@@ -1,17 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-<style>
 
-</style>
-<script>
-
-</script>
-</head>
-<body>
-
-
-    <p>
     CANDY CRUSH PLAN
     GAME UI
     1. Implement 8 x 8 grid with cells
@@ -42,8 +29,4 @@
     3. 5 in a row gives a coloured ball.
     4. New game board size.
     5. Proper animations
-
- </p> 
-</body>
-</html>
 
