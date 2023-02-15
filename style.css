@@ -1,0 +1,174 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
+  overflow:hidden;
+}
+/* background animation credit to Manuel Pinto */
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* background animation credit to Manuel Pinto */
+
+#grid {
+  display: grid;
+  grid-gap: 5px;
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+}
+
+/* credit: MDN documentation demo */
+.cell:hover {
+  /* Start the shake animation and make the animation last for 0.5 seconds */
+  animation: shake 2s;
+  /* When the animation is finished, start again */
+  animation-iteration-count: infinite;
+  cursor: pointer;
+}
+
+.cell.fly {
+  animation: fly 3s;
+  animation-iteration-count: 1; 
+}
+
+@keyframes fly {
+  0% {
+    transform: translate(0px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(150px, -2px) rotate(-10deg);
+  }
+  20% {
+    transform: translate(300px, 0px) rotate(10deg);
+  }
+  30% {
+    transform: translate(450px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(600px, -1px) rotate(10deg);
+  }
+  50% {
+    transform: translate(750px, 2px) rotate(-10deg);
+  }
+  60% {
+    transform: translate(900px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(1050px, 1px) rotate(-10deg);
+  }
+  80% {
+    transform: translate(1200px, -1px) rotate(10deg);
+  }
+  90% {
+    transform: translate(1350px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1500px, -2px) rotate(-10deg);
+  }
+}
+
+
+
+
+/* credit: MDN documentation demo */
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+.dragging {
+  transition: all 0.5s ease-in-out;
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+#div1 {
+  width: 350px;
+  height: 70px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
+
+#flex-container {
+  display: inline-block;
+  width: 100%;
+}
+
+img {
+  display: inline-block;
+  width: 350px;
+  height: 70px;
+}
+
+#preview {
+  border: 1px solid #aaaaaa;
+  overflow-x: visible;
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+  /* justify-content: stretch; */
+  /* align-items: stretch; */
+  width: 105%;
+  height: 400px;
+  /* flex-basis: max-content;  */
+  flex-wrap: nowrap;
+}
+
+#preview > img {
+  height: 380px;
+  width: auto;
+}
+
+#experimental {
+  display: none;
+}
