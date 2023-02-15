@@ -45,47 +45,6 @@ body {
   cursor: pointer;
 }
 
-.cell.fly {
-  animation: fly 3s;
-  animation-iteration-count: 1; 
-}
-
-@keyframes fly {
-  0% {
-    transform: translate(0px, 1px) rotate(0deg);
-  }
-  10% {
-    transform: translate(150px, -2px) rotate(-10deg);
-  }
-  20% {
-    transform: translate(300px, 0px) rotate(10deg);
-  }
-  30% {
-    transform: translate(450px, 2px) rotate(0deg);
-  }
-  40% {
-    transform: translate(600px, -1px) rotate(10deg);
-  }
-  50% {
-    transform: translate(750px, 2px) rotate(-10deg);
-  }
-  60% {
-    transform: translate(900px, 1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(1050px, 1px) rotate(-10deg);
-  }
-  80% {
-    transform: translate(1200px, -1px) rotate(10deg);
-  }
-  90% {
-    transform: translate(1350px, 2px) rotate(0deg);
-  }
-  100% {
-    transform: translate(1500px, -2px) rotate(-10deg);
-  }
-}
-
 
 
 

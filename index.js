@@ -1,57 +1,240 @@
 function CandyCrush() {
-  let grid = [];
-  let gridMarked = [];
-  let gridFly=[];
-  let gameData = {
-    startID: "",
-    endID: "",
-    rowCount: 6,
-    colCount: 6,
-    candyCount: 6,
-    isCrushable: false,
-  };
+  //Declare game data with empty values
+  class GameData {
+    constructor(rowCount, colCount, candyCount) {
+      this.rowCount = rowCount || 6;
+      this.colCount = colCount || 6;
+      this.candyCount = candyCount || 6;
+      this.start = {};
+      this.end = {};
+      this.grid = [];
+      this.gridToCrush = [];
+      this.fillGridArray();
+      this.setStartId("");
+      this.setEndId("");
 
-  function fillGrid(rowCount, colCount, candyCount) {
-    //String.fromCharCode(65) => 'A'
-    //A = 65, F = 70, Z = 90
+      this.stateOf = { ready: 0, check: 1, crush: 2, drop: 3 };
+      this.state = this.stateOf["ready"];
+      console.log(this.state);
+    }
 
-    for (let i = 0; i < rowCount; i++) {
-      const row = [];
-      for (j = 0; j < colCount; j++) {
-        row.push(
-          String.fromCharCode(65 + Math.floor(Math.random() * candyCount))
-        );
+    setStartId(id) {
+      if (id === "") {
+        this.start.id = "";
+        this.start.row = "";
+        this.start.col = "";
+        this.start.value = "";
+      } else {
+        this.start.id = id;
+        this.start.row = this.getRow(id);
+        this.start.col = this.getCol(id);
+        this.start.value = this.grid[this.start.row][this.start.col];
       }
-      grid.push(row);
+    }
+
+    setEndId(id) {
+      if (id === "") {
+        this.end.id = "";
+        this.end.row = "";
+        this.end.col = "";
+        this.end.value = "";
+      } else {
+        this.end.id = id;
+        this.end.row = this.getRow(id);
+        this.end.col = this.getCol(id);
+        this.end.value = this.grid[this.end.row][this.end.col];
+      }
+    }
+
+    getRow(id) {
+      //convert r1c1 to {row, col} and to "A"
+      return id ? Number(id.slice(1, 2)) : "";
+    }
+
+    getCol(id) {
+      return id ? Number(id.slice(3, 4)) : "";
+    }
+
+    getRandomCandy() {
+      return String.fromCharCode(
+        65 + Math.floor(Math.random() * this.candyCount)
+      );
+    }
+
+    //Fill game grid with values
+    fillGridArray() {
+      //String.fromCharCode(65) => 'A'
+      //A = 65, F = 70, Z = 90
+      this.grid = [];
+      for (let i = 0; i < this.rowCount; i++) {
+        let gridRow = [];
+        for (let j = 0; j < this.colCount; j++) {
+          gridRow.push(this.getRandomCandy());
+        }
+        this.grid.push(gridRow);
+      }
+    }
+
+    compareAndRemoveOnesFromGridArray(){
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          if (gd.gridToCrushing[i][j]===1) {
+              gd.grid[i][j]="";
+          }
+        }
+      }
+    }
+
+    swapCandy() {
+      //console.log("SwapCandy: gd:", gd);
+      this.grid[this.start.row][this.start.col] = this.end.value;
+      this.grid[this.end.row][this.end.col] = this.start.value;
+    }
+
+    checkThreeOrMoreInALine() {
+      //check and mark rows
+      let isCrushable = false;
+      this.gridToCrush = [];
+      for (let i = 0; i < gd.rowCount; i++) {
+        let rowText = this.grid[i].join("");
+        const markedRow = markLine(rowText);
+        if (markedRow.includes("1")) isCrushable = true;
+        //console.log(markedRow);
+        this.gridToCrush.push([...markedRow]);
+      }
+
+      console.table("checkThreeOrMoreInALine: ", this.gridToCrush);
+
+      for (let j = 0; j < gd.colCount; j++) {
+        let colText = "";
+        for (let i = 0; i < gd.rowCount; i++) {
+          colText += this.grid[i][j];
+        }
+        const markedCol = markLine(colText);
+        if (markedCol.includes("1")) isCrushable = true;
+        const markedColArray = [...markedCol];
+
+        for (let i = 0; i < gd.rowCount; i++) {
+          if (this.gridToCrush[i][j] === "1") {
+            ///only overwrite if not equal to '1'
+          } else {
+            this.gridToCrush[i][j] = markedColArray[i];
+          }
+        }
+      }
+
+      console.table("checkThreeOrMoreInALine: ", this.gridToCrush);
+      if (!isCrushable) gd.gridToCrush = [];
+
+      return isCrushable;
+    }
+
+    getDistance() {
+      return Math.sqrt(
+        (this.start.row - this.end.row) ** 2 + (this.start.col - this.end.col) ** 2
+      );
+    }
+
+    checkValidMoveAdjacent() {
+      const distance = this.getDistance();
+      if (distance === 0) {
+        console.log("distance = 0 : invalid");
+        return false;
+      } else if (distance > 1) {
+        console.log("distance > 1 : invalid");
+        return false;
+      }
+      if (distance === 1) {
+        console.log("distance valid");
+        return true;
+      }
     }
   }
 
-  fillGrid(6, 6, 6);
-  console.log(grid);
+  function routerNext() {
+    console.log(`state = ${gd.state}`);
+    switch (gd.state) {
+      case 0:
+        console.log("state ready->check");
+        // state = 0 "ready": listening for game events
+        // -> change 0 to 1 when drag and drop event handler is called
+        gd.state = gd.stateOf["check"];
+        routerNext();
+        break;
+      case 1:
+        console.log("state check");
+        // state = 1 "check": checking for correct move, 3 or more in a line
+        if (!gd.checkValidMoveAdjacent()) {
+          // -> change 1 to 0 when check is failed (failed also means all candy is crushed)
+          console.log("state check->ready (not valid adjacent move)");
+          gd.state = gd.stateOf["ready"];
+          routerNext();
+        }
 
-  const gridContainer = document.querySelector("#grid");
+        if (!gd.checkThreeOrMoreInALine()) {
+          // -> change 1 to 2 when check is passed
+          console.log("state check->ready (not 3 or more in a line)");
+          gd.state = gd.stateOf["ready"];
+          routerNext();
+        }
+
+        gd.swapCandy();
+        renderGrid();
+
+        gd.state = gd.stateOf["crush"];
+        routerNext();
+
+        break;
+      case 2:
+        console.log("state crush");
+        // state = 2 "crush" : animating the candy crush(es), assign "crush" class to candy
+        // -> change 2 to 3 when setTimeout of "500ms" is ended (assume the animation takes 500ms)
+        
+        
+        setTimeout(() => {
+          console.log("state crush->drop, when setTimeout of 2s ended");
+          compareAndRemoveOnesFromGridArray();
+          renderGrid();
+          gd.state = gd.stateOf["drop"];
+          routerNext();
+        }, 2000);
+
+        break;
+      case 3:
+        console.log("state drop");
+        // state = 3 "drop": define drop candy, animating the drop(s), remove "crush" class, assign "drop" class
+        // -> change 3 to 1 when setTimeout of "500ms" is ended (assume the animation takes 500ms)
+        setTimeout(() => {
+          console.log("state drop->check, when setTimeout of 2s ended");
+          renderGrid();
+          gd.state = gd.stateOf["check"];
+          routerNext();
+        }, 2000);
+
+        break;
+      default:
+        console.log("state invalid");
+        break;
+    }
+    return;
+  }
+
+  //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
+  let gd = new GameData(6, 6, 6);
+  console.log("GameData object created:", gd);
+
+  //Cache the game elements
+  gridContainer = document.querySelector("#grid");
+
+  //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
   gridContainer.addEventListener("dragstart", onDragStartHandler);
 
-  function initGrid() {
-    const rowCount = gameData.rowCount;
-    const colCount = gameData.colCount;
-    const size = 80;
-    gridContainer.style.cssText += `grid-template-columns: repeat(${colCount}, ${size}px)`;
-    gridContainer.style.cssText += `grid-template-rows: repeat(${rowCount}, ${size}px)`;
-    gridContainer.style.cssText += `width: ${
-      size * colCount + 5 * (colCount - 1)
-    }px`;
-    gridContainer.style.cssText += `height: ${
-      size * colCount + 5 * (colCount - 1)
-    }px`;
-  }
-
   function onDragStartHandler(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
-    gameData.startID = ev.target.id;
-    console.log("onDragStartHandler: startID", ev.target.id);
+    gd.setStartId(ev.target.id);
+    console.log("onDragStartHandler: start object", gd.start);
   }
 
   function onDragOverHandler(ev) {
@@ -61,151 +244,65 @@ function CandyCrush() {
 
   function onDropHandler(ev) {
     ev.preventDefault();
-    gameData.endID = ev.target.id;
-    //console.log("endID", ev.target.id);
-    swapCandy(gameData);
-    checkCandyCrushable();
-
-      renderGrid();
-      renderFly();
-  
+    gd.setEndId(ev.target.id);
+    console.log("onDragStartHandler: start object", gd.start);
+    routerNext();
   }
 
-  function convert(id) {
-    //convert r1c1 to {row, col} and to "A"
-    const row = Number(id.slice(1, id.indexOf("c")));
-    const col = Number(id.slice(id.indexOf("c") + 1, id.length));
-    const value = grid[row][col];
-    console.log("convert:", id, { row, col, value });
-    return { row: row, col: col, value: value };
-  }
+  function markLine(str) {
+    const countObj = countInLine(str);
+    //console.log("countObj: ",countObj);
+    const filteredObj = filterCount(countObj);
+    //console.log("filteredObj",filteredObj);
+    const markedString = markString(filteredObj, str);
+    //console.log("markedString: ", markedString);
 
-  function deepCopy(arr) {
-    let arrCopy = [];
-    arr.forEach((row) => {
-      const rowCopy = [];
-      row.forEach((item) => {
-        rowCopy.push(item);
-      });
-      arrCopy.push(rowCopy);
-    });
-    console.log("DeepCopy:", arr, arrCopy);
-    return arrCopy;
-  }
-
-  function swapCandy(gameData) {
-    console.log("gamedata:", gameData);
-
-    const start = convert(gameData.startID);
-    const end = convert(gameData.endID);
-    console.log({ ...start }, { ...end });
-    grid[start.row][start.col] = end.value;
-    grid[end.row][end.col] = start.value;
-
-    const result = checkValidMoveAdjacent(start, end);
-    
-    gameData.isCrushable = checkCandyCrushable();
-    if (result === false || gameData.isCrushable === false ) {
-      //revert to previous values
-      grid[start.row][start.col] = start.value;
-      grid[end.row][end.col] = end.value;
-      return;
-    }
-
-
-    
-    //Check if valid, otherwise swap it back.
-    //1. Candy can only move to up, down, left, right
-    //2. Candy can only move if there is at least 3 candy matches after moving.
-    //Save a copy of the grid, revert to previous grid if invalid
-    //3. Check all rows and columns for 3 or more in a line. Make a grid of marked candy + missing candy.
-
-    //4. Animate the marked candy flying to the right in a swimming pattern.
-    //5. Refresh the grid with missing candy.
-    //6. Candy drops by gravity to fill the missing holes. Random candy comes in from the top.
-    //   This must be done step by step. For each step, run 3,4,5 recursively.
-  }
-
-
-
-
-  function checkCandyCrushable() {
-    //check and mark rows
-    let isCrushable=false;
-    gridMarked = [];
-    for (let i = 0; i < gameData.rowCount; i++) {
-      let rowText = grid[i].join("");
-      const markedRow = markLine(rowText);
-      if (markedRow.includes('1')) isCrushable = true;
-      //console.log(markedRow);      
-      gridMarked.push([...markedRow]);
-    }
-
-    console.table(gridMarked);
-
-    for (let j = 0; j < gameData.colCount; j++) {
-      let colText = "";
-      for (let i = 0; i < gameData.rowCount; i++) {
-        colText += grid[i][j];
-      }
-      const markedCol = markLine(colText);
-      if (markedCol.includes('1')) isCrushable = true;
-      const markedColArray = [...markedCol];
-
-      for (let i = 0; i < gameData.rowCount; i++) {
-          
-        if (gridMarked[i][j] === '1') {
-          ///only overwrite if not equal to '1'
+    function countInLine(str) {
+      let hash = {};
+      const arr = [...str];
+      arr.forEach((el, index) => {
+        if (!hash[el]) {
+          hash[el] = {};
+          hash[el].count = 1;
+          hash[el].start = index;
         } else {
-          gridMarked[i][j] = markedColArray[i];
+          hash[el].count++;
+          hash[el].end = index;
         }
-      }
+      });
+      return hash;
     }
 
-    gridFly=[];
-    for (let i=0; i<gameData.rowCount;i++){
-      for (let j=0;j<gameData.colCount;j++){
-          if (gridMarked[i][j]==='1')
-          { 
-            gridFly.push({
-              row: i,
-              col:j,
-            })
-          }
-      }
+    function filterCount(countObj) {
+      const keys = Object.keys(countObj);
+      const filteredObj = {};
+
+      keys.forEach((key) => {
+        if (
+          countObj[key].count >= 3 &&
+          countObj[key].count === countObj[key].end - countObj[key].start + 1
+        ) {
+          filteredObj[key] = { ...countObj[key] }; //copying object
+        }
+      });
+      return filteredObj;
     }
 
-    console.log("gridFly:",gridFly);
+    function markString(filteredObj, str) {
+      let markedString = "" + str;
+      const keys = Object.keys(filteredObj);
 
-    console.log("isCrushable",isCrushable);
-    console.table(gridMarked);
-    return isCrushable;
+      keys.forEach((key) => {
+        markedString = markedString.replaceAll(key, "1");
+      });
+
+      return markedString;
+    }
+
+    return markedString;
   }
 
-  function removeFromGrid(){
-    gridFly.forEach(item=>{
-      grid[item.row][item.col]="";
-    })
-  }
-
-  function fillGrid(){
-    gridFly.forEach(item=>{
-      grid[item.row][item.col]=String.fromCharCode(65 + Math.floor(Math.random() * candyCount));
-    })
-
-  }
-
-  function markLine(str){
-      const countObj = countInLine(str);
-      //console.log("countObj: ",countObj);
-      const filteredObj = filterCount(countObj);
-      //console.log("filteredObj",filteredObj);
-      const markedString = markString(filteredObj,str);
-      //console.log("markedString: ", markedString);
-      return markedString;    
-  }
-
-  //Unit Tests for markLine
+  //Tests for markLine
   // const test = "AAAABBCCCDDEEEEEEFF";
   // const countObj = countInLine(test);
   // console.log("countObj: ",countObj);
@@ -214,98 +311,49 @@ function CandyCrush() {
   // const markedString = markString(filteredObj,test);
   // console.log("markedString: ", markedString);
   //console.log(test, markLine(test));
-    
 
-  function countInLine(str) {
-    let hash = {};
-    const arr = [...str];
-    arr.forEach((el,index) => {
-      if (!hash[el]) {
-        hash[el]={};
-        hash[el].count=1;
-        hash[el].start=index;
-      } else {
-        hash[el].count++;
-        hash[el].end=index;
-      }
-    })
-    return hash;
-  }
-
-  function filterCount(countObj){
-    const keys = Object.keys(countObj);
-    const filteredObj={};
-
-    keys.forEach(key=>{
-      if (countObj[key].count>=3 && (countObj[key].count===countObj[key].end-countObj[key].start+1))
-      {
-          filteredObj[key]={...countObj[key]}; //copying object
-      }
-    })
-    return filteredObj;
-  }
-
-  function markString(filteredObj, str){
-    let markedString=""+str;
-    const keys = Object.keys(filteredObj);
-
-    keys.forEach(key=>{
-      markedString=markedString.replaceAll(key,"1");
-    });
-
-    return markedString;
-  }
-
-
-
-
-
-  function checkValidMoveAdjacent(start, end) {
-    const distance = Math.sqrt(
-      (start.row - end.row) ** 2 + (start.col - end.col) ** 2
-    );
-    console.log({ distance, start, end });
-    if (distance === 0 || distance > 1) {
-      console.log("distance invalid");
-      return false;
-    }
-    if (distance === 1) {
-      console.log("distance valid");
-      return true;
+  function applyStyleToGridContainer() {
+    if (!gridContainer) {
+      console.log("gridContainer not defined");
+      return;
+    } else {
+      const size = 80;
+      gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${size}px)`;
+      gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${size}px)`;
+      gridContainer.style.cssText += `width: ${
+        size * gd.colCount + 5 * (gd.colCount - 1)
+      }px`;
+      gridContainer.style.cssText += `height: ${
+        size * gd.colCount + 5 * (gd.colCount - 1)
+      }px`;
     }
   }
 
   function renderGrid() {
-    const rowCount = gameData.rowCount;
-    const colCount = gameData.colCount;
-
     gridContainer.innerHTML = "";
-    for (let i = 0; i < rowCount; i++) {
-      for (let j = 0; j < colCount; j++) {
+    for (let i = 0; i < gd.rowCount; i++) {
+      for (let j = 0; j < gd.colCount; j++) {
         const item = document.createElement("img");
         item.id = `r${i}c${j}`;
         item.classList.add("cell");
         item.setAttribute("draggable", "true");
-        if (grid[i][j]) item.src = `./images/candy${grid[i][j]}.png`;
+        if (gd.grid[i][j]!=="") {
+          item.src = `./images/candy${gd.grid[i][j]}.png`;
+        } else {
+          item.src = `./images/candy.png`;  
+        }
         gridContainer.appendChild(item);
       }
     }
-
   }
 
-  function renderFly(){
-    gridFly.forEach(item=>{
-      const flyEl = document.getElementById(`r${item.row}c${item.col}`);
-      flyEl.classList.add("fly");
-    })
+  function init() {
+    //NOTE must declare gridContainer before instantiation of gd
+    applyStyleToGridContainer(gridContainer);
+    renderGrid();
   }
 
-
-
-  function crushCandy() {}
-
-  initGrid();
-  renderGrid();
+  init();
 }
 
 CandyCrush();
