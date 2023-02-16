@@ -13,36 +13,48 @@ function CandyCrush() {
       this.setStartId("");
       this.setEndId("");
 
-      this.stateOf = { ready: 0, check: 1, crush: 2, drop: 3 };
-      this.state = this.stateOf["ready"];
-      console.log(this.state);
+      this.states = ["wait", "ready", "check", "crush", "drop", "fill"];
+      this.state = "ready";
     }
 
     setStartId(id) {
-      if (id === "") {
-        this.start.id = "";
-        this.start.row = "";
-        this.start.col = "";
-        this.start.value = "";
-      } else {
-        this.start.id = id;
-        this.start.row = this.getRow(id);
-        this.start.col = this.getCol(id);
-        this.start.value = this.grid[this.start.row][this.start.col];
+      try {
+        if (id === "") {
+          this.start.id = "";
+          this.start.row = "";
+          this.start.col = "";
+          this.start.value = "";
+        } else if (id === "grid") {
+          //do nothing
+        } else {
+          this.start.id = id;
+          this.start.row = this.getRow(id);
+          this.start.col = this.getCol(id);
+          this.start.value = this.grid[this.start.row][this.start.col];
+        }
+      } catch (e) {
+        console.log("error: ",id," typeof ", typeof id);
       }
     }
 
     setEndId(id) {
-      if (id === "") {
-        this.end.id = "";
-        this.end.row = "";
-        this.end.col = "";
-        this.end.value = "";
-      } else {
-        this.end.id = id;
-        this.end.row = this.getRow(id);
-        this.end.col = this.getCol(id);
-        this.end.value = this.grid[this.end.row][this.end.col];
+      try {
+        if (id === "") {
+          this.end.id = "";
+          this.end.row = "";
+          this.end.col = "";
+          this.end.value = "";
+        } else if (id === "grid") {
+          //do nothing
+        } else {
+          this.end.id = id;
+          this.end.row = this.getRow(id);
+          this.end.col = this.getCol(id);
+          this.end.value = this.grid[this.end.row][this.end.col];
+        }
+      } catch (e) {
+        console.log("error: ",id," typeof ", typeof id);
+
       }
     }
 
@@ -75,14 +87,15 @@ function CandyCrush() {
       }
     }
 
-    compareAndRemoveOnesFromGridArray(){
+    compareAndRemoveOnesFromGridArray() {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
-          if (gd.gridToCrushing[i][j]===1) {
-              gd.grid[i][j]="";
+          if (this.gridToCrush[i][j] === "1") {
+            this.grid[i][j] = " ";
           }
         }
       }
+      this.gridToCrush = [];
     }
 
     swapCandy() {
@@ -95,7 +108,7 @@ function CandyCrush() {
       //check and mark rows
       let isCrushable = false;
       this.gridToCrush = [];
-      for (let i = 0; i < gd.rowCount; i++) {
+      for (let i = 0; i < this.rowCount; i++) {
         let rowText = this.grid[i].join("");
         const markedRow = markLine(rowText);
         if (markedRow.includes("1")) isCrushable = true;
@@ -103,18 +116,18 @@ function CandyCrush() {
         this.gridToCrush.push([...markedRow]);
       }
 
-      console.table("checkThreeOrMoreInALine: ", this.gridToCrush);
+      console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridToCrush);
 
-      for (let j = 0; j < gd.colCount; j++) {
+      for (let j = 0; j < this.colCount; j++) {
         let colText = "";
-        for (let i = 0; i < gd.rowCount; i++) {
-          colText += this.grid[i][j];
+        for (let i = 0; i < this.rowCount; i++) {
+          colText = colText + this.grid[i][j];
         }
         const markedCol = markLine(colText);
         if (markedCol.includes("1")) isCrushable = true;
         const markedColArray = [...markedCol];
 
-        for (let i = 0; i < gd.rowCount; i++) {
+        for (let i = 0; i < this.rowCount; i++) {
           if (this.gridToCrush[i][j] === "1") {
             ///only overwrite if not equal to '1'
           } else {
@@ -123,15 +136,16 @@ function CandyCrush() {
         }
       }
 
-      console.table("checkThreeOrMoreInALine: ", this.gridToCrush);
-      if (!isCrushable) gd.gridToCrush = [];
+      console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridToCrush);
+      if (!isCrushable) this.gridToCrush = [];
 
       return isCrushable;
     }
 
     getDistance() {
       return Math.sqrt(
-        (this.start.row - this.end.row) ** 2 + (this.start.col - this.end.col) ** 2
+        (this.start.row - this.end.row) ** 2 +
+          (this.start.col - this.end.col) ** 2
       );
     }
 
@@ -152,64 +166,77 @@ function CandyCrush() {
   }
 
   function routerNext() {
-    console.log(`state = ${gd.state}`);
     switch (gd.state) {
-      case 0:
-        console.log("state ready->check");
+      case "wait":
+        console.log("wait");
+        //do nothing
+        break;
+      case "ready":
+        console.log("swapping candy");
         // state = 0 "ready": listening for game events
         // -> change 0 to 1 when drag and drop event handler is called
-        gd.state = gd.stateOf["check"];
+        gd.swapCandy();
+        gd.state = "check";
         routerNext();
         break;
-      case 1:
-        console.log("state check");
+      case "check":
+        console.log("start check");
         // state = 1 "check": checking for correct move, 3 or more in a line
         if (!gd.checkValidMoveAdjacent()) {
           // -> change 1 to 0 when check is failed (failed also means all candy is crushed)
-          console.log("state check->ready (not valid adjacent move)");
-          gd.state = gd.stateOf["ready"];
+          console.log("end check (not valid adjacent move)");
+          gd.swapCandy(); //swap it back
+          renderGrid();
+          gd.state = "ready";
           routerNext();
         }
 
         if (!gd.checkThreeOrMoreInALine()) {
           // -> change 1 to 2 when check is passed
-          console.log("state check->ready (not 3 or more in a line)");
-          gd.state = gd.stateOf["ready"];
+          console.log("end check (not 3 or more in a line)");
+          gd.swapCandy(); //swap it back
+          renderGrid();
+          gd.state = "ready";
           routerNext();
         }
 
-        gd.swapCandy();
         renderGrid();
 
-        gd.state = gd.stateOf["crush"];
+        gd.state = "crush";
         routerNext();
 
         break;
-      case 2:
-        console.log("state crush");
-        // state = 2 "crush" : animating the candy crush(es), assign "crush" class to candy
-        // -> change 2 to 3 when setTimeout of "500ms" is ended (assume the animation takes 500ms)
-        
-        
+      case "crush":
+        console.log("start crush");
         setTimeout(() => {
-          console.log("state crush->drop, when setTimeout of 2s ended");
-          compareAndRemoveOnesFromGridArray();
+          console.log("end crush, when setTimeout of 2s ended");
+          gd.compareAndRemoveOnesFromGridArray();
           renderGrid();
-          gd.state = gd.stateOf["drop"];
+          gd.state = "drop";
           routerNext();
-        }, 2000);
+        }, 500);
+        gd.state = "wait"; //set to wait, so as not to trigger
 
         break;
-      case 3:
-        console.log("state drop");
-        // state = 3 "drop": define drop candy, animating the drop(s), remove "crush" class, assign "drop" class
-        // -> change 3 to 1 when setTimeout of "500ms" is ended (assume the animation takes 500ms)
+      case "drop":
+        console.log("start drop");
         setTimeout(() => {
-          console.log("state drop->check, when setTimeout of 2s ended");
+          console.log("end drop, when setTimeout of 2s ended");
           renderGrid();
-          gd.state = gd.stateOf["check"];
+          gd.state = "fill";
           routerNext();
-        }, 2000);
+        }, 500);
+        break;
+        gd.state = "wait"; //set to wait, so as not to trigger
+      case "fill":
+        console.log("start fill");
+        setTimeout(() => {
+          console.log("end fill, when setTimeout of 2s ended");
+          renderGrid();
+          gd.state = "ready";
+          // routerNext();
+        }, 500);
+        gd.state = "wait"; //set to wait, so as not to trigger
 
         break;
       default:
@@ -220,7 +247,7 @@ function CandyCrush() {
   }
 
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
-  let gd = new GameData(6, 6, 6);
+  let gd = new GameData(8, 8, 6);
   console.log("GameData object created:", gd);
 
   //Cache the game elements
@@ -250,54 +277,14 @@ function CandyCrush() {
   }
 
   function markLine(str) {
-    const countObj = countInLine(str);
-    //console.log("countObj: ",countObj);
-    const filteredObj = filterCount(countObj);
-    //console.log("filteredObj",filteredObj);
-    const markedString = markString(filteredObj, str);
+    const regex = /([A-Z])\1{2,}/g;
+    let numDuplicates=0;
+    const markedString = str.replace(regex, (match) => {
+      numDuplicates = match.length;
+      return '1'.repeat(numDuplicates);
+    });
+
     //console.log("markedString: ", markedString);
-
-    function countInLine(str) {
-      let hash = {};
-      const arr = [...str];
-      arr.forEach((el, index) => {
-        if (!hash[el]) {
-          hash[el] = {};
-          hash[el].count = 1;
-          hash[el].start = index;
-        } else {
-          hash[el].count++;
-          hash[el].end = index;
-        }
-      });
-      return hash;
-    }
-
-    function filterCount(countObj) {
-      const keys = Object.keys(countObj);
-      const filteredObj = {};
-
-      keys.forEach((key) => {
-        if (
-          countObj[key].count >= 3 &&
-          countObj[key].count === countObj[key].end - countObj[key].start + 1
-        ) {
-          filteredObj[key] = { ...countObj[key] }; //copying object
-        }
-      });
-      return filteredObj;
-    }
-
-    function markString(filteredObj, str) {
-      let markedString = "" + str;
-      const keys = Object.keys(filteredObj);
-
-      keys.forEach((key) => {
-        markedString = markedString.replaceAll(key, "1");
-      });
-
-      return markedString;
-    }
 
     return markedString;
   }
@@ -337,10 +324,12 @@ function CandyCrush() {
         item.id = `r${i}c${j}`;
         item.classList.add("cell");
         item.setAttribute("draggable", "true");
-        if (gd.grid[i][j]!=="") {
-          item.src = `./images/candy${gd.grid[i][j]}.png`;
+        if (gd.grid[i][j] === " ") {
+          item.src = "";
+          item.style.visibility = "hidden";
         } else {
-          item.src = `./images/candy.png`;  
+          item.src = `./images/candy${gd.grid[i][j]}.png`;
+          item.style.visibility = "visible";
         }
         gridContainer.appendChild(item);
       }

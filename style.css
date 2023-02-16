@@ -34,6 +34,7 @@ body {
 .cell {
   width: 80px;
   height: 80px;
+  display: flex;
 }
 
 /* credit: MDN documentation demo */
