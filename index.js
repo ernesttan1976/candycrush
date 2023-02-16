@@ -9,6 +9,7 @@ function CandyCrush() {
       this.end = {};
       this.grid = [];
       this.gridToCrush = [];
+      this.gridTemp =[];
       this.fillGridArray();
       this.setStartId("");
       this.setEndId("");
@@ -78,12 +79,37 @@ function CandyCrush() {
       //String.fromCharCode(65) => 'A'
       //A = 65, F = 70, Z = 90
       this.grid = [];
+      this.gridTemp=[];
       for (let i = 0; i < this.rowCount; i++) {
-        let gridRow = [];
+        let row = [];
         for (let j = 0; j < this.colCount; j++) {
-          gridRow.push(this.getRandomCandy());
+          row.push(this.getRandomCandy());
         }
-        this.grid.push(gridRow);
+        this.grid.push(row);
+      }
+
+
+      if (this.checkThreeOrMoreInALine())
+      {
+        this.compareAndRemoveOnesFromGridArray();
+        this.fillGridArrayBlanks();
+      }
+    }
+
+    fillGridArrayBlanks() {
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          if (this.grid[i][j]===" ")
+          {
+            this.grid[i][j]=this.getRandomCandy();
+          }
+        }
+      }
+
+      if (this.checkThreeOrMoreInALine())
+      {
+        this.compareAndRemoveOnesFromGridArray();
+        this.fillGridArrayBlanks();
       }
     }
 
