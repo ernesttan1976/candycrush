@@ -9,12 +9,12 @@ function CandyCrush() {
       this.end = {};
       this.grid = [];
       this.gridToCrush = [];
-      this.gridTemp =[];
+      this.gridTemp = [];
       this.fillGridArray();
       this.setStartId("");
       this.setEndId("");
 
-      this.states = ["wait", "ready", "check", "crush", "drop", "fill"];
+      this.states = ["wait", "ready", "check1", "check2", "crush", "drop", "fill"];
       this.state = "ready";
     }
 
@@ -34,7 +34,7 @@ function CandyCrush() {
           this.start.value = this.grid[this.start.row][this.start.col];
         }
       } catch (e) {
-        console.log("error: ",id," typeof ", typeof id);
+        console.log("error: ", id, " typeof ", typeof id);
       }
     }
 
@@ -54,8 +54,7 @@ function CandyCrush() {
           this.end.value = this.grid[this.end.row][this.end.col];
         }
       } catch (e) {
-        console.log("error: ",id," typeof ", typeof id);
-
+        console.log("error: ", id, " typeof ", typeof id);
       }
     }
 
@@ -74,42 +73,45 @@ function CandyCrush() {
       );
     }
 
-    //Fill game grid with values
     fillGridArray() {
       //String.fromCharCode(65) => 'A'
       //A = 65, F = 70, Z = 90
       this.grid = [];
-      this.gridTemp=[];
+      this.gridTemp = [];
       for (let i = 0; i < this.rowCount; i++) {
         let row = [];
         for (let j = 0; j < this.colCount; j++) {
           row.push(this.getRandomCandy());
         }
         this.grid.push(row);
-      }
-
-
-      if (this.checkThreeOrMoreInALine())
-      {
-        this.compareAndRemoveOnesFromGridArray();
-        this.fillGridArrayBlanks();
+        this.gridTemp.push(row);
       }
     }
 
     fillGridArrayBlanks() {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
-          if (this.grid[i][j]===" ")
-          {
-            this.grid[i][j]=this.getRandomCandy();
+          if (this.grid[i][j] === " ") {
+            this.grid[i][j] = this.getRandomCandy();
           }
         }
       }
+    }
 
-      if (this.checkThreeOrMoreInALine())
-      {
-        this.compareAndRemoveOnesFromGridArray();
-        this.fillGridArrayBlanks();
+    dropCandy() {
+      for (let j = 0; j < this.colCount; j++) {
+        let col = "";
+        for (let i = 0; i < this.rowCount; i++) {
+          col = col + this.grid[i][j];
+        }
+        console.log("col", col);
+        col = col.replaceAll(" ", "");
+        col = " ".repeat(gd.rowCount - col.length) + col; // this removes spaces between and pads left spaces
+        let colArray = [...col];
+        console.log("colArray", colArray);
+        for (let i = 0; i < this.rowCount; i++) {
+          this.grid[i][j] = colArray[i];
+        }
       }
     }
 
@@ -202,28 +204,35 @@ function CandyCrush() {
         // state = 0 "ready": listening for game events
         // -> change 0 to 1 when drag and drop event handler is called
         gd.swapCandy();
-        gd.state = "check";
+        gd.state = "check1";
         routerNext();
         break;
-      case "check":
-        console.log("start check");
-        // state = 1 "check": checking for correct move, 3 or more in a line
+      case "check1":
         if (!gd.checkValidMoveAdjacent()) {
           // -> change 1 to 0 when check is failed (failed also means all candy is crushed)
           console.log("end check (not valid adjacent move)");
           gd.swapCandy(); //swap it back
           renderGrid();
           gd.state = "ready";
-          routerNext();
+          return;
         }
+        renderGrid();
+
+        gd.state = "check2";
+        routerNext();
+
+        break;
+      case "check2":
+        console.log("start check2");
+        // state = 1 "check": checking for correct move, 3 or more in a line
 
         if (!gd.checkThreeOrMoreInALine()) {
           // -> change 1 to 2 when check is passed
-          console.log("end check (not 3 or more in a line)");
-          gd.swapCandy(); //swap it back
+          console.log("end check2 (not 3 or more in a line)");
+          //gd.swapCandy(); //swap it back
           renderGrid();
           gd.state = "ready";
-          routerNext();
+          return;
         }
 
         renderGrid();
@@ -232,38 +241,43 @@ function CandyCrush() {
         routerNext();
 
         break;
+           
       case "crush":
         console.log("start crush");
+        gd.compareAndRemoveOnesFromGridArray();
         setTimeout(() => {
           console.log("end crush, when setTimeout of 2s ended");
-          gd.compareAndRemoveOnesFromGridArray();
           renderGrid();
           gd.state = "drop";
           routerNext();
-        }, 500);
+        }, 300);
         gd.state = "wait"; //set to wait, so as not to trigger
 
         break;
       case "drop":
         console.log("start drop");
+        gd.dropCandy();
+        console.log("dropped grid:", gd.grid);
         setTimeout(() => {
           console.log("end drop, when setTimeout of 2s ended");
           renderGrid();
           gd.state = "fill";
           routerNext();
-        }, 500);
-        break;
+        }, 300);
+
         gd.state = "wait"; //set to wait, so as not to trigger
+        break;
       case "fill":
         console.log("start fill");
+        gd.fillGridArrayBlanks();
+        console.log("After filling:", gd.grid);
         setTimeout(() => {
           console.log("end fill, when setTimeout of 2s ended");
           renderGrid();
-          gd.state = "ready";
-          // routerNext();
-        }, 500);
+          gd.state = "check2"; // check2 because not moved by user
+          routerNext();
+        }, 300);
         gd.state = "wait"; //set to wait, so as not to trigger
-
         break;
       default:
         console.log("state invalid");
@@ -273,7 +287,7 @@ function CandyCrush() {
   }
 
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
-  let gd = new GameData(8, 8, 6);
+  let gd = new GameData(10, 10, 5);
   console.log("GameData object created:", gd);
 
   //Cache the game elements
@@ -304,10 +318,10 @@ function CandyCrush() {
 
   function markLine(str) {
     const regex = /([A-Z])\1{2,}/g;
-    let numDuplicates=0;
+    let numDuplicates = 0;
     const markedString = str.replace(regex, (match) => {
       numDuplicates = match.length;
-      return '1'.repeat(numDuplicates);
+      return "1".repeat(numDuplicates);
     });
 
     //console.log("markedString: ", markedString);
