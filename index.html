@@ -8,18 +8,26 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="grid">
+    <div>
+      <div id="grid"></div>
+      <audio
+        class="audio"
+        loop
+        controls
+        src="./sounds/music2.ogg"
+      >
+        <source type="audio/filetype" volume="0.2"/>
+      </audio>
     </div>
 
-
-<!-- This is experimental, to be ignored -->
-<div id="experimental">
-    <div id="flex-container">
+    <!-- This is experimental, to be ignored -->
+    <div id="experimental">
+      <div id="flex-container">
         <p>Drag the W3Schools image into the rectangle:</p>
-  
+
         <div id="div1"></div>
         <br />
-  
+
         <img
           id="img1"
           src="https://www.w3schools.com/html/img_logo.gif"
@@ -28,9 +36,9 @@
           height="69"
         />
       </div>
-      <div id="preview"></div>  
-</div>
-<!-- This is experimental, to be ignored -->
+      <div id="preview"></div>
+    </div>
+    <!-- This is experimental, to be ignored -->
 
     <script src="index.js" defer></script>
   </body>

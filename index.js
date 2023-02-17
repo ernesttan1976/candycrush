@@ -16,6 +16,12 @@ function CandyCrush() {
 
       this.states = ["wait", "ready", "check1", "check2", "crush", "drop", "fill"];
       this.state = "ready";
+
+      this.cascadeCounter=1;
+      this.candyfallsCounter=1;
+      this.userActive=false; 
+
+
     }
 
     setStartId(id) {
@@ -34,7 +40,7 @@ function CandyCrush() {
           this.start.value = this.grid[this.start.row][this.start.col];
         }
       } catch (e) {
-        console.log("error: ", id, " typeof ", typeof id);
+        //console.log("error: ", id, " typeof ", typeof id);
       }
     }
 
@@ -54,7 +60,7 @@ function CandyCrush() {
           this.end.value = this.grid[this.end.row][this.end.col];
         }
       } catch (e) {
-        console.log("error: ", id, " typeof ", typeof id);
+        //console.log("error: ", id, " typeof ", typeof id);
       }
     }
 
@@ -104,11 +110,11 @@ function CandyCrush() {
         for (let i = 0; i < this.rowCount; i++) {
           col = col + this.grid[i][j];
         }
-        console.log("col", col);
+        //console.log("col", col);
         col = col.replaceAll(" ", "");
         col = " ".repeat(gd.rowCount - col.length) + col; // this removes spaces between and pads left spaces
         let colArray = [...col];
-        console.log("colArray", colArray);
+        //console.log("colArray", colArray);
         for (let i = 0; i < this.rowCount; i++) {
           this.grid[i][j] = colArray[i];
         }
@@ -127,9 +133,13 @@ function CandyCrush() {
     }
 
     swapCandy() {
-      //console.log("SwapCandy: gd:", gd);
-      this.grid[this.start.row][this.start.col] = this.end.value;
-      this.grid[this.end.row][this.end.col] = this.start.value;
+      ////console.log("SwapCandy: gd:", gd);
+      const temp = this.grid[this.end.row][this.end.col];
+      this.grid[this.end.row][this.end.col] = this.grid[this.start.row][this.start.col];
+      this.grid[this.start.row][this.start.col] = temp;
+      
+      //this.grid[this.start.row][this.start.col] = this.end.value;
+      //this.grid[this.end.row][this.end.col] = this.start.value;
     }
 
     checkThreeOrMoreInALine() {
@@ -140,11 +150,11 @@ function CandyCrush() {
         let rowText = this.grid[i].join("");
         const markedRow = markLine(rowText);
         if (markedRow.includes("1")) isCrushable = true;
-        //console.log(markedRow);
+        ////console.log(markedRow);
         this.gridToCrush.push([...markedRow]);
       }
 
-      console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridToCrush);
+      //console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridToCrush);
 
       for (let j = 0; j < this.colCount; j++) {
         let colText = "";
@@ -164,7 +174,7 @@ function CandyCrush() {
         }
       }
 
-      console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridToCrush);
+      //console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridToCrush);
       if (!isCrushable) this.gridToCrush = [];
 
       return isCrushable;
@@ -180,38 +190,101 @@ function CandyCrush() {
     checkValidMoveAdjacent() {
       const distance = this.getDistance();
       if (distance === 0) {
-        console.log("distance = 0 : invalid");
+        //console.log("distance = 0 : invalid");
         return false;
       } else if (distance > 1) {
-        console.log("distance > 1 : invalid");
+        //console.log("distance > 1 : invalid");
         return false;
       }
       if (distance === 1) {
-        console.log("distance valid");
+        //console.log("distance valid");
         return true;
       }
     }
   }
 
+  
+  class Sound{
+    constructor()
+    {
+      this.volume = 0.1;
+      this.switch = new Audio("./sounds/switch.ogg");
+      this.negativeswitch = new Audio("./sounds/negativeswitch.ogg");
+      //this.loadgame = new Audio("./sounds/loadgame.ogg");
+      this.candyfalls1 = new Audio("./sounds/candyfalls1.ogg");
+      this.candyfalls2 = new Audio("./sounds/candyfalls2.ogg");
+      this.candyfalls3 = new Audio("./sounds/candyfalls3.ogg");
+      this.candyfalls4 = new Audio("./sounds/candyfalls4.ogg");
+      
+      this.cascade1 = new Audio("./sounds/cascade1.ogg");
+      this.cascade2 = new Audio("./sounds/cascade2.ogg");
+      this.cascade3 = new Audio("./sounds/cascade3.ogg");
+      this.cascade4 = new Audio("./sounds/cascade4.ogg");
+      this.cascade5 = new Audio("./sounds/cascade5.ogg");
+      this.cascade6 = new Audio("./sounds/cascade6.ogg");
+      this.cascade7 = new Audio("./sounds/cascade7.ogg");
+      this.cascade8 = new Audio("./sounds/cascade8.ogg");
+      this.cascade9 = new Audio("./sounds/cascade9.ogg");
+      this.cascade10 = new Audio("./sounds/cascade10.ogg");
+      this.cascade11= new Audio("./sounds/cascade11.ogg");
+      this.cascade12 = new Audio("./sounds/cascade12.ogg");
+      this.music = new Audio("./sounds/music.ogg");      
+      this.music2 = new Audio("./sounds/music2.ogg");   
+      this.setVolume(0.05);
+    }
+
+    setVolume(volume){
+      this.volume=volume;
+      Object.keys(this).forEach(key=>{
+        if (key!=="volume"){
+          this[key].volume=volume;
+        }
+        })
+      //console.log(this);
+      };
+
+
+    candyfallplayrandom(){
+      this[`candyfalls${gd.candyfallsCounter}`].play();
+      gd.candyfallsCounter++;
+      gd.candyfallsCounter = gd.candyfallsCounter % 4 + 1;
+
+    }
+
+    candydropplayrandom(){
+      this[`cascade${gd.cascadeCounter}`].play();
+      gd.cascadeCounter++;
+      gd.cascadeCounter = gd.cascadeCounter % 12+1;
+    }
+
+  }
+
+  let sound = new Sound();
+
+
   function routerNext() {
     switch (gd.state) {
       case "wait":
-        console.log("wait");
+        //console.log("wait");
         //do nothing
         break;
       case "ready":
-        console.log("swapping candy");
+        //console.log("swapping candy");
         // state = 0 "ready": listening for game events
         // -> change 0 to 1 when drag and drop event handler is called
+        gd.cascadeCounter=1;
+        gd.userActive=true;
         gd.swapCandy();
+        sound.switch.play();
         gd.state = "check1";
         routerNext();
         break;
       case "check1":
         if (!gd.checkValidMoveAdjacent()) {
           // -> change 1 to 0 when check is failed (failed also means all candy is crushed)
-          console.log("end check (not valid adjacent move)");
+          //console.log("end check (not valid adjacent move)");
           gd.swapCandy(); //swap it back
+          //sound.negativeswitch.play();
           renderGrid();
           gd.state = "ready";
           return;
@@ -223,14 +296,23 @@ function CandyCrush() {
 
         break;
       case "check2":
-        console.log("start check2");
+        //console.log("start check2");
         // state = 1 "check": checking for correct move, 3 or more in a line
 
         if (!gd.checkThreeOrMoreInALine()) {
           // -> change 1 to 2 when check is passed
-          console.log("end check2 (not 3 or more in a line)");
+          //console.log("end check2 (not 3 or more in a line)");
           //gd.swapCandy(); //swap it back
-          renderGrid();
+          if (gd.userActive) 
+          {
+            gd.swapCandy();
+            renderGrid();
+            sound.negativeswitch.play();
+          } else {
+            //final cascade
+            gd.cascadeCounter=1;
+          }
+            renderGrid();
           gd.state = "ready";
           return;
         }
@@ -238,57 +320,60 @@ function CandyCrush() {
         renderGrid();
 
         gd.state = "crush";
+        gd.userActive = false;
         routerNext();
 
         break;
            
       case "crush":
-        console.log("start crush");
+        //console.log("start crush");
         gd.compareAndRemoveOnesFromGridArray();
+        sound.candyfallplayrandom();
         setTimeout(() => {
-          console.log("end crush, when setTimeout of 2s ended");
+          //console.log("end crush, when setTimeout of 2s ended");
           renderGrid();
           gd.state = "drop";
           routerNext();
-        }, 300);
+        }, 200);
         gd.state = "wait"; //set to wait, so as not to trigger
 
         break;
       case "drop":
-        console.log("start drop");
+        //console.log("start drop");
         gd.dropCandy();
-        console.log("dropped grid:", gd.grid);
+        sound.candydropplayrandom();
+        //console.log("dropped grid:", gd.grid);
         setTimeout(() => {
-          console.log("end drop, when setTimeout of 2s ended");
+          //console.log("end drop, when setTimeout of 2s ended");
           renderGrid();
           gd.state = "fill";
           routerNext();
-        }, 300);
+        }, 200);
 
         gd.state = "wait"; //set to wait, so as not to trigger
         break;
       case "fill":
-        console.log("start fill");
+        //console.log("start fill");
         gd.fillGridArrayBlanks();
-        console.log("After filling:", gd.grid);
+        //console.log("After filling:", gd.grid);
         setTimeout(() => {
-          console.log("end fill, when setTimeout of 2s ended");
+          //console.log("end fill, when setTimeout of 2s ended");
           renderGrid();
           gd.state = "check2"; // check2 because not moved by user
           routerNext();
-        }, 300);
+        }, 200);
         gd.state = "wait"; //set to wait, so as not to trigger
         break;
       default:
-        console.log("state invalid");
+        //console.log("state invalid");
         break;
     }
     return;
   }
 
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
-  let gd = new GameData(10, 10, 5);
-  console.log("GameData object created:", gd);
+  let gd = new GameData(10, 10, 4);
+  //console.log("GameData object created:", gd);
 
   //Cache the game elements
   gridContainer = document.querySelector("#grid");
@@ -301,18 +386,18 @@ function CandyCrush() {
   function onDragStartHandler(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
     gd.setStartId(ev.target.id);
-    console.log("onDragStartHandler: start object", gd.start);
+    //console.log("onDragStartHandler: start object", gd.start);
   }
 
   function onDragOverHandler(ev) {
     ev.preventDefault();
-    //console.log("onDragOverHandler");
+    ////console.log("onDragOverHandler");
   }
 
   function onDropHandler(ev) {
     ev.preventDefault();
     gd.setEndId(ev.target.id);
-    console.log("onDragStartHandler: start object", gd.start);
+    //console.log("onDragStartHandler: start object", gd.start);
     routerNext();
   }
 
@@ -324,7 +409,7 @@ function CandyCrush() {
       return "1".repeat(numDuplicates);
     });
 
-    //console.log("markedString: ", markedString);
+    ////console.log("markedString: ", markedString);
 
     return markedString;
   }
@@ -332,16 +417,16 @@ function CandyCrush() {
   //Tests for markLine
   // const test = "AAAABBCCCDDEEEEEEFF";
   // const countObj = countInLine(test);
-  // console.log("countObj: ",countObj);
+  // //console.log("countObj: ",countObj);
   // const filteredObj = filterCount(countObj);
-  // console.log("filteredObj",filteredObj);
+  // //console.log("filteredObj",filteredObj);
   // const markedString = markString(filteredObj,test);
-  // console.log("markedString: ", markedString);
-  //console.log(test, markLine(test));
+  // //console.log("markedString: ", markedString);
+  // //console.log(test, markLine(test));
 
   function applyStyleToGridContainer() {
     if (!gridContainer) {
-      console.log("gridContainer not defined");
+      //console.log("gridContainer not defined");
       return;
     } else {
       const size = 80;
@@ -376,116 +461,22 @@ function CandyCrush() {
     }
   }
 
+  
+  const audio=document.querySelector('.audio');
+
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
     applyStyleToGridContainer(gridContainer);
     renderGrid();
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    //sound.music2.play();
+    
+    audio.volume=0.03;
+    
   }
 
   init();
+  
 }
 
 CandyCrush();
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// This below section is some widgets for experimentation, not part of this game
-
-function experimental() {
-  const preview = document.querySelector("#preview");
-  const box = document.querySelector("#div1");
-  //console.log("box: " + box);
-  box.addEventListener("dragover", onDragOverHandler2);
-  box.addEventListener("drop", onDropHandler2);
-
-  const item = document.querySelector("#img1");
-  //console.log(`item: ${item}`);
-  item.addEventListener("dragstart", onDragStartHandler2);
-  //ITEM
-  //on drag, save the element data , in this case it is the id
-  function onDragStartHandler2(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-    console.log("onDragStartHandler: setData", ev.target.id);
-  }
-
-  //BOX
-  //ondragover, prevent the default
-  function onDragOverHandler2(ev) {
-    ev.preventDefault();
-    console.log("onDragOverHandler");
-  }
-
-  //BOX
-  function onDropHandler2(ev) {
-    ev.preventDefault();
-    console.dir(ev.dataTransfer);
-    console.log(`types: ${ev.dataTransfer.types}`);
-    console.dir(ev.dataTransfer.types[0]);
-    console.dir(ev.dataTransfer.getData(ev.dataTransfer.types[0]));
-    //   console.dir(ev.dataTransfer.getData("text"));
-    //   console.dir(ev.dataTransfer.getData("Files"));
-
-    if (ev.dataTransfer.types[0].includes("text")) {
-      var data = ev.dataTransfer.getData("text");
-      console.log("data:", data);
-
-      ev.target.appendChild(document.getElementById(data));
-      console.log(`drop: data:${data} ev.target ${ev.target}`);
-    } else if (ev.dataTransfer.types[0].includes("Files")) {
-      console.log("files");
-
-      if (ev.dataTransfer.items) {
-        //either it is a mixture of items or it is files
-        console.log("items detected");
-        handleImages(ev.dataTransfer.files, preview);
-        [...ev.dataTransfer.items].forEach((file, i) => {
-          console.log(`file no. ${i}, webkitRelativePath ${file.webkitRelativePath}
-            file.name ${file.name}, file.type ${file.type}, file.size ${file.size}`);
-          console.dir(file);
-          console.log(file.getAsFile());
-        });
-      } else {
-        //it is files
-        //convert collection to array
-        console.log("files detected");
-      }
-    }
-  }
-
-  function handleImages(files, preview) {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      if (!file.type.startsWith("image/")) {
-        continue;
-      }
-
-      const img = document.createElement("img");
-      img.classList.add("obj");
-      img.file = file;
-      preview.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  console.log("started");
-}
-
-//experimental();

@@ -49,7 +49,12 @@ body {
   cursor: pointer;
 }
 
-
+.audio {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:200px;
+}
 
 
 /* credit: MDN documentation demo */
