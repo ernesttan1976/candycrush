@@ -5,40 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Candy Crush</title>
+    <link href="https://fonts.cdnfonts.com/css/keep-calm" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div>
+    <div id="start-page">
+    </div>
+    <div id="game-page">
       <div id="grid"></div>
-      <audio
-        class="audio"
-        loop
-        controls
-        src="./sounds/music2.ogg"
-      >
-        <source type="audio/filetype" volume="0.2"/>
+      <audio class="audio" loop controls src="./sounds/music2.ogg">
+        <source type="audio/filetype" volume="0.2" />
       </audio>
     </div>
-
-    <!-- This is experimental, to be ignored -->
-    <div id="experimental">
-      <div id="flex-container">
-        <p>Drag the W3Schools image into the rectangle:</p>
-
-        <div id="div1"></div>
-        <br />
-
-        <img
-          id="img1"
-          src="https://www.w3schools.com/html/img_logo.gif"
-          draggable="true"
-          width="336"
-          height="69"
-        />
-      </div>
-      <div id="preview"></div>
-    </div>
-    <!-- This is experimental, to be ignored -->
 
     <script src="index.js" defer></script>
   </body>

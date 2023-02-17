@@ -13,6 +13,7 @@ function CandyCrush() {
       this.fillGridArray();
       this.setStartId("");
       this.setEndId("");
+      this.size = 60;
 
       this.states = ["wait", "ready", "check1", "check2", "crush", "drop", "fill"];
       this.state = "ready";
@@ -207,7 +208,7 @@ function CandyCrush() {
   class Sound{
     constructor()
     {
-      this.volume = 0.1;
+      this.volume = 0.4;
       this.switch = new Audio("./sounds/switch.ogg");
       this.negativeswitch = new Audio("./sounds/negativeswitch.ogg");
       //this.loadgame = new Audio("./sounds/loadgame.ogg");
@@ -230,7 +231,7 @@ function CandyCrush() {
       this.cascade12 = new Audio("./sounds/cascade12.ogg");
       this.music = new Audio("./sounds/music.ogg");      
       this.music2 = new Audio("./sounds/music2.ogg");   
-      this.setVolume(0.05);
+      this.setVolume(0.4);
     }
 
     setVolume(volume){
@@ -377,11 +378,21 @@ function CandyCrush() {
 
   //Cache the game elements
   gridContainer = document.querySelector("#grid");
+  startPage = document.querySelector("#start-page");
+  gamePage = document.querySelector("#game-page");
+  cells = document.querySelectorAll(".cell");
 
   //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
   gridContainer.addEventListener("dragstart", onDragStartHandler);
+  startPage.addEventListener("click", playButtonHandler);
+
+  function playButtonHandler(ev){
+    console.log(ev.target);
+    gamePage.style.display="flex";
+    startPage.style.display="none";
+  }
 
   function onDragStartHandler(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
@@ -429,14 +440,14 @@ function CandyCrush() {
       //console.log("gridContainer not defined");
       return;
     } else {
-      const size = 80;
-      gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${size}px)`;
-      gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${size}px)`;
+      gd.size = (gd.colCount>7) ? 60:80;
+      gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${gd.size}px)`;
+      gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `width: ${
-        size * gd.colCount + 5 * (gd.colCount - 1)
+        gd.size * gd.colCount + 5 * (gd.colCount - 1)
       }px`;
       gridContainer.style.cssText += `height: ${
-        size * gd.colCount + 5 * (gd.colCount - 1)
+        gd.size * gd.colCount + 5 * (gd.colCount - 1)
       }px`;
     }
   }
@@ -460,7 +471,7 @@ function CandyCrush() {
       }
     }
   }
-
+ 
   
   const audio=document.querySelector('.audio');
 
@@ -468,10 +479,10 @@ function CandyCrush() {
     //NOTE must declare gridContainer before instantiation of gd
     applyStyleToGridContainer(gridContainer);
     renderGrid();
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    //document.addEventListener('contextmenu', event => event.preventDefault());
     //sound.music2.play();
     
-    audio.volume=0.03;
+    audio.volume=0.3;
     
   }
 

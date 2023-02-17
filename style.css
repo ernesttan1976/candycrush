@@ -3,15 +3,38 @@
 }
 
 body {
+  width: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#start-page {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("images/keepcalm.jpg");
+  background-color: #c00c05;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 50% 50%;
+  background-size: contain;
+  /* background-size: auto 100%; */
+  /* background-size: contain;, background-size: 100%;, background-size: 100vw 100vh */
+}
+
+#game-page {
+  display: none;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
+  width: 100vw;
   height: 100vh;
-  display:flex;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
-  overflow:hidden;
 }
+
+
 /* background animation credit to Manuel Pinto */
 
 @keyframes gradient {
@@ -32,11 +55,11 @@ body {
   grid-gap: 5px;
   justify-content: stretch;
   align-items: stretch;
+  justify-self: center;
+  align-self: center;
 }
 
 .cell {
-  width: 80px;
-  height: 80px;
   display: flex;
 }
 
@@ -53,9 +76,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width:200px;
+  width: 200px;
 }
-
 
 /* credit: MDN documentation demo */
 @keyframes shake {
@@ -107,36 +129,3 @@ body {
   border: 1px solid #aaaaaa;
 }
 
-#flex-container {
-  display: inline-block;
-  width: 100%;
-}
-
-img {
-  display: inline-block;
-  width: 350px;
-  height: 70px;
-}
-
-#preview {
-  border: 1px solid #aaaaaa;
-  overflow-x: visible;
-  overflow: auto;
-  display: flex;
-  flex-direction: row;
-  /* justify-content: stretch; */
-  /* align-items: stretch; */
-  width: 105%;
-  height: 400px;
-  /* flex-basis: max-content;  */
-  flex-wrap: nowrap;
-}
-
-#preview > img {
-  height: 380px;
-  width: auto;
-}
-
-#experimental {
-  display: none;
-}
