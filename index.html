@@ -9,47 +9,60 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    
     <div id="start-page">
       <div id="keep-calm-top"></div>
       <div id="keep-calm-middle">
-        <div id="play-button">PLAY</div>
+        <div id="play-button" class="button">PLAY</div>
       </div>
       <div id="keep-calm-bottom"></div>
     </div>
+
     <div id="game-page">
-      <div id="game-container1">
-        <div id="game-name" class="game-display">NAME</div>
-        <div id="game-level" class="game-display">LEVEL 1</div>
+      <div id="game-header">
+        <div id="game-container1">
+          <div id="game-name-container">
+            <div id="game-name" class="game-display">NAME</div>
+            <div id="game-level" class="game-display">LEVEL 1</div>
+          </div>
+          <div id="game-moves" class="game-display">MOVES 20</div>
+        </div>
+
+        <div id="game-container2">
+          <div id="game-stars" class="game-display">GAME STARS</div>
+          <div id="game-score-container">
+            <div id="game-target" class="game-display">RED 10</div>
+            <div id="game-score" class="game-display">GAME SCORE</div>
+          </div>
+        </div>
+
+        <div id="game-container3">
+          <div id="game-logo">LOGO HERE</div>
+        </div>
       </div>
-      <div id="game-container2">
-        <div id="game-moves" class="game-display">MOVES 20</div>
-        <div id="game-target" class="game-display">RED 10</div>
-      </div>
-      <div id="game-container3">
-        <div id="game-stars" class="game-display"></div>
-        <div id="game-score" class="game-display"></div>
-      </div>
-      <div id="game-container4">
+      <div id="grid"></div>
+      <div id="game-footer">
         <div id="level-button" class="game-display">LEVELS</div>
         <div id="settings-button" class="game-display">SETTINGS</div>
       </div>
-      <div id="grid"></div>
     </div>
+    
     <div id="level-page">
       <h2>LEVELS</h2>
       <div id="level-container">
-        <div id="level1-button" class="setting-display">LEVEL 1</div>
-        <div id="level2-button" class="setting-display">LEVEL 2</div>
-        <div id="level3-button" class="setting-display">LEVEL 3</div>
-        <div id="level4-button" class="setting-display">LEVEL 4</div>
-        <div id="level5-button" class="setting-display">LEVEL 5</div>
-        <div id="level6-button" class="setting-display">LEVEL 6</div>
-        <div id="level7-button" class="setting-display">LEVEL 7</div>
-        <div id="level8-button" class="setting-display">LEVEL 8</div>
-        <div id="level9-button" class="setting-display">LEVEL 9</div>
+        <div id="level1-button" class="button">LEVEL 1</div>
+        <div id="level2-button" class="button">LEVEL 2</div>
+        <div id="level3-button" class="button">LEVEL 3</div>
+        <div id="level4-button" class="button">LEVEL 4</div>
+        <div id="level5-button" class="button">LEVEL 5</div>
+        <div id="level6-button" class="button">LEVEL 6</div>
+        <div id="level7-button" class="button">LEVEL 7</div>
+        <div id="level8-button" class="button">LEVEL 8</div>
+        <div id="level9-button" class="button">LEVEL 9</div>
       </div>
       <div id="back-button">BACK</div>
     </div>
+
     <div id="setting-page">
       <h2>SETTINGS</h2>
       <div id="setting-container">
@@ -68,6 +81,7 @@
       </div>
       <div id="back-button">BACK</div>
     </div>
+    
     <script src="index.js" defer></script>
   </body>
 </html>

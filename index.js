@@ -15,14 +15,20 @@ function CandyCrush() {
       this.setEndId("");
       this.size = 60;
 
-      this.states = ["wait", "ready", "check1", "check2", "crush", "drop", "fill"];
+      this.states = [
+        "wait",
+        "ready",
+        "check1",
+        "check2",
+        "crush",
+        "drop",
+        "fill",
+      ];
       this.state = "ready";
 
-      this.cascadeCounter=1;
-      this.candyfallsCounter=1;
-      this.userActive=false; 
-
-
+      this.cascadeCounter = 1;
+      this.candyfallsCounter = 1;
+      this.userActive = false;
     }
 
     setStartId(id) {
@@ -136,9 +142,10 @@ function CandyCrush() {
     swapCandy() {
       ////console.log("SwapCandy: gd:", gd);
       const temp = this.grid[this.end.row][this.end.col];
-      this.grid[this.end.row][this.end.col] = this.grid[this.start.row][this.start.col];
+      this.grid[this.end.row][this.end.col] =
+        this.grid[this.start.row][this.start.col];
       this.grid[this.start.row][this.start.col] = temp;
-      
+
       //this.grid[this.start.row][this.start.col] = this.end.value;
       //this.grid[this.end.row][this.end.col] = this.start.value;
     }
@@ -204,10 +211,8 @@ function CandyCrush() {
     }
   }
 
-  
-  class Sound{
-    constructor()
-    {
+  class Sound {
+    constructor() {
       this.volume = 0.4;
       this.switch = new Audio("./sounds/switch.ogg");
       this.negativeswitch = new Audio("./sounds/negativeswitch.ogg");
@@ -216,7 +221,7 @@ function CandyCrush() {
       this.candyfalls2 = new Audio("./sounds/candyfalls2.ogg");
       this.candyfalls3 = new Audio("./sounds/candyfalls3.ogg");
       this.candyfalls4 = new Audio("./sounds/candyfalls4.ogg");
-      
+
       this.cascade1 = new Audio("./sounds/cascade1.ogg");
       this.cascade2 = new Audio("./sounds/cascade2.ogg");
       this.cascade3 = new Audio("./sounds/cascade3.ogg");
@@ -227,41 +232,37 @@ function CandyCrush() {
       this.cascade8 = new Audio("./sounds/cascade8.ogg");
       this.cascade9 = new Audio("./sounds/cascade9.ogg");
       this.cascade10 = new Audio("./sounds/cascade10.ogg");
-      this.cascade11= new Audio("./sounds/cascade11.ogg");
+      this.cascade11 = new Audio("./sounds/cascade11.ogg");
       this.cascade12 = new Audio("./sounds/cascade12.ogg");
-      this.music = new Audio("./sounds/music.ogg");      
-      this.music2 = new Audio("./sounds/music2.ogg");   
+      this.music = new Audio("./sounds/music.ogg");
+      this.music2 = new Audio("./sounds/music2.ogg");
       this.setVolume(0.4);
     }
 
-    setVolume(volume){
-      this.volume=volume;
-      Object.keys(this).forEach(key=>{
-        if (key!=="volume"){
-          this[key].volume=volume;
+    setVolume(volume) {
+      this.volume = volume;
+      Object.keys(this).forEach((key) => {
+        if (key !== "volume") {
+          this[key].volume = volume;
         }
-        })
+      });
       //console.log(this);
-      };
+    }
 
-
-    candyfallplayrandom(){
+    candyfallplayrandom() {
       this[`candyfalls${gd.candyfallsCounter}`].play();
       gd.candyfallsCounter++;
-      gd.candyfallsCounter = gd.candyfallsCounter % 4 + 1;
-
+      gd.candyfallsCounter = (gd.candyfallsCounter % 4) + 1;
     }
 
-    candydropplayrandom(){
+    candydropplayrandom() {
       this[`cascade${gd.cascadeCounter}`].play();
       gd.cascadeCounter++;
-      gd.cascadeCounter = gd.cascadeCounter % 12+1;
+      gd.cascadeCounter = (gd.cascadeCounter % 12) + 1;
     }
-
   }
 
   let sound = new Sound();
-
 
   function routerNext() {
     switch (gd.state) {
@@ -273,8 +274,8 @@ function CandyCrush() {
         //console.log("swapping candy");
         // state = 0 "ready": listening for game events
         // -> change 0 to 1 when drag and drop event handler is called
-        gd.cascadeCounter=1;
-        gd.userActive=true;
+        gd.cascadeCounter = 1;
+        gd.userActive = true;
         gd.swapCandy();
         sound.switch.play();
         gd.state = "check1";
@@ -304,16 +305,15 @@ function CandyCrush() {
           // -> change 1 to 2 when check is passed
           //console.log("end check2 (not 3 or more in a line)");
           //gd.swapCandy(); //swap it back
-          if (gd.userActive) 
-          {
+          if (gd.userActive) {
             gd.swapCandy();
             renderGrid();
             sound.negativeswitch.play();
           } else {
             //final cascade
-            gd.cascadeCounter=1;
+            gd.cascadeCounter = 1;
           }
-            renderGrid();
+          renderGrid();
           gd.state = "ready";
           return;
         }
@@ -325,7 +325,7 @@ function CandyCrush() {
         routerNext();
 
         break;
-           
+
       case "crush":
         //console.log("start crush");
         gd.compareAndRemoveOnesFromGridArray();
@@ -373,7 +373,7 @@ function CandyCrush() {
   }
 
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
-  let gd = new GameData(10, 10, 4);
+  let gd = new GameData(8, 6, 4);
   //console.log("GameData object created:", gd);
 
   //Cache the game elements
@@ -382,8 +382,10 @@ function CandyCrush() {
   gamePage = document.querySelector("#game-page");
   levelPage = document.querySelector("#level-page");
   settingPage = document.querySelector("#setting-page");
-  cells = document.querySelectorAll(".cell");
   playButton = document.querySelector("#play-button");
+  levelButton = document.querySelector("#level-button");
+  settingsButton = document.querySelector("#setting-button");
+  cells = document.querySelectorAll(".cell");
 
   //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
@@ -391,10 +393,38 @@ function CandyCrush() {
   gridContainer.addEventListener("dragstart", onDragStartHandler);
   playButton.addEventListener("click", playButtonHandler);
 
-  function playButtonHandler(ev){
-    console.log(ev.target);
-    gamePage.style.display="flex";
-    startPage.style.display="none";
+function setActivePage(page){
+  switch (page) {
+    case "start":
+      startPage.style.display = "flex";    
+      gamePage.style.display = "none";
+      levelPage.style.display = "none";    
+      settingPage.style.display = "none";    
+      break;
+    case "game":
+      startPage.style.display = "none";    
+      gamePage.style.display = "flex";
+      levelPage.style.display = "none";    
+      settingPage.style.display = "none";    
+      break;
+    case "level":
+      startPage.style.display = "none";    
+      gamePage.style.display = "flex";
+      levelPage.style.display = "flex";    
+      settingPage.style.display = "none";    
+      break;
+    case "setting":
+      startPage.style.display = "none";    
+      gamePage.style.display = "flex";
+      levelPage.style.display = "none";    
+      settingPage.style.display = "flex";    
+      break;
+  }
+}
+
+  function playButtonHandler(ev) {
+    //console.log(ev.target);
+    setActivePage("game");
   }
 
   function onDragStartHandler(ev) {
@@ -438,12 +468,38 @@ function CandyCrush() {
   // //console.log("markedString: ", markedString);
   // //console.log(test, markLine(test));
 
+  function max(n1, n2) {
+    return n1 > n2 ? n1 : n2;
+  }
+
+  function setCellSizeResponsive() {
+    const maxSize = max(gd.rowCount, gd.columnCount);
+    switch (maxSize) {
+      case 6:
+        gd.size = 60;
+        break;
+      case 7:
+        gd.size = 55;
+        break;
+      case 8:
+        gd.size = 50;
+        break;
+      case 9:
+        gd.size = 45;
+      case 10:
+        gd.size = 40;
+        break;
+      default:
+        break;
+    }
+  }
+
   function applyStyleToGridContainer() {
     if (!gridContainer) {
       //console.log("gridContainer not defined");
       return;
     } else {
-      gd.size = (gd.colCount>7) ? 60:80;
+      setCellSizeResponsive();
       gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `width: ${
@@ -474,9 +530,8 @@ function CandyCrush() {
       }
     }
   }
- 
-  
-  const audio=document.querySelector('.audio');
+
+  const audio = document.querySelector(".audio");
 
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
@@ -484,13 +539,11 @@ function CandyCrush() {
     renderGrid();
     //document.addEventListener('contextmenu', event => event.preventDefault());
     //sound.music2.play();
-    
-    audio.volume=0.3;
-    
+
+    audio.volume = 0.3;
   }
 
   init();
-  
 }
 
 CandyCrush();
