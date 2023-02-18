@@ -30,8 +30,6 @@ function CandyCrush() {
       this.cascadeCounter = 1;
       this.candyfallsCounter = 1;
       this.userActive = false;
-
-     
     }
 
     setStartId(id) {
@@ -76,11 +74,13 @@ function CandyCrush() {
 
     getRow(id) {
       //convert r1c1 to {row, col} and to "A"
-      return id ? Number(id.slice(1, 2)) : "";
+      const c = id.indexOf("c");
+      return id ? Number(id.slice(1, c)) : "";
     }
 
     getCol(id) {
-      return id ? Number(id.slice(3, 4)) : "";
+      const c = id.indexOf("c");
+      return id ? Number(id.slice(c + 1, id.length)) : "";
     }
 
     getRandomCandy() {
@@ -192,6 +192,7 @@ function CandyCrush() {
     }
 
     getDistance() {
+      //console.log(this.start, this.end);
       return Math.sqrt(
         (this.start.row - this.end.row) ** 2 +
           (this.start.col - this.end.col) ** 2
@@ -375,21 +376,72 @@ function CandyCrush() {
     return;
   }
 
-  function loadLevel(level){
-    const levelArray =[
+
+  function loadLevel(level) {
+    let levelArray = [
+      {
+        rowCount: 6,
+        colCount: 6,
+        candyCount: 4,
+      },
+      {
+        rowCount: 7,
+        colCount: 6,
+        candyCount: 4,
+      },
+      {
+        rowCount: 8,
+        colCount: 7,
+        candyCount: 5,
+      },
+      {
+        rowCount: 8,
+        colCount: 10,
+        candyCount: 5,
+      },
+      {
+        rowCount: 8,
+        colCount: 14,
+        candyCount: 6,
+      },
+      {
+        rowCount: 8,
+        colCount: 16,
+        candyCount: 6,
+      },
+      {
+        rowCount: 8,
+        colCount: 18,
+        candyCount: 6,
+      },
+      {
+        rowCount: 8,
+        colCount: 20,
+        candyCount: 6,
+      },
+      {
+        rowCount: 8,
+        colCount: 22,
+        candyCount: 6,
+      },
+    ];
+
+    //console.log(window.innerWidth, window.innerHeight);
+    if (window.innerWidth < window.innerHeight) {
+      levelArray = [
         {
           rowCount: 6,
           colCount: 6,
           candyCount: 4,
         },
         {
-          rowCount: 7,
-          colCount: 6,
+          rowCount: 6,
+          colCount: 7,
           candyCount: 4,
         },
         {
           rowCount: 8,
-          colCount: 7,
+          colCount: 8,
           candyCount: 5,
         },
         {
@@ -398,43 +450,45 @@ function CandyCrush() {
           candyCount: 5,
         },
         {
-          rowCount: 10,
-          colCount: 9,
+          rowCount: 8,
+          colCount: 8,
+          candyCount: 6,
+        },
+        {
+          rowCount: 9,
+          colCount: 8,
+          candyCount: 6,
+        },
+        {
+          rowCount: 9,
+          colCount: 8,
           candyCount: 6,
         },
         {
           rowCount: 10,
-          colCount: 10,
+          colCount: 8,
           candyCount: 6,
         },
         {
           rowCount: 10,
-          colCount: 11,
+          colCount: 8,
           candyCount: 6,
         },
-        {
-          rowCount: 10,
-          colCount: 12,
-          candyCount: 6,
-        },
-        {
-          rowCount: 11,
-          colCount: 12,
-          candyCount: 6,
-        },
-      ]
-      const {rowCount, colCount, candyCount} = levelArray[level-1];
-      console.log(rowCount, colCount, candyCount);
-      let gdNew = new GameData(rowCount, colCount, candyCount);
-      
+      ];
+      console.log(levelArray);
+    }
+
+    const { rowCount, colCount, candyCount } = levelArray[level - 1];
+    //console.log(rowCount, colCount, candyCount);
+    let gdNew = new GameData(rowCount, colCount, candyCount);
+
     return gdNew;
   }
-
 
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
   //let gd = new GameData(6, 6, 3);
   let gd = loadLevel(1);
-  
+
   //console.log("GameData object created:", gd);
 
   //Cache the game elements
@@ -450,8 +504,14 @@ function CandyCrush() {
   const backButton2 = document.querySelector("#back-button2");
   const rangeSound = document.querySelector("#range-sound");
   const levelContainer = document.querySelector("#level-container");
-  
-  
+  const gameName = document.querySelector("#game-name");
+  const gameLevel = document.querySelector("#game-level");
+  const gameMoves = document.querySelector("#game-moves");
+  const gameStars = document.querySelector("#game-stars");
+  const gameTarget = document.querySelector("#game-target");
+  const gameScore = document.querySelector("#game-score");
+  const inputName = document.querySelector("#name");
+  const audio = document.querySelector("#music");
   const cells = document.querySelectorAll(".cell");
 
   //Event listeners
@@ -461,15 +521,15 @@ function CandyCrush() {
   playButton.addEventListener("click", playButtonHandler);
   levelButton.addEventListener("click", levelButtonHandler);
   settingButton.addEventListener("click", settingButtonHandler);
-  backButton.addEventListener("click",backButtonHandler);
-  backButton2.addEventListener("click",backButtonHandler);
-  rangeSound.addEventListener("change",rangeChangeHandler);
+  backButton.addEventListener("click", backButtonHandler);
+  backButton2.addEventListener("click", backButtonHandler);
+  rangeSound.addEventListener("change", rangeChangeHandler);
   levelContainer.addEventListener("click", levelChangeButtonHandler);
 
   function levelChangeButtonHandler(ev) {
     const str = "" + ev.target.id;
     const level = str[5];
-    console.log(ev.target.id, level);
+    //console.log(ev.target.id, level);
     gd = loadLevel(level);
     setActivePage("game");
     applyStyleToGridContainer(gridContainer);
@@ -485,57 +545,19 @@ function CandyCrush() {
     setActivePage("level");
   }
 
-  function settingButtonHandler(ev){
+  function settingButtonHandler(ev) {
     setActivePage("setting");
   }
 
-  function backButtonHandler(ev){
+  function backButtonHandler(ev) {
     setActivePage("game");
   }
 
-  function rangeChangeHandler(ev){
-    console.log("range", ev.target.value)
-    sound.setVolume(ev.target.value/100);
-    console.log(sound);
+  function rangeChangeHandler(ev) {
+    //console.log("range", ev.target.value)
+    sound.setVolume(ev.target.value / 100);
+    //console.log(sound);
   }
-
-  function setActivePage(page) {
-    switch (page) {
-      case "start":
-        startPage.style.display = "flex";
-        gamePage.style.display = "none";
-        levelPage.style.width="0";
-        levelPage.style.display = "none"
-        settingPage.style.width="0";
-        settingPage.style.display = "none";
-        break;
-      case "game":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width="0";
-        levelPage.style.display = "none"
-        settingPage.style.width="0";
-        settingPage.style.display = "none";
-        break;
-      case "level":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width="100vw";
-        levelPage.style.display = "flex";
-        settingPage.style.width="0";
-        settingPage.style.display = "none";
-        break;
-      case "setting":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width="0";
-        levelPage.style.display = "none"
-        settingPage.style.width="100vw";
-        settingPage.style.display = "flex";
-        break;
-    }
-  }
-
 
   function onDragStartHandler(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
@@ -553,6 +575,43 @@ function CandyCrush() {
     gd.setEndId(ev.target.id);
     //console.log("onDragStartHandler: start object", gd.start);
     routerNext();
+  }
+
+  function setActivePage(page) {
+    switch (page) {
+      case "start":
+        startPage.style.display = "flex";
+        gamePage.style.display = "none";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "game":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "level":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "100vw";
+        levelPage.style.display = "flex";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "setting":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "100vw";
+        settingPage.style.display = "flex";
+        break;
+    }
   }
 
   function markLine(str) {
@@ -582,11 +641,21 @@ function CandyCrush() {
     return n1 > n2 ? n1 : n2;
   }
 
+  function min(n1, n2) {
+    return n1 < n2 ? n1 : n2;
+  }
+
   function setCellSizeResponsive() {
     const maxSize = max(gd.rowCount, gd.columnCount);
-    gd.size =
-      ((window.innerHeight * 0.7 - gd.gap * (gd.rowCount - 1)) / gd.rowCount) *
-      0.8;
+    const sizeBasedOnRowHeight =  ((window.innerHeight * 0.7 - gd.gap * (gd.rowCount - 1)) / gd.rowCount);
+    const sizeBasedOnColWidth = ((window.innerWidth * 0.7 - gd.gap * (gd.colCount - 1)) / gd.colCount);
+      if (window.innerWidth < 768 || window.innerWidth < window.innerHeight) {
+      gd.size = min(sizeBasedOnColWidth,sizeBasedOnRowHeight);
+      //console.log("min: ", sizeBasedOnColWidth,sizeBasedOnRowHeight);
+    } else {
+      gd.size = min(80,max(sizeBasedOnColWidth,sizeBasedOnRowHeight));
+      //console.log("max: ", sizeBasedOnColWidth,sizeBasedOnRowHeight);
+    }
   }
 
   function applyStyleToGridContainer() {
@@ -598,10 +667,10 @@ function CandyCrush() {
       gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `width: ${
-        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1)+50)
+        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1))*1.1
       }px`;
       gridContainer.style.cssText += `height: ${
-        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1)+50)
+        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1))*1.1
       }px`;
     }
   }
@@ -628,8 +697,6 @@ function CandyCrush() {
     }
   }
 
-  const audio = document.querySelector("#music");
-
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
     applyStyleToGridContainer(gridContainer);
@@ -640,9 +707,7 @@ function CandyCrush() {
     audio.volume = 0.3;
   }
 
-  
   init();
-
 }
 
 CandyCrush();
