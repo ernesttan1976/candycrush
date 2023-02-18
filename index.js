@@ -380,13 +380,16 @@ function CandyCrush() {
   gridContainer = document.querySelector("#grid");
   startPage = document.querySelector("#start-page");
   gamePage = document.querySelector("#game-page");
+  levelPage = document.querySelector("#level-page");
+  settingPage = document.querySelector("#setting-page");
   cells = document.querySelectorAll(".cell");
+  playButton = document.querySelector("#play-button");
 
   //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
   gridContainer.addEventListener("dragstart", onDragStartHandler);
-  startPage.addEventListener("click", playButtonHandler);
+  playButton.addEventListener("click", playButtonHandler);
 
   function playButtonHandler(ev){
     console.log(ev.target);
