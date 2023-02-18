@@ -14,6 +14,7 @@ function CandyCrush() {
       this.setStartId("");
       this.setEndId("");
       this.size = 60;
+      this.gap = 4;
 
       this.states = [
         "wait",
@@ -29,6 +30,8 @@ function CandyCrush() {
       this.cascadeCounter = 1;
       this.candyfallsCounter = 1;
       this.userActive = false;
+
+     
     }
 
     setStartId(id) {
@@ -372,60 +375,167 @@ function CandyCrush() {
     return;
   }
 
+  function loadLevel(level){
+    const levelArray =[
+        {
+          rowCount: 6,
+          colCount: 6,
+          candyCount: 4,
+        },
+        {
+          rowCount: 7,
+          colCount: 6,
+          candyCount: 4,
+        },
+        {
+          rowCount: 8,
+          colCount: 7,
+          candyCount: 5,
+        },
+        {
+          rowCount: 8,
+          colCount: 8,
+          candyCount: 5,
+        },
+        {
+          rowCount: 10,
+          colCount: 9,
+          candyCount: 6,
+        },
+        {
+          rowCount: 10,
+          colCount: 10,
+          candyCount: 6,
+        },
+        {
+          rowCount: 10,
+          colCount: 11,
+          candyCount: 6,
+        },
+        {
+          rowCount: 10,
+          colCount: 12,
+          candyCount: 6,
+        },
+        {
+          rowCount: 11,
+          colCount: 12,
+          candyCount: 6,
+        },
+      ]
+      const {rowCount, colCount, candyCount} = levelArray[level-1];
+      console.log(rowCount, colCount, candyCount);
+      let gdNew = new GameData(rowCount, colCount, candyCount);
+      
+    return gdNew;
+  }
+
+
   //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
-  let gd = new GameData(8, 6, 4);
+  //let gd = new GameData(6, 6, 3);
+  let gd = loadLevel(1);
+  
   //console.log("GameData object created:", gd);
 
   //Cache the game elements
-  gridContainer = document.querySelector("#grid");
-  startPage = document.querySelector("#start-page");
-  gamePage = document.querySelector("#game-page");
-  levelPage = document.querySelector("#level-page");
-  settingPage = document.querySelector("#setting-page");
-  playButton = document.querySelector("#play-button");
-  levelButton = document.querySelector("#level-button");
-  settingsButton = document.querySelector("#setting-button");
-  cells = document.querySelectorAll(".cell");
+  const gridContainer = document.querySelector("#grid");
+  const startPage = document.querySelector("#start-page");
+  const gamePage = document.querySelector("#game-page");
+  const levelPage = document.querySelector("#level-page");
+  const settingPage = document.querySelector("#setting-page");
+  const playButton = document.querySelector("#play-button");
+  const levelButton = document.querySelector("#level-button");
+  const settingButton = document.querySelector("#setting-button");
+  const backButton = document.querySelector("#back-button");
+  const backButton2 = document.querySelector("#back-button2");
+  const rangeSound = document.querySelector("#range-sound");
+  const levelContainer = document.querySelector("#level-container");
+  
+  
+  const cells = document.querySelectorAll(".cell");
 
   //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
   gridContainer.addEventListener("dragstart", onDragStartHandler);
   playButton.addEventListener("click", playButtonHandler);
+  levelButton.addEventListener("click", levelButtonHandler);
+  settingButton.addEventListener("click", settingButtonHandler);
+  backButton.addEventListener("click",backButtonHandler);
+  backButton2.addEventListener("click",backButtonHandler);
+  rangeSound.addEventListener("change",rangeChangeHandler);
+  levelContainer.addEventListener("click", levelChangeButtonHandler);
 
-function setActivePage(page){
-  switch (page) {
-    case "start":
-      startPage.style.display = "flex";    
-      gamePage.style.display = "none";
-      levelPage.style.display = "none";    
-      settingPage.style.display = "none";    
-      break;
-    case "game":
-      startPage.style.display = "none";    
-      gamePage.style.display = "flex";
-      levelPage.style.display = "none";    
-      settingPage.style.display = "none";    
-      break;
-    case "level":
-      startPage.style.display = "none";    
-      gamePage.style.display = "flex";
-      levelPage.style.display = "flex";    
-      settingPage.style.display = "none";    
-      break;
-    case "setting":
-      startPage.style.display = "none";    
-      gamePage.style.display = "flex";
-      levelPage.style.display = "none";    
-      settingPage.style.display = "flex";    
-      break;
+  function levelChangeButtonHandler(ev) {
+    const str = "" + ev.target.id;
+    const level = str[5];
+    console.log(ev.target.id, level);
+    gd = loadLevel(level);
+    setActivePage("game");
+    applyStyleToGridContainer(gridContainer);
+    renderGrid();
   }
-}
 
   function playButtonHandler(ev) {
     //console.log(ev.target);
     setActivePage("game");
   }
+
+  function levelButtonHandler(ev) {
+    setActivePage("level");
+  }
+
+  function settingButtonHandler(ev){
+    setActivePage("setting");
+  }
+
+  function backButtonHandler(ev){
+    setActivePage("game");
+  }
+
+  function rangeChangeHandler(ev){
+    console.log("range", ev.target.value)
+    sound.setVolume(ev.target.value/100);
+    console.log(sound);
+  }
+
+  function setActivePage(page) {
+    switch (page) {
+      case "start":
+        startPage.style.display = "flex";
+        gamePage.style.display = "none";
+        levelPage.style.width="0";
+        levelPage.style.display = "none"
+        settingPage.style.width="0";
+        settingPage.style.display = "none";
+        break;
+      case "game":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width="0";
+        levelPage.style.display = "none"
+        settingPage.style.width="0";
+        settingPage.style.display = "none";
+        break;
+      case "level":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width="100vw";
+        levelPage.style.display = "flex";
+        settingPage.style.width="0";
+        settingPage.style.display = "none";
+        break;
+      case "setting":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width="0";
+        levelPage.style.display = "none"
+        settingPage.style.width="100vw";
+        settingPage.style.display = "flex";
+        break;
+    }
+  }
+
 
   function onDragStartHandler(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
@@ -474,24 +584,9 @@ function setActivePage(page){
 
   function setCellSizeResponsive() {
     const maxSize = max(gd.rowCount, gd.columnCount);
-    switch (maxSize) {
-      case 6:
-        gd.size = 60;
-        break;
-      case 7:
-        gd.size = 55;
-        break;
-      case 8:
-        gd.size = 50;
-        break;
-      case 9:
-        gd.size = 45;
-      case 10:
-        gd.size = 40;
-        break;
-      default:
-        break;
-    }
+    gd.size =
+      ((window.innerHeight * 0.7 - gd.gap * (gd.rowCount - 1)) / gd.rowCount) *
+      0.8;
   }
 
   function applyStyleToGridContainer() {
@@ -503,10 +598,10 @@ function setActivePage(page){
       gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.cssText += `width: ${
-        gd.size * gd.colCount + 5 * (gd.colCount - 1)
+        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1)+50)
       }px`;
       gridContainer.style.cssText += `height: ${
-        gd.size * gd.colCount + 5 * (gd.colCount - 1)
+        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1)+50)
       }px`;
     }
   }
@@ -519,6 +614,8 @@ function setActivePage(page){
         item.id = `r${i}c${j}`;
         item.classList.add("cell");
         item.setAttribute("draggable", "true");
+        item.width = gd.size;
+        item.height = gd.size;
         if (gd.grid[i][j] === " ") {
           item.src = "";
           item.style.visibility = "hidden";
@@ -531,7 +628,7 @@ function setActivePage(page){
     }
   }
 
-  const audio = document.querySelector(".audio");
+  const audio = document.querySelector("#music");
 
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
@@ -543,7 +640,9 @@ function setActivePage(page){
     audio.volume = 0.3;
   }
 
+  
   init();
+
 }
 
 CandyCrush();

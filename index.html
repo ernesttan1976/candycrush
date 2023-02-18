@@ -19,7 +19,6 @@
     </div>
 
     <div id="game-page">
-      <div id="game-header">
         <div id="game-container1">
           <div id="game-name-container">
             <div id="game-name" class="game-display">NAME</div>
@@ -37,49 +36,51 @@
         </div>
 
         <div id="game-container3">
-          <div id="game-logo">LOGO HERE</div>
+          <img src="images/unicorn.png" alt="unicorn" width="200px" height="200px"/>
         </div>
-      </div>
+
       <div id="grid"></div>
       <div id="game-footer">
-        <div id="level-button" class="game-display">LEVELS</div>
-        <div id="settings-button" class="game-display">SETTINGS</div>
+        <div id="level-button" class="small-button">LEVELS</div>
+        <div id="setting-button" class="small-button">SETTINGS</div>
       </div>
     </div>
     
     <div id="level-page">
-      <h2>LEVELS</h2>
+      <div class="game-display">LEVEL</div>
       <div id="level-container">
-        <div id="level1-button" class="button">LEVEL 1</div>
-        <div id="level2-button" class="button">LEVEL 2</div>
-        <div id="level3-button" class="button">LEVEL 3</div>
-        <div id="level4-button" class="button">LEVEL 4</div>
-        <div id="level5-button" class="button">LEVEL 5</div>
-        <div id="level6-button" class="button">LEVEL 6</div>
-        <div id="level7-button" class="button">LEVEL 7</div>
-        <div id="level8-button" class="button">LEVEL 8</div>
-        <div id="level9-button" class="button">LEVEL 9</div>
+        <div id="level1-button" class="level-button">1</div>
+        <div id="level2-button" class="level-button">2</div>
+        <div id="level3-button" class="level-button">3</div>
+        <div id="level4-button" class="level-button">4</div>
+        <div id="level5-button" class="level-button">5</div>
+        <div id="level6-button" class="level-button">6</div>
+        <div id="level7-button" class="level-button">7</div>
+        <div id="level8-button" class="level-button">8</div>
+        <div id="level9-button" class="level-button">9</div>
       </div>
-      <div id="back-button">BACK</div>
+      <div id="back-button" class="small-button">BACK</div>
     </div>
 
     <div id="setting-page">
-      <h2>SETTINGS</h2>
+      <div id="setting-title" class="game-display">SETTINGS</div>
       <div id="setting-container">
-        <div id="name" class="setting-display"></div>
-        <div id="music" class="setting-display">
-          <h4>GAME MUSIC</h4>
-          <audio class="audio" loop controls src="./sounds/music2.ogg">
-            <source type="audio/filetype" volume="0.2" />
-          </audio>
-          <input id="range-music" type="range" min="1" max="100" value="50" />
-        </div>
+    
+        <div class="game-display">NAME</div>
+        <input type="text" id="name" class="setting-display" placeholder="Your Name">
+    
+        <div class="game-display">GAME MUSIC</div>
+        <audio id="music" class="audio setting-display" loop controls src="./sounds/music2.ogg" width="350px" height="50px">
+          <source type="audio/filetype" volume="0.2" />
+        </audio>
+        <!-- <input id="range-music" type="range" min="1" max="100" value="50" /> -->
+
+        <div class="game-display">GAME SOUND</div>
         <div id="sound" class="setting-display">
-          <h4>GAME SOUND</h4>
           <input id="range-sound" type="range" min="1" max="100" value="50" />
         </div>
       </div>
-      <div id="back-button">BACK</div>
+      <div id="back-button2" class="small-button">BACK</div>
     </div>
     
     <script src="index.js" defer></script>
