@@ -493,17 +493,25 @@ function CandyCrush() {
 
   //Cache the game elements
   const gridContainer = document.querySelector("#grid");
+  const cells = document.querySelectorAll(".cell");
+
+  const levelContainer = document.querySelector("#level-container");
+  
   const startPage = document.querySelector("#start-page");
   const gamePage = document.querySelector("#game-page");
   const levelPage = document.querySelector("#level-page");
   const settingPage = document.querySelector("#setting-page");
+
   const playButton = document.querySelector("#play-button");
   const levelButton = document.querySelector("#level-button");
   const settingButton = document.querySelector("#setting-button");
   const backButton = document.querySelector("#back-button");
   const backButton2 = document.querySelector("#back-button2");
+  
   const rangeSound = document.querySelector("#range-sound");
-  const levelContainer = document.querySelector("#level-container");
+  const audio = document.querySelector("#music");
+  
+  
   const gameName = document.querySelector("#game-name");
   const gameLevel = document.querySelector("#game-level");
   const gameMoves = document.querySelector("#game-moves");
@@ -511,9 +519,8 @@ function CandyCrush() {
   const gameTarget = document.querySelector("#game-target");
   const gameScore = document.querySelector("#game-score");
   const inputName = document.querySelector("#name");
-  const audio = document.querySelector("#music");
-  const cells = document.querySelectorAll(".cell");
-
+  
+  
   //Event listeners
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
