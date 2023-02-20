@@ -68,29 +68,35 @@
     <div id="setting-page">
       <div id="setting-title" class="game-display">SETTINGS</div>
       <div id="setting-container">
-        <div class="game-display">NAME</div>
+        <div id="label-name" class="game-display">NAME</div>
         <input
           type="text"
           id="name"
           class="setting-display"
           placeholder="Your Name"
         />
+        <select name="User" id="select-user" class="game-display">
+          <option value="volvo">Volvo</option>
+          <option value="saab">Saab</option>
+          <option value="opel">Opel</option>
+          <option value="audi">Audi</option>
+        </select>
 
-        <div class="game-display">GAME MUSIC</div>
+        <div id="label-music" class="game-display">GAME MUSIC</div>
         <audio
           id="music"
           class="audio setting-display"
           loop
           controls
           src="./sounds/music2.ogg"
-          width="350px"
-          height="50px"
+          width=350px
+          height=50px
         >
           <source type="audio/filetype" volume="0.2" />
         </audio>
         <!-- <input id="range-music" type="range" min="1" max="100" value="50" /> -->
 
-        <div class="game-display">GAME SOUND</div>
+        <div id="label-sound" class="game-display">GAME SOUND</div>
         <div id="sound" class="setting-display">
           <input id="range-sound" type="range" min="1" max="100" value="50" />
         </div>

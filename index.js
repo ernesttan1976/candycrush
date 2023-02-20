@@ -38,6 +38,94 @@ function CandyCrush() {
       this.cascadeCounter = 1;
       this.candyfallsCounter = 1;
       this.userActive = false;
+
+      this.userData=[];
+      this.currentUser=0;
+      this.loadUserData(this.currentUser);
+    }
+
+    loadUserData(){
+      if (localStorage.getItem("userData")) {
+        this.userData = JSON.parse(localStorage.getItem("userData"));
+      } else {
+        this.userData = [
+          {
+            name: "Random Kid",
+            highestlevel: 1,
+            highScore: 0,
+            musicLevel: 0.2,
+            soundLevel: 0.2,
+            gameHistory: [
+              {
+                level: 1,
+                highScore: 0,
+                stars: 0,
+              },
+            ],
+          },
+          {
+            name: "Unicorn Girl",
+            highestlevel: 9,
+            highScore: 10000,
+            musicLevel: 0.2,
+            soundLevel: 0.2,
+            gameHistory: [
+              {
+                level: 1,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 2,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 3,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 4,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 5,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 6,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 7,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 8,
+                highScore: 10000,
+                stars: 2,
+              },
+              {
+                level: 9,
+                highScore: 10000,
+                stars: 2,
+              },
+
+            ],
+          },
+        ];
+        this.saveUserData();
+      }
+      console.log(this.userData);
+    }
+
+    saveUserData(){
+      localStorage.setItem("userData", JSON.stringify(this.userData));
     }
 
     getStart() {
@@ -180,7 +268,11 @@ function CandyCrush() {
       //results in gridColorBallWithStriped marked with N to S, all candy with that color's striped candy. e.g. A -> H or N, immediately invoke laser on it.
       // i.e. invoke checkStripedWithNormalCandy
 
-      return { isThree: this.isThree, isFour: this.isFour, isFive: this.isFive };
+      return {
+        isThree: this.isThree,
+        isFour: this.isFour,
+        isFive: this.isFive,
+      };
     }
 
     getRandomStripeCandy(color) {
@@ -228,7 +320,6 @@ function CandyCrush() {
       }
     }
 
-    
     giveColorBall() {
       //scan rows and if 1, match the color found in grid
       //get the start to end of every four in a row
@@ -296,7 +387,6 @@ function CandyCrush() {
       }
       console.log(list);
       list.forEach((item) => {
-
         const isStartOnLine = this.startOnLine(
           item.gdStart,
           item.start,
@@ -445,7 +535,6 @@ function CandyCrush() {
       return markedString;
     }
 
-    
     checkFiveInALine() {
       //check and mark rows
       let isCrushable = false;
@@ -611,7 +700,6 @@ function CandyCrush() {
               for (let j2 = 0; j2 < this.colCount; j2++) {
                 this.grid[i][j2] = " ";
               }
-              
             } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
               //vertical laser
               for (let i2 = 0; i2 < this.rowCount; i2++) {
@@ -619,7 +707,6 @@ function CandyCrush() {
               }
             }
             sound.stripedcandyblast.play();
-            
           } else if (
             this.gridThree[i][j] === "1" &&
             !(this.grid[i][j] >= "H" && this.grid[i][j] <= "S")
@@ -636,15 +723,13 @@ function CandyCrush() {
             if (this.gridFour[i][j] >= "H" && this.gridFour[i][j] <= "S") {
               //Add striped candy
               this.grid[i][j] = this.gridFour[i][j];
-              
             }
           }
 
-          if (this.isFive){
+          if (this.isFive) {
             if (this.gridFive[i][j] === "G") {
               //Add color ball
               this.grid[i][j] = this.gridFive[i][j];
-              
             }
           }
         }
@@ -714,7 +799,7 @@ function CandyCrush() {
 
       this.stripedcandycreated = new Audio("./sounds/stripedcandycreated.ogg");
       this.stripedcandyblast = new Audio("./sounds/stripedcandyblast.ogg");
-      
+
       this.cascade1 = new Audio("./sounds/cascade1.ogg");
       this.cascade2 = new Audio("./sounds/cascade2.ogg");
       this.cascade3 = new Audio("./sounds/cascade3.ogg");
@@ -729,7 +814,7 @@ function CandyCrush() {
       this.cascade12 = new Audio("./sounds/cascade12.ogg");
       this.music = new Audio("./sounds/music.ogg");
       this.music2 = new Audio("./sounds/music2.ogg");
-      this.setVolume(0.4);
+      this.setVolume(this.volume);
     }
 
     setVolume(volume) {
@@ -1006,6 +1091,7 @@ function CandyCrush() {
   const gameTarget = document.querySelector("#game-target");
   const gameScore = document.querySelector("#game-score");
   const inputName = document.querySelector("#name");
+  const selectUser = document.querySelector("#select-user");
 
   //Event listeners
   window.onresize = applyStyleToGridContainer;
@@ -1019,6 +1105,17 @@ function CandyCrush() {
   backButton2.addEventListener("click", backButtonHandler);
   rangeSound.addEventListener("change", rangeChangeHandler);
   levelContainer.addEventListener("click", levelChangeButtonHandler);
+  inputName.addEventListener("blur", inputNameHandler);
+  selectUser.addEventListener("change", selectUserHandler);
+
+  function inputNameHandler(ev){
+    console.log(inputName.value);
+    //this.saveUserData();
+  }
+
+  function selectUserHandler(ev){
+    console.log(selectUser.value);
+  }
 
   function levelChangeButtonHandler(ev) {
     const str = "" + ev.target.id;
@@ -1049,7 +1146,10 @@ function CandyCrush() {
 
   function rangeChangeHandler(ev) {
     //console.log("range", ev.target.value)
-    sound.setVolume(ev.target.value / 100);
+    const volume = ev.target.value / 100;
+    sound.setVolume(volume);
+    gd.userData.soundLevel = volume;
+    saveUserData();
     //console.log(sound);
   }
 
@@ -1139,7 +1239,7 @@ function CandyCrush() {
       setCellSizeResponsive();
       gridContainer.style.gridTemplateColumns = `repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.gridTemplateRows = `repeat(${gd.rowCount}, ${gd.size}px)`;
-      gridContainer.style.width =`${
+      gridContainer.style.width = `${
         (gd.size * gd.colCount + gd.gap * (gd.colCount - 1)) * 1.1
       }px`;
       gridContainer.style.height = `${
@@ -1147,10 +1247,8 @@ function CandyCrush() {
       }px`;
       //cells.style.width=`${gd.size}px`;
       //cells.style.height=`${gd.size}px`;
-      
     }
   }
-
 
   function renderGrid() {
     gridContainer.innerHTML = "";
