@@ -1,4 +1,5 @@
-# CANDY CRUSH #
+# [CANDY CRUSH](https://ernesttan1976.github.io/candycrush/) #
+
 ## GA SEI BOOTCAMP PROJECT ##
 To demonstrate my proficiency in vanilla Javascript, HTML and CSS.  
 Candy Crush is a single player, 3 tile-matching game which is well loved.
