@@ -19,27 +19,27 @@
     </div>
 
     <div id="game-page">
-      <div id="game-container1">
-        <div id="game-name" class="game-display">NAME</div>
-        <div id="game-level" class="game-display">LEVEL 1</div>
-        <div id="game-moves" class="game-display">MOVES 20</div>
-      </div>
-
-      <div id="game-container2">
-        <div id="game-stars" class="game-display">STARS</div>
-        <div id="game-score" class="game-display">SCORE</div>
-        <div id="game-candy-target" class="game-display">RED</div>
-        <div id="game-target" class="game-display">10</div>
-
-      </div>
-
-      <div id="game-container3">
-        <img
-          src="images/unicorn.png"
-          alt="unicorn"
-          width="200px"
-          height="200px"
-        />
+      <div id="game-header" class="header-display">
+        <div id="game-container1">
+          <div id="game-name" class="game-display">NAME</div>
+          <div id="game-level" class="game-display">LEVEL 1</div>
+          <div id="game-moves" class="game-display">MOVES 20</div>
+        </div>
+  
+        <div id="game-container2">
+          <div id="game-stars" class="game-display">STARS</div>
+          <div id="game-score" class="game-display">SCORE</div>
+          <div id="game-candy-target" class="game-display">RED</div>
+          <div id="game-target" class="game-display">10</div>
+  
+        </div>
+  
+        <div id="game-container3">
+          <img
+            src="images/unicorn.png"
+            alt="unicorn"
+          />
+        </div>  
       </div>
 
       <div id="grid"></div>
@@ -75,13 +75,9 @@
           class="setting-display"
           placeholder="Your Name"
         />
-        <select name="User" id="select-user" class="game-display">
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="opel">Opel</option>
-          <option value="audi">Audi</option>
+        <select name="User" id="select-user" class="setting-display">
         </select>
-
+        <div id="add-user" class="small-button">CREATE</div>
         <div id="label-music" class="game-display">GAME MUSIC</div>
         <audio
           id="music"
@@ -89,17 +85,13 @@
           loop
           controls
           src="./sounds/music2.ogg"
-          width=350px
-          height=50px
         >
           <source type="audio/filetype" volume="0.2" />
         </audio>
         <!-- <input id="range-music" type="range" min="1" max="100" value="50" /> -->
 
         <div id="label-sound" class="game-display">GAME SOUND</div>
-        <div id="sound" class="setting-display">
-          <input id="range-sound" type="range" min="1" max="100" value="50" />
-        </div>
+        <input id="range-sound" class="setting-display" type="range" min="1" max="100" value="50" />
       </div>
       <div id="back-button2" class="small-button">BACK</div>
     </div>

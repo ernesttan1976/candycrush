@@ -14,8 +14,10 @@ function CandyCrush() {
       this.isThree = false;
       this.isFour = false;
       this.isFive = false;
-      this.gridStripedWithNormalCandy = [];
-      this.gridColorBallWithNormalCandy = [];
+      this.isColorBallWithNormal = false;
+      this.isColorBallWithStriped = false;
+      this.gridStripedWithNormal = [];
+      this.gridColorBallWithNormal = [];
       this.gridColorBallWithStriped = [];
       this.gridTemp = [];
       this.fillGridArray();
@@ -39,12 +41,13 @@ function CandyCrush() {
       this.candyfallsCounter = 1;
       this.userActive = false;
 
-      this.userData=[];
-      this.currentUser=0;
+      this.userData = [];
+      this.currentUser = 0;
       this.loadUserData(this.currentUser);
+      this.firstCell;
     }
 
-    loadUserData(){
+    loadUserData() {
       if (localStorage.getItem("userData")) {
         this.userData = JSON.parse(localStorage.getItem("userData"));
       } else {
@@ -115,16 +118,15 @@ function CandyCrush() {
                 highScore: 10000,
                 stars: 2,
               },
-
             ],
           },
         ];
         this.saveUserData();
       }
-      console.log(this.userData);
+      //console.log(this.userData);
     }
 
-    saveUserData(){
+    saveUserData() {
       localStorage.setItem("userData", JSON.stringify(this.userData));
     }
 
@@ -242,8 +244,127 @@ function CandyCrush() {
 
     //upgrade to include striped candy and color ball
 
+    checkColorBall() {
+      const start = this.getStart();
+      const end = this.getEnd();
+      let colorBall;
+      let other;
+      let normalColor = "";
+      let stripedColor = "";
+      let isColorBallWithNormal = false;
+      let isColorBallWithStriped = false;
+      this.gridColorBallWithNormal = [];
+      this.gridColorBallWithStriped = [];
+      this.list=[];
+      if (start.color === "G") {
+        colorBall = start;
+        other = end;
+      } else if (end.color === "G") {
+        colorBall = end;
+        other = start;
+      } else {
+        return { isColorBallWithNormal, isColorBallWithStriped };
+      }
+
+      console.log(other.color);
+
+      //remove the 2 spaces
+      this.grid[colorBall.row][colorBall.col]="1";
+      this.grid[other.row][other.col]="1";
+
+        if (other.color >= "A" && other.color <= "F") {
+        //color+normal
+        isColorBallWithNormal = true;
+        normalColor = other.color;
+        this.gridColorBallWithNormalCandy = [];
+        for (let i = 0; i < this.rowCount; i++) {
+          let row = [];
+          for (let j = 0; j < this.colCount; j++) {
+            if (this.grid[i][j] === normalColor) {
+              row.push("1");
+              this.grid[i][j] = "1";
+              this.list.push({
+                start: colorBall,
+                end: {row: i, col: j},
+              });
+            } else {
+              row.push(" ");
+
+            }
+          }
+          this.gridColorBallWithNormal.push(row);
+        }
+
+      } else if (other.color >= "H" && other.color <= "S") {
+        //color+striped
+        isColorBallWithStriped = true;
+        stripedColor = this.stripedToNormal(other.color);
+        console.log("striped: ", other.color, stripedColor);
+        this.gridColorBallWithStriped = [];
+        for (let i = 0; i < this.rowCount; i++) {
+          let row = [];
+          for (let j = 0; j < this.colCount; j++) {
+            if (this.grid[i][j] === stripedColor) {
+              let thisStripe = this.getRandomStripeCandy(stripedColor);
+              //randomly assign  striped candy
+              console.log(thisStripe);
+              row.push(thisStripe);
+              this.list.push({
+                start: colorBall,
+                end: {row: i, col: j},
+              });
+
+            } else {
+              row.push(" ");
+            }
+          }
+          this.gridColorBallWithStriped.push(row);
+        }
+      }
+      console.log(this.list);
+      return { isColorBallWithNormal, isColorBallWithStriped };
+    }
+
+    stripedToNormal(str) {
+      return str
+        .replace("H", "A")
+        .replace("N", "A")
+        .replace("I", "B")
+        .replace("O", "B")
+        .replace("J", "C")
+        .replace("P", "C")
+        .replace("K", "D")
+        .replace("Q", "D")
+        .replace("L", "E")
+        .replace("R", "E")
+        .replace("M", "F")
+        .replace("S", "F");
+    }
+
     checkCandyMatch() {
+      this.isThree = false;
+      this.isFour = false;
+      this.isFive = false;
+      this.isColorBallWithNormal = false;
+      this.isColorBallWithStriped = false;
       //prioity given to the rarest
+      const { isColorBallWithNormal, isColorBallWithStriped } =
+        this.checkColorBall();
+      this.isColorBallWithNormal = isColorBallWithNormal;
+      this.isColorBallWithStriped = isColorBallWithStriped;
+      //color ball + normal candy -> all normal candy of that color disappears
+      //color ball + striped candy -> all normal candy of that color changes into striped candy
+      if (this.isColorBallWithNormal || this.isColorBallWithStriped) {
+        console.log("ColorBallWithNormalCandy", this.gridColorBallWithNormal);
+        console.log("ColorBallWithStriped", this.gridColorBallWithStriped);
+
+        // gd.list.forEach(line=>{
+        //   let laser = document.createElement("div");
+        //   laser.style.position = "absolute";
+        //   gamePage.append(laser);  
+        // });
+      }
+
 
       this.isThree = this.checkThreeInALine();
       //results in gridThree marked with 1 (normal candy)
@@ -252,14 +373,14 @@ function CandyCrush() {
       //results in gridFour marked with H to S (striped candy)
       if (this.isFour) {
         this.giveStripedCandy();
-        console.log(this.gridFour);
+        //console.log(this.gridFour);
       }
 
       this.isFive = this.checkFiveInALine();
       //results in gridFive marked with G (color ball)
       if (this.isFive) {
         this.giveColorBall();
-        console.log(this.gridFive);
+        //console.log(this.gridFive);
       }
       //const isColorBallWithNormalCandy = this.checkColorBallWithNormalCandy();
       //results in gridColorBallWithNormalCandy marked with 1, all candy with that color
@@ -272,11 +393,13 @@ function CandyCrush() {
         isThree: this.isThree,
         isFour: this.isFour,
         isFive: this.isFive,
+        isColorBallWithNormal: this.isColorBallWithNormal,
+        isColorBallWithStriped: this.isColorBallWithStriped,
       };
     }
 
     getRandomStripeCandy(color) {
-      const n = Math.floor(Math.random()); //0 or 1
+      const n = Math.floor(Math.random() * 2); //0 or 1
       switch (color) {
         case "A":
           return n === 1 ? "H" : "N";
@@ -385,7 +508,7 @@ function CandyCrush() {
           }
         }
       }
-      console.log(list);
+      //console.log(list);
       list.forEach((item) => {
         const isStartOnLine = this.startOnLine(
           item.gdStart,
@@ -511,18 +634,6 @@ function CandyCrush() {
         }
       });
     }
-
-    // fillArray(rowCount, colCount) {
-    //   let arr = [];
-    //   for (let i = 0; i < rowCount; i++) {
-    //     let row = [];
-    //     for (let j = 0; j < colCount; j++) {
-    //       row.push(" ");
-    //     }
-    //     arr.push(row);
-    //   }
-    //   return arr;
-    // }
 
     markLineFive(str) {
       const regex = /([A-F])\1{4}/g;
@@ -685,12 +796,49 @@ function CandyCrush() {
       return markedString;
     }
 
-    compareAndRemoveOnesFromGridArray() {
+    removeOnesAndGiveSpecialCandy() {
+      //if colorBall add the striped candy to the grid
+
+      if (this.isColorBallWithStripedCandy) {
+        for (let i = 0; i < this.rowCount; i++) {
+          for (let j = 0; j < this.colCount; j++) {
+            if (
+              this.gridColorBallWithStriped[i][j] >= "H" &&
+              this.gridColorBallWithStriped[i][j] <= "S"
+            ) {
+              this.grid[i][j] = this.gridColorBallWithStriped[i][j];
+              this.gridColorBallWithStriped[i][j] = "G";
+            }
+          }
+        }
+      }
+
       //remove items, including laser zaps
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
           if (
             this.gridThree[i][j] === "1" &&
+            this.grid[i][j] >= "H" &&
+            this.grid[i][j] <= "S"
+          ) {
+            //Striped candy laser
+            if (this.grid[i][j] >= "H" && this.grid[i][j] <= "M") {
+              //horizontal laser
+              for (let j2 = 0; j2 < this.colCount; j2++) {
+                this.grid[i][j2] = " ";
+              }
+            } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
+              //vertical laser
+              for (let i2 = 0; i2 < this.rowCount; i2++) {
+                this.grid[i2][j] = " ";
+              }
+            }
+            sound.stripedcandyblast.play();
+          } else if (this.grid[i][j] === "G") {
+            this.grid[i][j] = " ";
+          } else if (
+            this.gridColorBallWithStriped.length > 0 &&
+            this.gridColorBallWithStriped[i][j] === "G" &&
             this.grid[i][j] >= "H" &&
             this.grid[i][j] <= "S"
           ) {
@@ -735,6 +883,8 @@ function CandyCrush() {
         }
       }
       this.gridThree = [];
+      this.isColorBallWithNormal = false;
+      this.isColorBallWithStriped = false;
     }
 
     swapCandy() {
@@ -879,8 +1029,20 @@ function CandyCrush() {
         //console.log("start check2");
         // state = 1 "check": checking for correct move, 3 or more in a line
 
-        const { isThree, isFour, isFive } = gd.checkCandyMatch();
-        if (!isThree && !isFour & !isFive) {
+        const {
+          isThree,
+          isFour,
+          isFive,
+          isColorBallWithNormal,
+          isColorBallWithStriped,
+        } = gd.checkCandyMatch();
+        if (
+          !isThree &&
+          !isFour &&
+          !isFive &&
+          !isColorBallWithNormal &&
+          !isColorBallWithStriped
+        ) {
           // -> change 1 to 2 when check is passed
           //console.log("end check2 (not 3 or more in a line)");
           //gd.swapCandy(); //swap it back
@@ -907,7 +1069,7 @@ function CandyCrush() {
 
       case "crush":
         //console.log("start crush");
-        gd.compareAndRemoveOnesFromGridArray();
+        gd.removeOnesAndGiveSpecialCandy();
         sound.candyfallplayrandom();
         renderGrid();
         setTimeout(() => {
@@ -1049,7 +1211,7 @@ function CandyCrush() {
           candyCount: 6,
         },
       ];
-      console.log(levelArray);
+      //console.log(levelArray);
     }
 
     const { rowCount, colCount, candyCount } = levelArray[level - 1];
@@ -1080,6 +1242,7 @@ function CandyCrush() {
   const settingButton = document.querySelector("#setting-button");
   const backButton = document.querySelector("#back-button");
   const backButton2 = document.querySelector("#back-button2");
+  const addUser = document.querySelector("#add-user");
 
   const rangeSound = document.querySelector("#range-sound");
   const audio = document.querySelector("#music");
@@ -1107,14 +1270,105 @@ function CandyCrush() {
   levelContainer.addEventListener("click", levelChangeButtonHandler);
   inputName.addEventListener("blur", inputNameHandler);
   selectUser.addEventListener("change", selectUserHandler);
+  addUser.addEventListener("click", addUserHandler);
 
-  function inputNameHandler(ev){
-    console.log(inputName.value);
+  function inputNameHandler(ev) {
+    //console.log(inputName.value);
     //this.saveUserData();
   }
 
-  function selectUserHandler(ev){
-    console.log(selectUser.value);
+  function addUserHandler(ev) {
+    if (inputName.value !== "") {
+      gd.userData = [
+        ...gd.userData,
+        {
+          name: inputName.value,
+          highestlevel: 1,
+          highScore: 0,
+          musicLevel: 0.2,
+          soundLevel: 0.2,
+          gameHistory: [
+            {
+              level: 1,
+              highScore: 0,
+              stars: 0,
+            },
+          ],
+        },
+      ];
+    }
+    gd.saveUserData();
+    selectUserHandler(); //refresh the select with new user name
+    selectUser.value = inputName.value;
+    inputName.value = "";
+  }
+
+  function selectUserHandler(ev) {
+    //console.log(selectUser.value);
+  }
+
+  function loadUserList(ev) {
+    selectUser.innerHTML = "";
+    gd.userData.forEach((user) => {
+      const optionEl = document.createElement("option");
+      optionEl.textContent = user.name;
+      optionEl.value = user.name;
+      selectUser.appendChild(optionEl);
+    });
+
+    // {
+    //   name: "Random Kid",
+    //   highestlevel: 1,
+    //   highScore: 0,
+    //   musicLevel: 0.2,
+    //   soundLevel: 0.2,
+    //   gameHistory: [
+    //     {
+    //       level: 1,
+    //       highScore: 0,
+    //       stars: 0,
+    //     },
+    //   ],
+    // }
+  }
+
+  function setActivePage(page) {
+    switch (page) {
+      case "start":
+        startPage.style.display = "flex";
+        gamePage.style.display = "none";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "game":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "level":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "100vw";
+        levelPage.style.display = "flex";
+        settingPage.style.width = "0";
+        settingPage.style.display = "none";
+        break;
+      case "setting":
+        startPage.style.display = "none";
+        gamePage.style.display = "grid";
+        levelPage.style.width = "0";
+        levelPage.style.display = "none";
+        settingPage.style.width = "100vw";
+        settingPage.style.display = "flex";
+        //load user list
+        loadUserList();
+        break;
+    }
   }
 
   function levelChangeButtonHandler(ev) {
@@ -1171,43 +1425,6 @@ function CandyCrush() {
     routerNext();
   }
 
-  function setActivePage(page) {
-    switch (page) {
-      case "start":
-        startPage.style.display = "flex";
-        gamePage.style.display = "none";
-        levelPage.style.width = "0";
-        levelPage.style.display = "none";
-        settingPage.style.width = "0";
-        settingPage.style.display = "none";
-        break;
-      case "game":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width = "0";
-        levelPage.style.display = "none";
-        settingPage.style.width = "0";
-        settingPage.style.display = "none";
-        break;
-      case "level":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width = "100vw";
-        levelPage.style.display = "flex";
-        settingPage.style.width = "0";
-        settingPage.style.display = "none";
-        break;
-      case "setting":
-        startPage.style.display = "none";
-        gamePage.style.display = "grid";
-        levelPage.style.width = "0";
-        levelPage.style.display = "none";
-        settingPage.style.width = "100vw";
-        settingPage.style.display = "flex";
-        break;
-    }
-  }
-
   function max(n1, n2) {
     return n1 > n2 ? n1 : n2;
   }
@@ -1240,14 +1457,15 @@ function CandyCrush() {
       gridContainer.style.gridTemplateColumns = `repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.gridTemplateRows = `repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.width = `${
-        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1)) * 1.1
+        (gd.size * gd.colCount)
       }px`;
       gridContainer.style.height = `${
-        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1)) * 1.1
+        (gd.size * gd.rowCount)
       }px`;
       //cells.style.width=`${gd.size}px`;
       //cells.style.height=`${gd.size}px`;
     }
+
   }
 
   function renderGrid() {
@@ -1268,9 +1486,116 @@ function CandyCrush() {
           item.style.visibility = "visible";
         }
         gridContainer.appendChild(item);
+        
       }
     }
+    // let from={row:0,col:0};
+    // let to={row:0,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:0,col:0};
+    // to={row:gd.rowCount-1,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:gd.rowCount-1,col:0};
+    // to={row:0,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:1,col:0};
+    // to={row:1,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:2,col:0};
+    // to={row:2,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:3,col:0};
+    // to={row:3,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:gd.rowCount-1,col:0};
+    // to={row:gd.rowCount-1,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+    // from={row:0,col:0};
+    // to={row:gd.rowCount-1,col:0};
+
+    // renderLaser(from,to);
+
+    // from={row:0,col:gd.colCount-1};
+    // to={row:gd.rowCount-1,col:gd.colCount-1};
+
+    // renderLaser(from,to);
+
+
   }
+
+  // function findLength(from, to){
+  //   if (from.row===to.row){
+  //     return Math.abs(from.col-to.col);
+  //   } else if (from.col ===to.col){
+  //     return Math.abs(from.row-to.row);
+  //   } else {
+  //     return Math.sqrt((to.row-from.row)**2+(to.col-from.col)**2);
+  //   }
+  // }
+
+  // function findAngle(from, to){
+  //   if (from.row===to.row){
+  //     return 0;
+  //   } else if (from.col ===to.col){
+  //     return 3.1415/2;
+  //   } else {
+  //     return angle = 180/3.1415*Math.atan2((to.row-from.row),-(to.col-from.col));
+  //   }
+  // }
+
+  // function midPoint(from,to){
+  //   if (from.row===to.row){
+  //     return {x:(from.col+to.col)/2, y:from.row};
+  //   } else if (from.col ===to.col){
+  //     return {x: from.col, y: (from.row+to.row)/2};
+  //   } else {
+  //     return {
+  //       y: (from.row+to.row)/2,
+  //       x: (from.col+to.col)/2,
+  //     }
+  //   }
+
+  // }
+
+  // function renderLaser(from, to){
+
+  //   let laser = document.createElement("div");
+  //   laser.style.position = "absolute";
+  //   const gridWidth = (gd.size * gd.colCount);
+  //   const gridHeight = (gd.size * gd.rowCount);
+
+  //   const midpoint = midPoint(from, to);
+
+  //   const length = findLength(from, to);
+  //   console.log(length);
+  //   const angle = 180/3.1415*Math.atan2((to.row-from.row),(to.col-from.col));
+  //   console.log(angle);
+
+  //   const top = window.innerHeight/2 - gridHeight/2 + (midpoint.y)*gd.size;
+  //   const left = window.innerWidth/2 - gridWidth/2 + (midpoint.x)*gd.size;
+  //   laser.style.top = `${top}px`;
+  //   laser.style.left = `${left}px`;
+  //   laser.style.height=`${gd.size*0.05}px`;
+  //   laser.style.width=`${(length*gd.size*1.2)}px`;
+  //   laser.style.backgroundColor="#fdff90c5";
+  //   laser.style.boxShadow=`#fdff90c5 0px 1px 10px 10px`;
+  //   laser.style.transform=`rotate(${angle}deg)`;
+  //   gridContainer.appendChild(laser);    
+  // }
 
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
