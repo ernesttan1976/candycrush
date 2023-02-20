@@ -8,7 +8,15 @@ function CandyCrush() {
       this.start = {};
       this.end = {};
       this.grid = [];
-      this.gridToCrush = [];
+      this.gridThree = [];
+      this.gridFour = [];
+      this.gridFive = [];
+      this.isThree = false;
+      this.isFour = false;
+      this.isFive = false;
+      this.gridStripedWithNormalCandy = [];
+      this.gridColorBallWithNormalCandy = [];
+      this.gridColorBallWithStriped = [];
       this.gridTemp = [];
       this.fillGridArray();
       this.setStartId("");
@@ -30,6 +38,19 @@ function CandyCrush() {
       this.cascadeCounter = 1;
       this.candyfallsCounter = 1;
       this.userActive = false;
+    }
+
+    getStart() {
+      return {
+        ...this.start,
+        color: this.grid[this.start.row][this.start.col],
+      };
+    }
+    getEnd() {
+      return {
+        ...this.end,
+        color: this.grid[this.end.row][this.end.col],
+      };
     }
 
     setStartId(id) {
@@ -104,6 +125,544 @@ function CandyCrush() {
       }
     }
 
+    getDistance() {
+      //console.log(this.start, this.end);
+      return Math.sqrt(
+        (this.start.row - this.end.row) ** 2 +
+          (this.start.col - this.end.col) ** 2
+      );
+    }
+
+    checkValidMoveAdjacent() {
+      const distance = this.getDistance();
+      if (distance === 0) {
+        //console.log("distance = 0 : invalid");
+        return false;
+      } else if (distance > 1) {
+        //console.log("distance > 1 : invalid");
+        return false;
+      }
+      if (distance === 1) {
+        //console.log("distance valid");
+        return true;
+      }
+    }
+
+    //simple match 3 algorithm
+    //checkThreeOrMoreInALine -> uses markLineThree with regex of 3 or more duplicate letters
+    //compareAndRemoveOnesFromGridArray
+
+    //upgrade to include striped candy and color ball
+
+    checkCandyMatch() {
+      //prioity given to the rarest
+
+      this.isThree = this.checkThreeInALine();
+      //results in gridThree marked with 1 (normal candy)
+
+      this.isFour = this.checkFourInALine();
+      //results in gridFour marked with H to S (striped candy)
+      if (this.isFour) {
+        this.giveStripedCandy();
+        console.log(this.gridFour);
+      }
+
+      this.isFive = this.checkFiveInALine();
+      //results in gridFive marked with G (color ball)
+      if (this.isFive) {
+        this.giveColorBall();
+        console.log(this.gridFive);
+      }
+      //const isColorBallWithNormalCandy = this.checkColorBallWithNormalCandy();
+      //results in gridColorBallWithNormalCandy marked with 1, all candy with that color
+
+      //const isColorBallWithStriped = this.checkColorBallWithStriped();
+      //results in gridColorBallWithStriped marked with N to S, all candy with that color's striped candy. e.g. A -> H or N, immediately invoke laser on it.
+      // i.e. invoke checkStripedWithNormalCandy
+
+      return { isThree: this.isThree, isFour: this.isFour, isFive: this.isFive };
+    }
+
+    getRandomStripeCandy(color) {
+      const n = Math.floor(Math.random()); //0 or 1
+      switch (color) {
+        case "A":
+          return n === 1 ? "H" : "N";
+          break;
+        case "B":
+          return n === 1 ? "I" : "O";
+          break;
+        case "C":
+          return n === 1 ? "J" : "P";
+          break;
+        case "D":
+          return n === 1 ? "K" : "Q";
+          break;
+        case "E":
+          return n === 1 ? "L" : "R";
+          break;
+        case "F":
+          return n === 1 ? "M" : "S";
+          break;
+        default:
+          console.log("getRandomStripeCandy: error");
+          break;
+      }
+    }
+
+    startOnLine(gdStart, start, end) {
+      if (gdStart.row === start.row) {
+        //is a row
+        if (start.col < end.col) {
+          return gdStart.col >= start.col && gdStart.col <= end.col;
+        } else if (start.col > end.col) {
+          return gdStart.col >= end.col && gdStart.col <= start.col;
+        }
+      } else if (gdStart.col === start.col) {
+        // is a col
+        if (start.row < end.row) {
+          return gdStart.row >= start.row && gdStart.row <= end.row;
+        } else if (start.row > end.row) {
+          return gdStart.row >= end.row && gdStart.row <= start.row;
+        }
+      }
+    }
+
+    
+    giveColorBall() {
+      //scan rows and if 1, match the color found in grid
+      //get the start to end of every four in a row
+      let list = [];
+
+      if (!this.isFive) {
+        console.log("gridFive is empty");
+        return;
+      }
+
+      for (let i = 0; i < this.rowCount; i++) {
+        let count = 0;
+        let start = {};
+        let end = {};
+        for (let j = 0; j < this.colCount; j++) {
+          if (this.gridFive[i][j] === "1") {
+            count++;
+            if (count === 1) {
+              start.row = i;
+              start.col = j;
+            } else if (count === 5) {
+              end.row = i;
+              end.col = j;
+              list.push({
+                start,
+                end,
+                color: this.grid[i][j],
+                gdStart: this.getStart(),
+                gdEnd: this.getEnd(),
+              });
+              count = 0;
+              start = {};
+              end = {};
+            }
+          }
+        }
+      }
+
+      for (let j = 0; j < this.colCount; j++) {
+        let count = 0;
+        let start = {};
+        let end = {};
+        for (let i = 0; i < this.rowCount; i++) {
+          if (this.gridFive[i][j] === "1") {
+            count++;
+            if (count === 1) {
+              start.row = i;
+              start.col = j;
+            } else if (count === 5) {
+              end.row = i;
+              end.col = j;
+              list.push({
+                start,
+                end,
+                color: this.grid[i][j],
+                gdStart: this.getStart(),
+                gdEnd: this.getEnd(),
+              });
+              count = 0;
+              start = {};
+              end = {};
+            }
+          }
+        }
+      }
+      console.log(list);
+      list.forEach((item) => {
+
+        const isStartOnLine = this.startOnLine(
+          item.gdStart,
+          item.start,
+          item.end
+        );
+        const isEndOnLine = this.startOnLine(item.gdEnd, item.start, item.end);
+        if (item.color === item.gdStart.color && isStartOnLine) {
+          this.gridFive[this.start.row][this.start.col] = "G";
+        } else if (item.color === item.gdEnd.color && isEndOnLine) {
+          this.gridFive[this.end.row][this.end.col] = "G";
+        } else {
+          //no match, this is not user generated
+          //assign randomly
+          if (item.start.row === item.end.row) {
+            //randomly assign along the row
+            this.gridFive[item.start.row][
+              this.start.col + Math.floor(Math.random() * 5)
+            ] = "G";
+          } else if (item.start.col === item.end.col) {
+            //randomly assign along the col
+            this.gridFive[item.start.row + Math.floor(Math.random() * 5)][
+              item.start.col
+            ] = "G";
+          }
+        }
+      });
+    }
+
+    giveStripedCandy() {
+      //scan rows and if 1, match the color found in grid
+      //get the start to end of every four in a row
+      let list = [];
+
+      if (!this.isFour) {
+        console.log("gridFour is empty");
+        return;
+      }
+
+      for (let i = 0; i < this.rowCount; i++) {
+        let count = 0;
+        let start = {};
+        let end = {};
+        for (let j = 0; j < this.colCount; j++) {
+          if (this.gridFour[i][j] === "1") {
+            count++;
+            if (count === 1) {
+              start.row = i;
+              start.col = j;
+            } else if (count === 4) {
+              end.row = i;
+              end.col = j;
+              list.push({
+                start,
+                end,
+                color: this.grid[i][j],
+                gdStart: this.getStart(),
+                gdEnd: this.getEnd(),
+              });
+              count = 0;
+              start = {};
+              end = {};
+            }
+          }
+        }
+      }
+
+      for (let j = 0; j < this.colCount; j++) {
+        let count = 0;
+        let start = {};
+        let end = {};
+        for (let i = 0; i < this.rowCount; i++) {
+          if (this.gridFour[i][j] === "1") {
+            count++;
+            if (count === 1) {
+              start.row = i;
+              start.col = j;
+            } else if (count === 4) {
+              end.row = i;
+              end.col = j;
+              list.push({
+                start,
+                end,
+                color: this.grid[i][j],
+                gdStart: this.getStart(),
+                gdEnd: this.getEnd(),
+              });
+              count = 0;
+              start = {};
+              end = {};
+            }
+          }
+        }
+      }
+      //console.log(list);
+      list.forEach((item) => {
+        sound.stripedcandycreated.play();
+        let stripedCandy = this.getRandomStripeCandy(item.color);
+        const isStartOnLine = this.startOnLine(
+          item.gdStart,
+          item.start,
+          item.end
+        );
+        const isEndOnLine = this.startOnLine(item.gdEnd, item.start, item.end);
+        if (item.color === item.gdStart.color && isStartOnLine) {
+          this.gridFour[this.start.row][this.start.col] = stripedCandy;
+        } else if (item.color === item.gdEnd.color && isEndOnLine) {
+          this.gridFour[this.end.row][this.end.col] = stripedCandy;
+        } else {
+          //no match, this is not user generated
+          //assign randomly
+          if (item.start.row === item.end.row) {
+            //randomly assign along the row
+            this.gridFour[item.start.row][
+              this.start.col + Math.floor(Math.random() * 4)
+            ] = stripedCandy;
+          } else if (item.start.col === item.end.col) {
+            //randomly assign along the col
+            this.gridFour[item.start.row + Math.floor(Math.random() * 4)][
+              item.start.col
+            ] = stripedCandy;
+          }
+        }
+      });
+    }
+
+    // fillArray(rowCount, colCount) {
+    //   let arr = [];
+    //   for (let i = 0; i < rowCount; i++) {
+    //     let row = [];
+    //     for (let j = 0; j < colCount; j++) {
+    //       row.push(" ");
+    //     }
+    //     arr.push(row);
+    //   }
+    //   return arr;
+    // }
+
+    markLineFive(str) {
+      const regex = /([A-F])\1{4}/g;
+      let numDuplicates = 0;
+      const markedString = str.replace(regex, (match) => {
+        numDuplicates = match.length;
+        return "1".repeat(numDuplicates);
+      });
+
+      return markedString;
+    }
+
+    
+    checkFiveInALine() {
+      //check and mark rows
+      let isCrushable = false;
+      this.gridFive = [];
+      for (let i = 0; i < this.rowCount; i++) {
+        let rowText = this.grid[i].join("");
+        const markedRow = this.markLineFive(rowText);
+        if (markedRow.includes("1")) isCrushable = true;
+
+        this.gridFive.push([...markedRow]);
+      }
+
+      //console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridThree);
+
+      for (let j = 0; j < this.colCount; j++) {
+        let colText = "";
+        for (let i = 0; i < this.rowCount; i++) {
+          colText = colText + this.grid[i][j];
+        }
+        const markedCol = this.markLineFive(colText);
+        if (markedCol.includes("1")) isCrushable = true;
+        const markedColArray = [...markedCol];
+
+        for (let i = 0; i < this.rowCount; i++) {
+          if (this.gridFive[i][j] === "1") {
+            ///only overwrite if not equal to '1'
+          } else {
+            this.gridFive[i][j] = markedColArray[i];
+          }
+        }
+      }
+
+      //console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridThree);
+      if (!isCrushable) this.gridFive = [];
+
+      return isCrushable;
+    }
+
+    markLineFour(str) {
+      const regex = /([A-F])\1{3}/g;
+      let numDuplicates = 0;
+      const markedString = str.replace(regex, (match) => {
+        numDuplicates = match.length;
+        return "1".repeat(numDuplicates);
+      });
+
+      return markedString;
+    }
+
+    checkFourInALine() {
+      //check and mark rows
+      let isCrushable = false;
+      this.gridFour = [];
+      for (let i = 0; i < this.rowCount; i++) {
+        let rowText = this.grid[i].join("");
+        const markedRow = this.markLineFour(rowText);
+        if (markedRow.includes("1")) isCrushable = true;
+
+        this.gridFour.push([...markedRow]);
+      }
+
+      //console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridThree);
+
+      for (let j = 0; j < this.colCount; j++) {
+        let colText = "";
+        for (let i = 0; i < this.rowCount; i++) {
+          colText = colText + this.grid[i][j];
+        }
+        const markedCol = this.markLineFour(colText);
+        if (markedCol.includes("1")) isCrushable = true;
+        const markedColArray = [...markedCol];
+
+        for (let i = 0; i < this.rowCount; i++) {
+          if (this.gridFour[i][j] === "1") {
+            ///only overwrite if not equal to '1'
+          } else {
+            this.gridFour[i][j] = markedColArray[i];
+          }
+        }
+      }
+
+      //console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridThree);
+      if (!isCrushable) this.gridFour = [];
+
+      return isCrushable;
+    }
+
+    checkThreeInALine() {
+      //check and mark rows
+      let isCrushable = false;
+      this.gridThree = [];
+      for (let i = 0; i < this.rowCount; i++) {
+        let rowText = this.grid[i].join("");
+        const markedRow = this.markLineThree(rowText);
+        if (markedRow.includes("1")) isCrushable = true;
+        ////console.log(markedRow);
+        this.gridThree.push([...markedRow]);
+      }
+
+      //console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridThree);
+
+      for (let j = 0; j < this.colCount; j++) {
+        let colText = "";
+        for (let i = 0; i < this.rowCount; i++) {
+          colText = colText + this.grid[i][j];
+        }
+        const markedCol = this.markLineThree(colText);
+        if (markedCol.includes("1")) isCrushable = true;
+        const markedColArray = [...markedCol];
+
+        for (let i = 0; i < this.rowCount; i++) {
+          if (this.gridThree[i][j] === "1") {
+            ///only overwrite if not equal to '1'
+          } else {
+            this.gridThree[i][j] = markedColArray[i];
+          }
+        }
+      }
+
+      //console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridThree);
+      if (!isCrushable) this.gridThree = [];
+
+      return isCrushable;
+    }
+
+    markLineThree(str) {
+      let newStr = str
+        .replace("H", "A")
+        .replace("N", "A")
+        .replace("I", "B")
+        .replace("O", "B")
+        .replace("J", "C")
+        .replace("P", "C")
+        .replace("K", "D")
+        .replace("Q", "D")
+        .replace("L", "E")
+        .replace("R", "E")
+        .replace("M", "F")
+        .replace("S", "F");
+
+      const regex = /([A-Z])\1{2,}/g;
+      let numDuplicates = 0;
+      const markedString = newStr.replace(regex, (match) => {
+        numDuplicates = match.length;
+        return "1".repeat(numDuplicates);
+      });
+
+      return markedString;
+    }
+
+    compareAndRemoveOnesFromGridArray() {
+      //remove items, including laser zaps
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          if (
+            this.gridThree[i][j] === "1" &&
+            this.grid[i][j] >= "H" &&
+            this.grid[i][j] <= "S"
+          ) {
+            //Striped candy laser
+            if (this.grid[i][j] >= "H" && this.grid[i][j] <= "M") {
+              //horizontal laser
+              for (let j2 = 0; j2 < this.colCount; j2++) {
+                this.grid[i][j2] = " ";
+              }
+              
+            } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
+              //vertical laser
+              for (let i2 = 0; i2 < this.rowCount; i2++) {
+                this.grid[i2][j] = " ";
+              }
+            }
+            sound.stripedcandyblast.play();
+            
+          } else if (
+            this.gridThree[i][j] === "1" &&
+            !(this.grid[i][j] >= "H" && this.grid[i][j] <= "S")
+          ) {
+            this.grid[i][j] = " ";
+          }
+        }
+      }
+
+      //add striped candy AFTER the others are removed
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          if (this.isFour) {
+            if (this.gridFour[i][j] >= "H" && this.gridFour[i][j] <= "S") {
+              //Add striped candy
+              this.grid[i][j] = this.gridFour[i][j];
+              
+            }
+          }
+
+          if (this.isFive){
+            if (this.gridFive[i][j] === "G") {
+              //Add color ball
+              this.grid[i][j] = this.gridFive[i][j];
+              
+            }
+          }
+        }
+      }
+      this.gridThree = [];
+    }
+
+    swapCandy() {
+      ////console.log("SwapCandy: gd:", gd);
+      const temp = this.grid[this.end.row][this.end.col];
+      this.grid[this.end.row][this.end.col] =
+        this.grid[this.start.row][this.start.col];
+      this.grid[this.start.row][this.start.col] = temp;
+
+      //this.grid[this.start.row][this.start.col] = this.end.value;
+      //this.grid[this.end.row][this.end.col] = this.start.value;
+    }
+
     fillGridArrayBlanks() {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
@@ -131,88 +690,15 @@ function CandyCrush() {
       }
     }
 
-    compareAndRemoveOnesFromGridArray() {
-      for (let i = 0; i < this.rowCount; i++) {
-        for (let j = 0; j < this.colCount; j++) {
-          if (this.gridToCrush[i][j] === "1") {
-            this.grid[i][j] = " ";
-          }
-        }
-      }
-      this.gridToCrush = [];
-    }
-
-    swapCandy() {
-      ////console.log("SwapCandy: gd:", gd);
-      const temp = this.grid[this.end.row][this.end.col];
-      this.grid[this.end.row][this.end.col] =
-        this.grid[this.start.row][this.start.col];
-      this.grid[this.start.row][this.start.col] = temp;
-
-      //this.grid[this.start.row][this.start.col] = this.end.value;
-      //this.grid[this.end.row][this.end.col] = this.start.value;
-    }
-
-    checkThreeOrMoreInALine() {
-      //check and mark rows
-      let isCrushable = false;
-      this.gridToCrush = [];
-      for (let i = 0; i < this.rowCount; i++) {
-        let rowText = this.grid[i].join("");
-        const markedRow = markLine(rowText);
-        if (markedRow.includes("1")) isCrushable = true;
-        ////console.log(markedRow);
-        this.gridToCrush.push([...markedRow]);
-      }
-
-      //console.table("checkThreeOrMoreInALine: Rows Scanned", this.gridToCrush);
-
-      for (let j = 0; j < this.colCount; j++) {
-        let colText = "";
-        for (let i = 0; i < this.rowCount; i++) {
-          colText = colText + this.grid[i][j];
-        }
-        const markedCol = markLine(colText);
-        if (markedCol.includes("1")) isCrushable = true;
-        const markedColArray = [...markedCol];
-
-        for (let i = 0; i < this.rowCount; i++) {
-          if (this.gridToCrush[i][j] === "1") {
-            ///only overwrite if not equal to '1'
-          } else {
-            this.gridToCrush[i][j] = markedColArray[i];
-          }
-        }
-      }
-
-      //console.table("checkThreeOrMoreInALine: Cols Scanned", this.gridToCrush);
-      if (!isCrushable) this.gridToCrush = [];
-
-      return isCrushable;
-    }
-
-    getDistance() {
-      //console.log(this.start, this.end);
-      return Math.sqrt(
-        (this.start.row - this.end.row) ** 2 +
-          (this.start.col - this.end.col) ** 2
-      );
-    }
-
-    checkValidMoveAdjacent() {
-      const distance = this.getDistance();
-      if (distance === 0) {
-        //console.log("distance = 0 : invalid");
-        return false;
-      } else if (distance > 1) {
-        //console.log("distance > 1 : invalid");
-        return false;
-      }
-      if (distance === 1) {
-        //console.log("distance valid");
-        return true;
-      }
-    }
+    //Tests for markLineThree
+    // const test = "AAAABBCCCDDEEEEEEFF";
+    // const countObj = countInLine(test);
+    // //console.log("countObj: ",countObj);
+    // const filteredObj = filterCount(countObj);
+    // //console.log("filteredObj",filteredObj);
+    // const markedString = markString(filteredObj,test);
+    // //console.log("markedString: ", markedString);
+    // //console.log(test, gd.markLineThree(test));
   }
 
   class Sound {
@@ -226,6 +712,9 @@ function CandyCrush() {
       this.candyfalls3 = new Audio("./sounds/candyfalls3.ogg");
       this.candyfalls4 = new Audio("./sounds/candyfalls4.ogg");
 
+      this.stripedcandycreated = new Audio("./sounds/stripedcandycreated.ogg");
+      this.stripedcandyblast = new Audio("./sounds/stripedcandyblast.ogg");
+      
       this.cascade1 = new Audio("./sounds/cascade1.ogg");
       this.cascade2 = new Audio("./sounds/cascade2.ogg");
       this.cascade3 = new Audio("./sounds/cascade3.ogg");
@@ -305,7 +794,8 @@ function CandyCrush() {
         //console.log("start check2");
         // state = 1 "check": checking for correct move, 3 or more in a line
 
-        if (!gd.checkThreeOrMoreInALine()) {
+        const { isThree, isFour, isFive } = gd.checkCandyMatch();
+        if (!isThree && !isFour & !isFive) {
           // -> change 1 to 2 when check is passed
           //console.log("end check2 (not 3 or more in a line)");
           //gd.swapCandy(); //swap it back
@@ -334,9 +824,9 @@ function CandyCrush() {
         //console.log("start crush");
         gd.compareAndRemoveOnesFromGridArray();
         sound.candyfallplayrandom();
+        renderGrid();
         setTimeout(() => {
           //console.log("end crush, when setTimeout of 2s ended");
-          renderGrid();
           gd.state = "drop";
           routerNext();
         }, 200);
@@ -348,9 +838,9 @@ function CandyCrush() {
         gd.dropCandy();
         sound.candydropplayrandom();
         //console.log("dropped grid:", gd.grid);
+        renderGrid();
         setTimeout(() => {
           //console.log("end drop, when setTimeout of 2s ended");
-          renderGrid();
           gd.state = "fill";
           routerNext();
         }, 200);
@@ -361,9 +851,9 @@ function CandyCrush() {
         //console.log("start fill");
         gd.fillGridArrayBlanks();
         //console.log("After filling:", gd.grid);
+        renderGrid();
         setTimeout(() => {
           //console.log("end fill, when setTimeout of 2s ended");
-          renderGrid();
           gd.state = "check2"; // check2 because not moved by user
           routerNext();
         }, 200);
@@ -376,13 +866,12 @@ function CandyCrush() {
     return;
   }
 
-
   function loadLevel(level) {
     let levelArray = [
       {
         rowCount: 6,
         colCount: 6,
-        candyCount: 4,
+        candyCount: 6,
       },
       {
         rowCount: 7,
@@ -493,10 +982,9 @@ function CandyCrush() {
 
   //Cache the game elements
   const gridContainer = document.querySelector("#grid");
-  const cells = document.querySelectorAll(".cell");
 
   const levelContainer = document.querySelector("#level-container");
-  
+
   const startPage = document.querySelector("#start-page");
   const gamePage = document.querySelector("#game-page");
   const levelPage = document.querySelector("#level-page");
@@ -507,11 +995,10 @@ function CandyCrush() {
   const settingButton = document.querySelector("#setting-button");
   const backButton = document.querySelector("#back-button");
   const backButton2 = document.querySelector("#back-button2");
-  
+
   const rangeSound = document.querySelector("#range-sound");
   const audio = document.querySelector("#music");
-  
-  
+
   const gameName = document.querySelector("#game-name");
   const gameLevel = document.querySelector("#game-level");
   const gameMoves = document.querySelector("#game-moves");
@@ -519,9 +1006,9 @@ function CandyCrush() {
   const gameTarget = document.querySelector("#game-target");
   const gameScore = document.querySelector("#game-score");
   const inputName = document.querySelector("#name");
-  
-  
+
   //Event listeners
+  window.onresize = applyStyleToGridContainer;
   gridContainer.addEventListener("dragover", onDragOverHandler);
   gridContainer.addEventListener("drop", onDropHandler);
   gridContainer.addEventListener("dragstart", onDragStartHandler);
@@ -621,29 +1108,6 @@ function CandyCrush() {
     }
   }
 
-  function markLine(str) {
-    const regex = /([A-Z])\1{2,}/g;
-    let numDuplicates = 0;
-    const markedString = str.replace(regex, (match) => {
-      numDuplicates = match.length;
-      return "1".repeat(numDuplicates);
-    });
-
-    ////console.log("markedString: ", markedString);
-
-    return markedString;
-  }
-
-  //Tests for markLine
-  // const test = "AAAABBCCCDDEEEEEEFF";
-  // const countObj = countInLine(test);
-  // //console.log("countObj: ",countObj);
-  // const filteredObj = filterCount(countObj);
-  // //console.log("filteredObj",filteredObj);
-  // const markedString = markString(filteredObj,test);
-  // //console.log("markedString: ", markedString);
-  // //console.log(test, markLine(test));
-
   function max(n1, n2) {
     return n1 > n2 ? n1 : n2;
   }
@@ -654,13 +1118,15 @@ function CandyCrush() {
 
   function setCellSizeResponsive() {
     const maxSize = max(gd.rowCount, gd.columnCount);
-    const sizeBasedOnRowHeight =  ((window.innerHeight * 0.7 - gd.gap * (gd.rowCount - 1)) / gd.rowCount);
-    const sizeBasedOnColWidth = ((window.innerWidth * 0.7 - gd.gap * (gd.colCount - 1)) / gd.colCount);
-      if (window.innerWidth < 768 || window.innerWidth < window.innerHeight) {
-      gd.size = min(sizeBasedOnColWidth,sizeBasedOnRowHeight);
+    const sizeBasedOnRowHeight =
+      (window.innerHeight * 0.7 - gd.gap * (gd.rowCount - 1)) / gd.rowCount;
+    const sizeBasedOnColWidth =
+      (window.innerWidth * 0.7 - gd.gap * (gd.colCount - 1)) / gd.colCount;
+    if (window.innerWidth < 768 || window.innerWidth < window.innerHeight) {
+      gd.size = min(sizeBasedOnColWidth, sizeBasedOnRowHeight);
       //console.log("min: ", sizeBasedOnColWidth,sizeBasedOnRowHeight);
     } else {
-      gd.size = min(80,max(sizeBasedOnColWidth,sizeBasedOnRowHeight));
+      gd.size = min(80, max(sizeBasedOnColWidth, sizeBasedOnRowHeight));
       //console.log("max: ", sizeBasedOnColWidth,sizeBasedOnRowHeight);
     }
   }
@@ -671,16 +1137,20 @@ function CandyCrush() {
       return;
     } else {
       setCellSizeResponsive();
-      gridContainer.style.cssText += `grid-template-columns: repeat(${gd.colCount}, ${gd.size}px)`;
-      gridContainer.style.cssText += `grid-template-rows: repeat(${gd.rowCount}, ${gd.size}px)`;
-      gridContainer.style.cssText += `width: ${
-        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1))*1.1
+      gridContainer.style.gridTemplateColumns = `repeat(${gd.colCount}, ${gd.size}px)`;
+      gridContainer.style.gridTemplateRows = `repeat(${gd.rowCount}, ${gd.size}px)`;
+      gridContainer.style.width =`${
+        (gd.size * gd.colCount + gd.gap * (gd.colCount - 1)) * 1.1
       }px`;
-      gridContainer.style.cssText += `height: ${
-        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1))*1.1
+      gridContainer.style.height = `${
+        (gd.size * gd.rowCount + gd.gap * (gd.rowCount - 1)) * 1.1
       }px`;
+      //cells.style.width=`${gd.size}px`;
+      //cells.style.height=`${gd.size}px`;
+      
     }
   }
+
 
   function renderGrid() {
     gridContainer.innerHTML = "";
