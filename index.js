@@ -10,6 +10,7 @@ function CandyCrush() {
       this.start = {};
       this.end = {};
       this.grid = [];
+      this.gridTemp = [];
       this.gridThree = [];
       this.gridFour = [];
       this.gridFive = [];
@@ -21,8 +22,10 @@ function CandyCrush() {
       this.gridStripedWithNormal = [];
       this.gridColorBallWithNormal = [];
       this.gridColorBallWithStriped = [];
-      this.gridTemp = [];
-      this.fillGridArray();
+      let {grid, gridTemp} = this.fillGridArray();
+      this.grid = grid;
+      this.gridTemp = gridTemp;
+
       this.setStartId("");
       this.setEndId("");
       this.size = 60;
@@ -145,43 +148,57 @@ function CandyCrush() {
       };
     }
 
+    //refactor this - done
     setStartId(id) {
+      let start={
+        id: "",
+        row: "",
+        col:"",
+        value:"",
+      }
+
+      if (id==="") return start;
+
       try {
-        if (id === "") {
-          this.start.id = "";
-          this.start.row = "";
-          this.start.col = "";
-          this.start.value = "";
-        } else if (id === "grid") {
+        if (id === "grid") {
           //do nothing
+          console.log("dragged on grid instead of cell");
         } else {
-          this.start.id = id;
-          this.start.row = this.getRow(id);
-          this.start.col = this.getCol(id);
-          this.start.value = this.grid[this.start.row][this.start.col];
+          start.id = id;
+          start.row = this.getRow(id);
+          start.col = this.getCol(id);
+          start.value = this.grid[this.start.row][this.start.col];
         }
+        return start;
       } catch (e) {
-        //console.log("error: ", id, " typeof ", typeof id);
+        console.error("error: ", id, " typeof ", typeof id);
+        throw e;
       }
     }
-
+    //refactor this - done
     setEndId(id) {
+      let end={
+        id: "",
+        row: "",
+        col: "",
+        value: "",
+      }
+
+      if (id === "") return end;
+
       try {
-        if (id === "") {
-          this.end.id = "";
-          this.end.row = "";
-          this.end.col = "";
-          this.end.value = "";
-        } else if (id === "grid") {
-          //do nothing
-        } else {
-          this.end.id = id;
-          this.end.row = this.getRow(id);
-          this.end.col = this.getCol(id);
-          this.end.value = this.grid[this.end.row][this.end.col];
+        if (id === "grid") {
+        //do nothing
+        console.log("dragged on grid instead of cell");
+      } else {
+          end.id = id;
+          end.row = this.getRow(id);
+          end.col = this.getCol(id);
+          end.value = this.grid[this.end.row][this.end.col];
         }
       } catch (e) {
-        //console.log("error: ", id, " typeof ", typeof id);
+        console.error("error: ", id, " typeof ", typeof id);
+        throw e;
       }
     }
 
@@ -202,19 +219,21 @@ function CandyCrush() {
       );
     }
 
-    fillGridArray() {
+    //refactor this - done
+    fillGridArray({grid, gridTemp}) {
       //String.fromCharCode(65) => 'A'
       //A = 65, F = 70, Z = 90
-      this.grid = [];
-      this.gridTemp = [];
+      const grid = [];
+      const gridTemp = [];
       for (let i = 0; i < this.rowCount; i++) {
         let row = [];
         for (let j = 0; j < this.colCount; j++) {
           row.push(this.getRandomCandy());
         }
-        this.grid.push(row);
-        this.gridTemp.push(row);
+        grid.push(row);
+        gridTemp.push(row);
       }
+      return {grid, gridTemp};
     }
 
     getDistance() {
