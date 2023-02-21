@@ -2,11 +2,13 @@
 
 function CandyCrush() {
   //Declare game data with empty values
+
+  //refactor this
   class GameData {
-    constructor(rowCount, colCount, candyCount) {
-      this.rowCount = rowCount || 6;
-      this.colCount = colCount || 6;
-      this.candyCount = candyCount || 6;
+    constructor(rowCount = 6, colCount = 6, candyCount = 6) {
+      this.rowCount = rowCount;
+      this.colCount = colCount;
+      this.candyCount = candyCount;
       this.start = {};
       this.end = {};
       this.grid = [];
@@ -22,7 +24,7 @@ function CandyCrush() {
       this.gridStripedWithNormal = [];
       this.gridColorBallWithNormal = [];
       this.gridColorBallWithStriped = [];
-      let {grid, gridTemp} = this.fillGridArray();
+      let { grid, gridTemp } = this.fillGridArray();
       this.grid = grid;
       this.gridTemp = gridTemp;
 
@@ -49,7 +51,6 @@ function CandyCrush() {
       this.userData = [];
       this.currentUser = 0;
       this.loadUserData(this.currentUser);
-      this.firstCell;
     }
 
     loadUserData() {
@@ -150,14 +151,14 @@ function CandyCrush() {
 
     //refactor this - done
     setStartId(id) {
-      let start={
+      let start = {
         id: "",
         row: "",
-        col:"",
-        value:"",
-      }
+        col: "",
+        value: "",
+      };
 
-      if (id==="") return start;
+      if (id === "") return start;
 
       try {
         if (id === "grid") {
@@ -167,8 +168,9 @@ function CandyCrush() {
           start.id = id;
           start.row = this.getRow(id);
           start.col = this.getCol(id);
-          start.value = this.grid[this.start.row][this.start.col];
+          start.value = this.grid[start.row][start.col];
         }
+        this.start = start;
         return start;
       } catch (e) {
         console.error("error: ", id, " typeof ", typeof id);
@@ -177,25 +179,27 @@ function CandyCrush() {
     }
     //refactor this - done
     setEndId(id) {
-      let end={
+      let end = {
         id: "",
         row: "",
         col: "",
         value: "",
-      }
+      };
 
       if (id === "") return end;
 
       try {
         if (id === "grid") {
-        //do nothing
-        console.log("dragged on grid instead of cell");
-      } else {
+          //do nothing
+          console.log("dragged on grid instead of cell");
+        } else {
           end.id = id;
           end.row = this.getRow(id);
           end.col = this.getCol(id);
-          end.value = this.grid[this.end.row][this.end.col];
+          end.value = this.grid[end.row][end.col];
         }
+        this.end = end;
+        return end;
       } catch (e) {
         console.error("error: ", id, " typeof ", typeof id);
         throw e;
@@ -233,15 +237,13 @@ function CandyCrush() {
         grid.push(row);
         gridTemp.push(row);
       }
-      return {grid, gridTemp};
+      return { grid, gridTemp };
     }
 
-    getDistance() {
+    //refactor this - done
+    getDistance(start, end) {
       //console.log(this.start, this.end);
-      return Math.sqrt(
-        (this.start.row - this.end.row) ** 2 +
-          (this.start.col - this.end.col) ** 2
-      );
+      return Math.sqrt((start.row - end.row) ** 2 + (start.col - end.col) ** 2);
     }
 
     //refactor this - done
@@ -271,7 +273,7 @@ function CandyCrush() {
       let isColorBallWithStriped = false;
       this.gridColorBallWithNormal = [];
       this.gridColorBallWithStriped = [];
-      this.list=[];
+      this.list = [];
       if (start.color === "G") {
         colorBall = start;
         other = end;
@@ -285,10 +287,10 @@ function CandyCrush() {
       console.log(other.color);
 
       //remove the 2 spaces
-      this.grid[colorBall.row][colorBall.col]="1";
-      this.grid[other.row][other.col]="1";
+      this.grid[colorBall.row][colorBall.col] = "1";
+      this.grid[other.row][other.col] = "1";
 
-        if (other.color >= "A" && other.color <= "F") {
+      if (other.color >= "A" && other.color <= "F") {
         //color+normal
         isColorBallWithNormal = true;
         normalColor = other.color;
@@ -301,16 +303,14 @@ function CandyCrush() {
               this.grid[i][j] = "1";
               this.list.push({
                 start: colorBall,
-                end: {row: i, col: j},
+                end: { row: i, col: j },
               });
             } else {
               row.push(" ");
-
             }
           }
           this.gridColorBallWithNormal.push(row);
         }
-
       } else if (other.color >= "H" && other.color <= "S") {
         //color+striped
         isColorBallWithStriped = true;
@@ -327,9 +327,8 @@ function CandyCrush() {
               row.push(thisStripe);
               this.list.push({
                 start: colorBall,
-                end: {row: i, col: j},
+                end: { row: i, col: j },
               });
-
             } else {
               row.push(" ");
             }
@@ -377,10 +376,9 @@ function CandyCrush() {
         // gd.list.forEach(line=>{
         //   let laser = document.createElement("div");
         //   laser.style.position = "absolute";
-        //   gamePage.append(laser);  
+        //   gamePage.append(laser);
         // });
       }
-
 
       this.isThree = this.checkThreeInALine();
       //results in gridThree marked with 1 (normal candy)
@@ -903,17 +901,35 @@ function CandyCrush() {
       this.isColorBallWithStriped = false;
     }
 
+    //refactor this - done
     swapCandy() {
-      ////console.log("SwapCandy: gd:", gd);
       const temp = this.grid[this.end.row][this.end.col];
       this.grid[this.end.row][this.end.col] =
         this.grid[this.start.row][this.start.col];
       this.grid[this.start.row][this.start.col] = temp;
-
-      //this.grid[this.start.row][this.start.col] = this.end.value;
-      //this.grid[this.end.row][this.end.col] = this.start.value;
     }
 
+    //refactored this but too complicated
+
+
+
+    
+    fillGridArrayBlanks2() {
+      const result = this.grid.reduce((prevRows, currRow) => {
+          const resultRow = thisRow.reduce((prevItem, currItem) => {
+          if (currItem === " ") {
+            prevItem.push(this.getRandomCandyItem());
+          } else {
+            prevItem.push(currItem);
+          }
+          return prevItem;
+        }, {});
+        prevRows.push(resultRow);
+        return prevRows;
+      }, {});
+    }
+
+    //original function
     fillGridArrayBlanks() {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
@@ -1472,16 +1488,11 @@ function CandyCrush() {
       setCellSizeResponsive();
       gridContainer.style.gridTemplateColumns = `repeat(${gd.colCount}, ${gd.size}px)`;
       gridContainer.style.gridTemplateRows = `repeat(${gd.rowCount}, ${gd.size}px)`;
-      gridContainer.style.width = `${
-        (gd.size * gd.colCount)
-      }px`;
-      gridContainer.style.height = `${
-        (gd.size * gd.rowCount)
-      }px`;
+      gridContainer.style.width = `${gd.size * gd.colCount}px`;
+      gridContainer.style.height = `${gd.size * gd.rowCount}px`;
       //cells.style.width=`${gd.size}px`;
       //cells.style.height=`${gd.size}px`;
     }
-
   }
 
   function renderGrid() {
@@ -1502,7 +1513,6 @@ function CandyCrush() {
           item.style.visibility = "visible";
         }
         gridContainer.appendChild(item);
-        
       }
     }
     // let from={row:0,col:0};
@@ -1549,8 +1559,6 @@ function CandyCrush() {
     // to={row:gd.rowCount-1,col:gd.colCount-1};
 
     // renderLaser(from,to);
-
-
   }
 
   // function findLength(from, to){
@@ -1610,7 +1618,7 @@ function CandyCrush() {
   //   laser.style.backgroundColor="#fdff90c5";
   //   laser.style.boxShadow=`#fdff90c5 0px 1px 10px 10px`;
   //   laser.style.transform=`rotate(${angle}deg)`;
-  //   gridContainer.appendChild(laser);    
+  //   gridContainer.appendChild(laser);
   // }
 
   function init() {
