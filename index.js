@@ -925,15 +925,17 @@ function CandyCrush() {
       const result = this.grid.reduce((prevRows, currRow) => {
         const resultRow = currRow.reduce((prevItem, currItem) => {
           if (currItem === " ") {
-            prevItem.push(this.getRandomCandyItem());
+            prevItem.push(this.getRandomCandy());
           } else {
             prevItem.push(currItem);
           }
           return prevItem;
-        }, {});
+        }, []);
         prevRows.push(resultRow);
         return prevRows;
-      }, {});
+      }, []);
+      this.grid = result;
+      return result;
     }
 
     //refactored wth map function and conditional function taken out
