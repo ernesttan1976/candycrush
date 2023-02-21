@@ -248,7 +248,7 @@ function CandyCrush() {
 
     //refactor this - done
     checkValidMoveAdjacent() {
-      const distance = this.getDistance();
+      const distance = this.getDistance(this.start, this.end);
       if (distance === 1) {
         return true;
       } else {
@@ -910,7 +910,7 @@ function CandyCrush() {
     }
 
     //original function
-    fillGridArrayBlanks() {
+    fillGridArrayBlanks2() {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
           if (this.grid[i][j] === " ") {
@@ -921,7 +921,7 @@ function CandyCrush() {
     }
 
     //refactored with reduce function
-    fillGridArrayBlanks2() {
+    fillGridArrayBlanks() {
       const result = this.grid.reduce((prevRows, currRow) => {
         const resultRow = currRow.reduce((prevItem, currItem) => {
           if (currItem === " ") {
