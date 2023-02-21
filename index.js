@@ -909,14 +909,21 @@ function CandyCrush() {
       this.grid[this.start.row][this.start.col] = temp;
     }
 
-    //refactored this but too complicated
+    //original function
+    fillGridArrayBlanks() {
+      for (let i = 0; i < this.rowCount; i++) {
+        for (let j = 0; j < this.colCount; j++) {
+          if (this.grid[i][j] === " ") {
+            this.grid[i][j] = this.getRandomCandy();
+          }
+        }
+      }
+    }
 
-
-
-    
+    //refactored with reduce function
     fillGridArrayBlanks2() {
       const result = this.grid.reduce((prevRows, currRow) => {
-          const resultRow = thisRow.reduce((prevItem, currItem) => {
+        const resultRow = currRow.reduce((prevItem, currItem) => {
           if (currItem === " ") {
             prevItem.push(this.getRandomCandyItem());
           } else {
@@ -929,15 +936,12 @@ function CandyCrush() {
       }, {});
     }
 
-    //original function
-    fillGridArrayBlanks() {
-      for (let i = 0; i < this.rowCount; i++) {
-        for (let j = 0; j < this.colCount; j++) {
-          if (this.grid[i][j] === " ") {
-            this.grid[i][j] = this.getRandomCandy();
-          }
-        }
-      }
+    //refactored wth map function and conditional function taken out
+    fillGridArrayBlanks3() {
+      const conditionalFunction = (item) =>
+        item === " " ? this.getRandomCandy() : item;
+      result = this.grid.map((row) => row.map(conditionalFunction));
+      return result;
     }
 
     dropCandy() {
