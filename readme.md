@@ -64,9 +64,11 @@ CSS - shake animation, background gradient animation
 - [ ] 5. Proper animations
 
 ### Code Refactoring ###
+The below code is easily understood.
+However it is tedious to type 2 for loops.
 ```
 //original function
-fillGridArrayBlanks2() {
+fillGridArrayBlanks() {
   for (let i = 0; i < this.rowCount; i++) {
     for (let j = 0; j < this.colCount; j++) {
       if (this.grid[i][j] === " ") {
@@ -77,9 +79,10 @@ fillGridArrayBlanks2() {
 }
 ```
 
+I refactored it to have 2 reduce functions. It worked, but REDUCE is hard to understand. So I scrapped it!
 ```
 //refactored with reduce function
-fillGridArrayBlanks3() {
+fillGridArrayBlanks2() {
   const result = this.grid.reduce((prevRows, currRow) => {
     const resultRow = currRow.reduce((prevItem, currItem) => {
       if (currItem === " ") {
@@ -97,9 +100,12 @@ fillGridArrayBlanks3() {
 }
 ```
 
+For this 3rd version I use the map function 2 times. And I put the conditional function separately so it is modular.
+It is cleaner and more extendable. Different conditionals can be passed into the generic 2D array mapping function.
+What do you think?
 ```
 //refactored wth map function and conditional function is abstracted for clarity
-    fillGridArrayBlanks() {
+    fillGridArrayBlanks3() {
       const conditionalFunction = (item) =>
         (item === " " ? this.getRandomCandy() : item);
       const result = this.grid.map((row) => row.map(conditionalFunction));
@@ -107,3 +113,4 @@ fillGridArrayBlanks3() {
       return result;
     }
 ```
+This
