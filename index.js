@@ -1,3 +1,5 @@
+"use strict";
+
 function CandyCrush() {
   //Declare game data with empty values
   class GameData {
@@ -223,18 +225,13 @@ function CandyCrush() {
       );
     }
 
+    //refactor this - done
     checkValidMoveAdjacent() {
       const distance = this.getDistance();
-      if (distance === 0) {
-        //console.log("distance = 0 : invalid");
-        return false;
-      } else if (distance > 1) {
-        //console.log("distance > 1 : invalid");
-        return false;
-      }
       if (distance === 1) {
-        //console.log("distance valid");
         return true;
+      } else {
+        return false;
       }
     }
 
