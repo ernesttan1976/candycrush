@@ -63,4 +63,47 @@ CSS - shake animation, background gradient animation
 - [ ] 4. New game board size.
 - [ ] 5. Proper animations
 
+### Code Refactoring ###
+```
+//original function
+fillGridArrayBlanks2() {
+  for (let i = 0; i < this.rowCount; i++) {
+    for (let j = 0; j < this.colCount; j++) {
+      if (this.grid[i][j] === " ") {
+        this.grid[i][j] = this.getRandomCandy();
+      }
+    }
+  }
+}
+```
 
+```
+//refactored with reduce function
+fillGridArrayBlanks3() {
+  const result = this.grid.reduce((prevRows, currRow) => {
+    const resultRow = currRow.reduce((prevItem, currItem) => {
+      if (currItem === " ") {
+        prevItem.push(this.getRandomCandy());
+      } else {
+        prevItem.push(currItem);
+      }
+      return prevItem;
+    }, []);
+    prevRows.push(resultRow);
+    return prevRows;
+  }, []);
+  this.grid = result;
+  return result;
+}
+```
+
+```
+//refactored wth map function and conditional function is abstracted for clarity
+    fillGridArrayBlanks() {
+      const conditionalFunction = (item) =>
+        (item === " " ? this.getRandomCandy() : item);
+      const result = this.grid.map((row) => row.map(conditionalFunction));
+      this.grid = result;
+      return result;
+    }
+```
