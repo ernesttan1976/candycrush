@@ -220,7 +220,7 @@ function CandyCrush() {
     }
 
     //refactor this - done
-    fillGridArray({grid, gridTemp}) {
+    fillGridArray() {
       //String.fromCharCode(65) => 'A'
       //A = 65, F = 70, Z = 90
       const grid = [];
