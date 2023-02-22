@@ -3,9 +3,6 @@
 import { min, max } from "./utils.js";
 import {GameData} from "./GameData.js";
 
-//function CandyCrush() {
-  //Declare game data with empty values
-
 
   //added this function map2d to Array as a generic function for 2d mapping
   Array.prototype.map2d = function (conditionalFunction) {
