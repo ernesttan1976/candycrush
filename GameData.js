@@ -4,7 +4,7 @@ const TEST = true;
 export class GameData {
   constructor(rowCount = 6, colCount = 6, candyCount = 6) {
     Array.prototype.map2d = function (transformFunction) {
-      return this.map((row,rowIndex) => row.map(transformFunction));
+      return this.map((row, rowIndex) => row.map(transformFunction));
     };
     this.rowCount = rowCount;
     this.colCount = colCount;
@@ -24,7 +24,7 @@ export class GameData {
     this.gridStripedWithNormal = [];
     this.gridColorBallWithNormal = [];
     this.gridColorBallWithStriped = [];
-    this.initGridArray();
+    this.grid = this.initGridArray(this.rowCount, this.colCount);
     this.fillGridArray();
 
     this.setStartId("");
@@ -143,22 +143,26 @@ export class GameData {
     );
   }
 
-  initGridArray() {
-    const grid = [];
-    for (let i = 0; i < this.rowCount; i++) {
+  initGridArray(rowCount, colCount) {
+    const tempGrid = [];
+    for (let i = 0; i < rowCount; i++) {
       let row = [];
-      for (let j = 0; j < this.colCount; j++) {
+      for (let j = 0; j < colCount; j++) {
         row.push(" ");
       }
-      grid.push(row);
+      tempGrid.push(row);
     }
-    this.grid = grid;
-    return grid;
+    return tempGrid;
   }
 
   fillGridArray() {
-    if (this.grid.length === 0) this.initGridArray();
-    const grid = this.grid.map2d((item, colIndex) => (item = this.getRandomCandy()));
+    if (this.grid.length === 0) 
+    {
+      this.grid = this.initGridArray(this.rowCount,this.colCount);
+    }
+    const grid = this.grid.map2d(
+      (item, colIndex) => (item = this.getRandomCandy())
+    );
     this.grid = grid;
     return grid;
   }
@@ -483,17 +487,7 @@ export class GameData {
     });
   }
 
-  //OMG!!
-  giveStripedCandy() {
-    //scan rows and if 1, match the color found in grid
-    //get the start to end of every four in a row
-    let list = [];
-
-    if (!this.isFour) {
-      console.log("gridFour is empty");
-      return;
-    }
-
+  scanRows(list) {
     for (let i = 0; i < this.rowCount; i++) {
       let count = 0;
       let start = {};
@@ -521,7 +515,10 @@ export class GameData {
         }
       }
     }
+    return list;
+  }
 
+  scanColumns(list) {
     for (let j = 0; j < this.colCount; j++) {
       let count = 0;
       let start = {};
@@ -549,36 +546,50 @@ export class GameData {
         }
       }
     }
-    //console.log(list);
+    return list;
+  }
+
+  assignCandy({list, gridFour, start, end}){
     list.forEach((item) => {
       if (!TEST) sound.stripedcandycreated.play();
       let stripedCandy = this.getRandomStripeCandy(item.color);
-      const isStartOnLine = this.isPointOnLine(
-        item.gdStart,
-        item.start,
-        item.end
-      );
+      const isStartOnLine = this.isPointOnLine(item.gdStart,item.start,item.end);
       const isEndOnLine = this.isPointOnLine(item.gdEnd, item.start, item.end);
-      if (item.color === item.gdStart.color && isStartOnLine) {
-        this.gridFour[this.start.row][this.start.col] = stripedCandy;
+      if ((item.color === item.gdStart.color) && isStartOnLine) {
+        gridFour[start.row][start.col] = stripedCandy;
       } else if (item.color === item.gdEnd.color && isEndOnLine) {
-        this.gridFour[this.end.row][this.end.col] = stripedCandy;
+        gridFour[end.row][end.col] = stripedCandy;
       } else {
         //no match, this is not user generated
         //assign randomly
         if (item.start.row === item.end.row) {
           //randomly assign along the row
-          this.gridFour[item.start.row][
-            this.start.col + Math.floor(Math.random() * 4)
+          gridFour[item.start.row][
+            start.col + Math.floor(Math.random() * 4)
           ] = stripedCandy;
         } else if (item.start.col === item.end.col) {
           //randomly assign along the col
-          this.gridFour[item.start.row + Math.floor(Math.random() * 4)][
+          gridFour[item.start.row + Math.floor(Math.random() * 4)][
             item.start.col
           ] = stripedCandy;
         }
       }
     });
+    return gridFour;
+  }
+  
+  giveStripedCandy() {
+    //scan rows and if 1, match the color found in grid
+    //get the start to end of every four in a row
+    let list = [];
+    if (!this.isFour) {
+      console.log("gridFour is empty");
+      return;
+    }
+    list = this.scanRows(list);
+    list = this.scanColumns(list);
+    this.gridFour = this.assignCandy({list, gridFour: this.gridFour, start: this.start, end: this.end});
+    return this.gridFour;
   }
 
   markLineFive(str) {
@@ -874,5 +885,6 @@ export class GameData {
         this.grid[i][j] = colArray[i];
       }
     }
+    return this.grid;
   }
 }

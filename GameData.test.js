@@ -4,7 +4,7 @@ import { GameData } from "GameData.js";
 describe("GameData class", () => {
   it("initGridArray() returns array of 6 x 6 blanks", () => {
     let gd = new GameData();
-    gd.initGridArray();
+    gd.grid = gd.initGridArray(6,6);
     const testGrid = [
       [" ", " ", " ", " ", " ", " "],
       [" ", " ", " ", " ", " ", " "],
@@ -271,73 +271,236 @@ describe("GameData class", () => {
     });
 
     gd.grid = [
-        [..."BCDEFA"],
-        [..."AAAEBB"],
-        [..."BCDEFA"],
-        [..."CDEEAB"],
-        [..."BCDFFA"],
-        [..."CDEFAB"],
-      ];
-      output = [
-        [..."BCD1FA"],
-        [..."AAA1BB"],
-        [..."BCD1FA"],
-        [..."CDE1AB"],
-        [..."BCDFFA"],
-        [..."CDEFAB"],
-      ];
-      console.log(gd.grid, output, gd.gridFour);
-      result = gd.checkFourInALine();
-      expect(result).toBe(true);
-      gd.gridFour.map((row, rowIndex) => {
-        row.map((item, colIndex) =>
-          expect(item).toEqual(output[rowIndex][colIndex])
-        );
-      });
-      gd.grid = [
-        [..."BCDEFA"],
-        [..."DEFABC"],
-        [..."BCDEFA"],
-        [..."CDEFAB"],
-        [..."BCDEFA"],
-        [..."CDEFAB"],
-      ];
-      output = [
-        [..."BCDEFA"],
-        [..."DEFABC"],
-        [..."BCDEFA"],
-        [..."CDEFAB"],
-        [..."BCDEFA"],
-        [..."CDEFAB"],
-      ];
-      console.log(gd.grid, output, gd.gridFour);
-      result = gd.checkFourInALine();
-      expect(result).toBe(false);
-      gd.gridFour.map((row, rowIndex) => {
-        row.map((item, colIndex) =>
-          expect(item).toEqual(output[rowIndex][colIndex])
-        );
-      });
+      [..."BCDEFA"],
+      [..."AAAEBB"],
+      [..."BCDEFA"],
+      [..."CDEEAB"],
+      [..."BCDFFA"],
+      [..."CDEFAB"],
+    ];
+    output = [
+      [..."BCD1FA"],
+      [..."AAA1BB"],
+      [..."BCD1FA"],
+      [..."CDE1AB"],
+      [..."BCDFFA"],
+      [..."CDEFAB"],
+    ];
+    console.log(gd.grid, output, gd.gridFour);
+    result = gd.checkFourInALine();
+    expect(result).toBe(true);
+    gd.gridFour.map((row, rowIndex) => {
+      row.map((item, colIndex) =>
+        expect(item).toEqual(output[rowIndex][colIndex])
+      );
+    });
+    gd.grid = [
+      [..."BCDEFA"],
+      [..."DEFABC"],
+      [..."BCDEFA"],
+      [..."CDEFAB"],
+      [..."BCDEFA"],
+      [..."CDEFAB"],
+    ];
+    output = [
+      [..."BCDEFA"],
+      [..."DEFABC"],
+      [..."BCDEFA"],
+      [..."CDEFAB"],
+      [..."BCDEFA"],
+      [..."CDEFAB"],
+    ];
+    console.log(gd.grid, output, gd.gridFour);
+    result = gd.checkFourInALine();
+    expect(result).toBe(false);
+    gd.gridFour.map((row, rowIndex) => {
+      row.map((item, colIndex) =>
+        expect(item).toEqual(output[rowIndex][colIndex])
+      );
+    });
   });
 
-  it("fillGridArrayBlanks()", ()=>{
+  it("fillGridArrayBlanks() fills in the spaces with random letters from A to F", () => {
     let gd = new GameData();
     gd.grid = [
-        [..." BCDEF"],
-        [..."ABCDEF"],
-        [..."   BCD"],
-        [..."CDEFAB"],
-        [..."     B"],
-        [..."  CDEF"],
-      ];
+      [..."      "],
+      [..."AB DE "],
+      [..."ABCEF "],
+      [..."BCCDEF"],
+      [..."ABCDEA"],
+      [..."BCDEFA"],
+    ];
     console.log(gd.grid);
     gd.fillGridArrayBlanks();
     console.log(gd.grid);
-    expect(gd.grid[0].join("")).toMatch(/[A-F]{1}BCDEF/);
-    expect(gd.grid[1].join("")).toMatch(/ABCDEF/);
-    expect(gd.grid[2].join("")).toMatch(/[A-F]{1}[A-F]{1}[A-F]{1}BCD/);
-    expect(gd.grid[3].join("")).toMatch(/CDEFAB/);
-    expect(gd.grid[4].join("")).toMatch(/[A-F]{1}[A-F]{1}[A-F]{1}[A-F]{1}[A-F]{1}B/);
-    expect(gd.grid[5].join("")).toMatch(/[A-F]{1}[A-F]{1}CDEF/);
+    expect(gd.grid[0].join("")).toMatch(/[A-F]{1}[A-F]{1}[A-F]{1}[A-F]{1}[A-F]{1}[A-F]{1}/);
+    expect(gd.grid[1].join("")).toMatch(/AB[A-F]{1}DE[A-F]{1}/);
+    expect(gd.grid[2].join("")).toMatch(/ABCEF[A-F]{1}/);
+    expect(gd.grid[3].join("")).toMatch(/BCCDEF/);
+    expect(gd.grid[4].join("")).toMatch(/ABCDEA/);
+    expect(gd.grid[5].join("")).toMatch(/BCDEFA/);
   });
+
+  it("dropCandy() shifts all characters in the column towards the bottom", () => {
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."   EFA"],
+      [..."ABCDE "],
+      [..."BC    "],
+      [..."ABCDE "],
+      [..."BCDEFA"],
+    ];
+    let output = [
+      [..."      "],
+      [..."AB DE "],
+      [..."ABCEF "],
+      [..."BCCDEF"],
+      [..."ABCDEA"],
+      [..."BCDEFA"],
+    ];
+    console.log(gd.grid);
+    gd.dropCandy();
+    gd.grid.map((row, rowIndex) => {
+      row.map((item, colIndex) =>
+        expect(item).toEqual(output[rowIndex][colIndex])
+      );
+      
+    });
+    console.log(gd.grid);
+    
+  });
+
+  it("scanRows(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."CCCCFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+    ];
+    gd.gridFour = [
+      [..."ABCDEF"],
+      [..."1111FA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+    ];
+    gd.start={row:1,col:4},
+    gd.end={row:1,col:3}
+    let output = {
+      start: {row:1,col:0},
+      end: {row:1,col:3},
+      color: "C",
+      gdStart: {row:1,col:4,color:"F"},
+      gdEnd: {row:1,col:3,color:"C"}
+    }
+    let list = [];
+    list = gd.scanRows(list);
+    console.log(output, list[0]);
+    expect(list[0]).toEqual(output);
+  });
+
+  it("scanColumns(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."BCDBFA"],
+      [..."ABCBEF"],
+      [..."BCDBFA"],
+      [..."ABCBEF"],
+      [..."BCDEFA"],
+    ];
+    gd.gridFour = [
+      [..."ABCDEF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCDEFA"],
+    ];
+    gd.start={row:1,col:4};
+    gd.end={row:1,col:3};
+    let output = {
+      start: {row:1,col:3},
+      end: {row:4,col:3},
+      color: "B",
+      gdStart: {row:1,col:4,color:"F"},
+      gdEnd: {row:1,col:3,color:"B"}
+    }
+    let list = [];
+    list = gd.scanColumns(list);
+    console.log(output, list[0]);
+    expect(list[0]).toEqual(output);
+  });
+
+  it("assignCandy({list, gridFour, start, end}) returns gridFour with 'H to M'(horizontal) or 'N to S'(vertical)",()=>{
+    let gd = new GameData();
+    let list = [{
+      start: {row:1,col:3},
+      end: {row:4,col:3},
+      color: "B",
+      gdStart: {row:1,col:4,color:"F"},
+      gdEnd: {row:1,col:3,color:"B"}
+    }];
+    let gridFour = [
+      [..."ABCDEF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCDEFA"],
+    ];
+    gd.start={row:1,col:4}
+    gd.end={row:1,col:3}
+    gd.gridFour = gd.assignCandy({list, gridFour, start: gd.start, end: gd.end});
+    expect(gd.gridFour[0].join("")).toMatch(/ABCDEF/);
+    expect(gd.gridFour[1].join("")).toMatch(/BCD[I|O]{1}FA/);
+    expect(gd.gridFour[2].join("")).toMatch(/ABC1EF/);
+    expect(gd.gridFour[3].join("")).toMatch(/BCD1FA/);
+    expect(gd.gridFour[4].join("")).toMatch(/ABC1EF/);
+    expect(gd.gridFour[5].join("")).toMatch(/BCDEFA/);
+
+  });
+
+  it("giveStripedCandy() scans gridFour for 1 and assigns striped candy returns gridFour with 'H to M'(horizontal) or 'N to S'(vertical)",()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."BCDBFA"],
+      [..."ABCBEF"],
+      [..."BCDBFA"],
+      [..."ABCBEF"],
+      [..."BCDEFA"],
+    ];
+    gd.gridFour = [
+      [..."ABCDEF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCDEFA"],
+    ];
+    gd.isFour=true;
+    let list = [{
+      start: {row:1,col:3},
+      end: {row:4,col:3},
+      color: "B",
+      gdStart: {row:1,col:4,color:"F"},
+      gdEnd: {row:1,col:3,color:"B"}
+    }];
+    gd.start={row:1,col:4}
+    gd.end={row:1,col:3}  
+    gd.gridFour = gd.giveStripedCandy();
+    expect(gd.gridFour[0].join("")).toMatch(/ABCDEF/);
+    expect(gd.gridFour[1].join("")).toMatch(/BCD[I|O]{1}FA/);
+    expect(gd.gridFour[2].join("")).toMatch(/ABC1EF/);
+    expect(gd.gridFour[3].join("")).toMatch(/BCD1FA/);
+    expect(gd.gridFour[4].join("")).toMatch(/ABC1EF/);
+    expect(gd.gridFour[5].join("")).toMatch(/BCDEFA/);
+  })
+
 });
