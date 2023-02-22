@@ -1,6 +1,10 @@
 {
-  "devDependencies": {
-    "global": "^4.4.0",
-    "vitest": "^0.28.5"
-  }
+    "devDependencies": {
+        "global": "^4.4.0",
+        "vitest": "^0.28.5"
+    },
+    "scripts": {
+        "test": "vitest --run --reporter verbose --globals",
+        "test:watch": "vitest --reporter verbose --globals"
+    }
 }
