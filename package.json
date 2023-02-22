@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "global": "^4.4.0",
+    "vitest": "^0.28.5"
+  }
+}

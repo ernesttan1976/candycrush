@@ -23,13 +23,13 @@ CSS - shake animation, background gradient animation
 - [x] 2.Game to have sound effects and background music. This will give a great experience.
 - [ ] 3.Player wins the round when Player matches "X" number of "Y" colour candy in "Z" number of moves. Player loses the round when "Z" number of moves is zero.
 - [ ] 4.Score is calculated based on 3's, 4's and 5's, number of cascades. Resulting in grading of 1 star, 2 star, 3 star.
-- [ ] 5.Game to have start screen(x), game screen(x). Toggle menus for settings and level selection.
-- [ ] 6.Player can progress to level 2 to 9. Levels get harder with blocker tiles, more colours, larger board size, increase "X", decrease "Z".
+- [x] 5.Game to have start screen(x), game screen(x). Toggle menus for settings and level selection.
+- [x] 6.Player can progress to level 2 to 9. Levels get harder with blocker tiles, more colours, larger board size, increase "X", decrease "Z".
 - [ ] 7.Make the app mobile responsive. Vary the layout of the elements
 
 #### OPTIONAL ####
-- [ ] 1.Four(4) in a line yields a striped candy. This will wipe out one line or column.
-- [ ] 2.Five(5) in a line yields a colour bomb. This will wipe out all of the same colour.
+- [x] 1.Four(4) in a line yields a striped candy. This will wipe out one line or column.
+- [x] 2.Five(5) in a line yields a colour bomb. This will wipe out all of the same colour.
 - [ ] 3.CSS Animation for the candy pop, candy fill, wiping laser effects.
 
 ## IMPLEMENT / HOW TO DO IT ##

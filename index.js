@@ -1,8 +1,14 @@
 "use strict";
 
-function CandyCrush() {
+//function CandyCrush() {
   //Declare game data with empty values
 
+
+  //added this function map2d to Array as a generic function for 2d mapping
+  Array.prototype.map2d = function (conditionalFunction) {
+    return this.map((row) => row.map(conditionalFunction));
+  };
+  
   //refactor this
   class GameData {
     constructor(rowCount = 6, colCount = 6, candyCount = 6) {
@@ -24,9 +30,8 @@ function CandyCrush() {
       this.gridStripedWithNormal = [];
       this.gridColorBallWithNormal = [];
       this.gridColorBallWithStriped = [];
-      let { grid, gridTemp } = this.fillGridArray();
-      this.grid = grid;
-      this.gridTemp = gridTemp;
+      this.initGridArray();
+      this.fillGridArray();
 
       this.setStartId("");
       this.setEndId("");
@@ -222,22 +227,25 @@ function CandyCrush() {
         65 + Math.floor(Math.random() * this.candyCount)
       );
     }
-
-    //refactor this - done
-    fillGridArray() {
-      //String.fromCharCode(65) => 'A'
-      //A = 65, F = 70, Z = 90
+    
+    initGridArray() {
       const grid = [];
-      const gridTemp = [];
       for (let i = 0; i < this.rowCount; i++) {
         let row = [];
         for (let j = 0; j < this.colCount; j++) {
-          row.push(this.getRandomCandy());
+          row.push(" ");
         }
         grid.push(row);
-        gridTemp.push(row);
       }
-      return { grid, gridTemp };
+      this.grid=grid;
+      return grid;
+    }
+
+    fillGridArray() {
+      if (this.grid.length===0) this.initGridArray();
+      const grid = this.grid.map2d((item)=>item = this.getRandomCandy());
+      this.grid = grid;
+      return grid;
     }
 
     //refactor this - done
@@ -909,42 +917,25 @@ function CandyCrush() {
       this.grid[this.start.row][this.start.col] = temp;
     }
 
-    //original function
-    fillGridArrayBlanks2() {
-      for (let i = 0; i < this.rowCount; i++) {
-        for (let j = 0; j < this.colCount; j++) {
-          if (this.grid[i][j] === " ") {
-            this.grid[i][j] = this.getRandomCandy();
-          }
-        }
-      }
-    }
-
-    //refactored with reduce function
-    fillGridArrayBlanks() {
-      const result = this.grid.reduce((prevRows, currRow) => {
-        const resultRow = currRow.reduce((prevItem, currItem) => {
-          if (currItem === " ") {
-            prevItem.push(this.getRandomCandy());
-          } else {
-            prevItem.push(currItem);
-          }
-          return prevItem;
-        }, []);
-        prevRows.push(resultRow);
-        return prevRows;
-      }, []);
+    //refactored wth map function and conditional function is abstracted for clarity
+    fillGridArrayBlanks4() {
+      const conditionalFunction = (item) =>
+        (item === " " ? this.getRandomCandy() : item);
+      const result = this.grid.map((row) => row.map(conditionalFunction));
       this.grid = result;
       return result;
     }
 
-    //refactored wth map function and conditional function taken out
-    fillGridArrayBlanks3() {
-      const conditionalFunction = (item) =>
-        item === " " ? this.getRandomCandy() : item;
-      result = this.grid.map((row) => row.map(conditionalFunction));
-      return result;
+    //map2d is a method of super class Array2d that extends Array class
+
+
+    fillGridArrayBlanks(){
+      let conditionalFunction = (item) => (item === " " ? this.getRandomCandy() : item);
+      this.grid = this.grid.map2d(conditionalFunction);
+      return this.grid;
     }
+
+    
 
     dropCandy() {
       for (let j = 0; j < this.colCount; j++) {
@@ -1496,8 +1487,6 @@ function CandyCrush() {
       gridContainer.style.gridTemplateRows = `repeat(${gd.rowCount}, ${gd.size}px)`;
       gridContainer.style.width = `${gd.size * gd.colCount}px`;
       gridContainer.style.height = `${gd.size * gd.rowCount}px`;
-      //cells.style.width=`${gd.size}px`;
-      //cells.style.height=`${gd.size}px`;
     }
   }
 
@@ -1626,6 +1615,7 @@ function CandyCrush() {
   //   laser.style.transform=`rotate(${angle}deg)`;
   //   gridContainer.appendChild(laser);
   // }
+  
 
   function init() {
     //NOTE must declare gridContainer before instantiation of gd
@@ -1638,6 +1628,22 @@ function CandyCrush() {
   }
 
   init();
+
+
+//CandyCrush();
+
+export function add([...arr]){
+  return arr.reduce((p,n)=>p+n,0);
 }
 
-CandyCrush();
+console.log(add([1,2,3]));
+
+// if (import.meta.vitest) {
+//   console.log("vitest");
+//    const { it, expect } = import.meta.vitest
+//    it('adds 2 numbers', () => {
+//      expect(add()).toBe(0);
+//      expect(add([1])).toBe(1);
+//      expect(add([1, 2, 3])).toBe(6);
+//    })
+// }
