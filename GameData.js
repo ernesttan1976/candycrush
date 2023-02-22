@@ -1,8 +1,11 @@
-const TEST = false;
+const TEST = true;
 //if TEST === true dont call the sound function
 
 export class GameData {
   constructor(rowCount = 6, colCount = 6, candyCount = 6) {
+    Array.prototype.map2d = function (transformFunction) {
+      return this.map((row) => row.map(transformFunction));
+    };
     this.rowCount = rowCount;
     this.colCount = colCount;
     this.candyCount = candyCount;
@@ -46,6 +49,9 @@ export class GameData {
 
     this.userData = [];
     this.currentUser = 0;
+    Array.prototype.map2d = function (transformFunction) {
+      return this.map((row) => row.map(transformFunction));
+    };
   }
 
   getStart() {
@@ -121,12 +127,14 @@ export class GameData {
   getRow(id) {
     //convert r1c1 to {row, col} and to "A"
     const c = id.indexOf("c");
-    return id ? Number(id.slice(1, c)) : "";
+    if (c === 1) return undefined;
+    return id ? Number(id.slice(1, c)) : undefined;
   }
 
   getCol(id) {
     const c = id.indexOf("c");
-    return id ? Number(id.slice(c + 1, id.length)) : "";
+    if (c + 1 === id.length) return undefined;
+    return id ? Number(id.slice(c + 1, id.length)) : undefined;
   }
 
   getRandomCandy() {
@@ -177,6 +185,7 @@ export class GameData {
 
   //upgrade to include striped candy and color ball
 
+  //OMG this function is terrible
   checkColorBall() {
     const start = this.getStart();
     const end = this.getEnd();
@@ -271,6 +280,7 @@ export class GameData {
       .replace("S", "F");
   }
 
+  //OMG another one!
   checkCandyMatch() {
     this.isThree = false;
     this.isFour = false;
@@ -354,21 +364,26 @@ export class GameData {
     }
   }
 
-  startOnLine(gdStart, start, end) {
-    if (gdStart.row === start.row) {
-      //is a row
-      if (start.col < end.col) {
-        return gdStart.col >= start.col && gdStart.col <= end.col;
-      } else if (start.col > end.col) {
-        return gdStart.col >= end.col && gdStart.col <= start.col;
-      }
-    } else if (gdStart.col === start.col) {
-      // is a col
-      if (start.row < end.row) {
-        return gdStart.row >= start.row && gdStart.row <= end.row;
-      } else if (start.row > end.row) {
-        return gdStart.row >= end.row && gdStart.row <= start.row;
-      }
+  isPointOnLine(point, start, end) {
+    if (
+      point.row === start.row &&
+      start.col <= end.col &&
+      point.col >= start.col &&
+      point.col <= end.col
+    ) {
+      // point is on the same row and between start and end columns
+      return true;
+    } else if (
+      point.col === start.col &&
+      start.row <= end.row &&
+      point.row >= start.row &&
+      point.row <= end.row
+    ) {
+      // point is on the same column and between start and end rows
+      return true;
+    } else {
+      // point is not on the line between start and end
+      return false;
     }
   }
 
@@ -439,12 +454,12 @@ export class GameData {
     }
     //console.log(list);
     list.forEach((item) => {
-      const isStartOnLine = this.startOnLine(
+      const isStartOnLine = this.isPointOnLine(
         item.gdStart,
         item.start,
         item.end
       );
-      const isEndOnLine = this.startOnLine(item.gdEnd, item.start, item.end);
+      const isEndOnLine = this.isPointOnLine(item.gdEnd, item.start, item.end);
       if (item.color === item.gdStart.color && isStartOnLine) {
         this.gridFive[this.start.row][this.start.col] = "G";
       } else if (item.color === item.gdEnd.color && isEndOnLine) {
@@ -536,12 +551,12 @@ export class GameData {
     list.forEach((item) => {
       if (!TEST) sound.stripedcandycreated.play();
       let stripedCandy = this.getRandomStripeCandy(item.color);
-      const isStartOnLine = this.startOnLine(
+      const isStartOnLine = this.isPointOnLine(
         item.gdStart,
         item.start,
         item.end
       );
-      const isEndOnLine = this.startOnLine(item.gdEnd, item.start, item.end);
+      const isEndOnLine = this.isPointOnLine(item.gdEnd, item.start, item.end);
       if (item.color === item.gdStart.color && isStartOnLine) {
         this.gridFour[this.start.row][this.start.col] = stripedCandy;
       } else if (item.color === item.gdEnd.color && isEndOnLine) {
@@ -824,11 +839,11 @@ export class GameData {
     this.grid[this.start.row][this.start.col] = temp;
   }
 
-  //refactored wth map function and conditional function is abstracted for clarity
+  //refactored wth map function and mapping function is abstracted for clarity
   fillGridArrayBlanks4() {
-    const conditionalFunction = (item) =>
+    const transformFunction = (item) =>
       item === " " ? this.getRandomCandy() : item;
-    const result = this.grid.map((row) => row.map(conditionalFunction));
+    const result = this.grid.map((row) => row.map(transformFunction));
     this.grid = result;
     return result;
   }
@@ -836,9 +851,9 @@ export class GameData {
   //map2d is a method of super class Array2d that extends Array class
 
   fillGridArrayBlanks() {
-    let conditionalFunction = (item) =>
+    let transformFunction = (item) =>
       item === " " ? this.getRandomCandy() : item;
-    this.grid = this.grid.map2d(conditionalFunction);
+    this.grid = this.grid.map2d(transformFunction);
     return this.grid;
   }
 

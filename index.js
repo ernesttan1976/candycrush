@@ -1,13 +1,14 @@
 "use strict";
+Array.prototype.map2d = function (conditionalFunction) {
+  return this.map((row) => row.map(conditionalFunction));
+};
 
 import { min, max } from "./utils.js";
 import {GameData} from "./GameData.js";
 
 
   //added this function map2d to Array as a generic function for 2d mapping
-  Array.prototype.map2d = function (conditionalFunction) {
-    return this.map((row) => row.map(conditionalFunction));
-  };
+
   
 
   //DOM dependency
