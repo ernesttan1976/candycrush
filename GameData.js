@@ -4,7 +4,7 @@ const TEST = true;
 export class GameData {
   constructor(rowCount = 6, colCount = 6, candyCount = 6) {
     Array.prototype.map2d = function (transformFunction) {
-      return this.map((row) => row.map(transformFunction));
+      return this.map((row,rowIndex) => row.map(transformFunction));
     };
     this.rowCount = rowCount;
     this.colCount = colCount;
@@ -158,7 +158,7 @@ export class GameData {
 
   fillGridArray() {
     if (this.grid.length === 0) this.initGridArray();
-    const grid = this.grid.map2d((item) => (item = this.getRandomCandy()));
+    const grid = this.grid.map2d((item, colIndex) => (item = this.getRandomCandy()));
     this.grid = grid;
     return grid;
   }
@@ -387,6 +387,7 @@ export class GameData {
     }
   }
 
+  //OMG!!
   giveColorBall() {
     //scan rows and if 1, match the color found in grid
     //get the start to end of every four in a row
@@ -482,6 +483,7 @@ export class GameData {
     });
   }
 
+  //OMG!!
   giveStripedCandy() {
     //scan rows and if 1, match the color found in grid
     //get the start to end of every four in a row
@@ -851,7 +853,7 @@ export class GameData {
   //map2d is a method of super class Array2d that extends Array class
 
   fillGridArrayBlanks() {
-    let transformFunction = (item) =>
+    let transformFunction = (item, colIndex) =>
       item === " " ? this.getRandomCandy() : item;
     this.grid = this.grid.map2d(transformFunction);
     return this.grid;
