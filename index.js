@@ -520,6 +520,7 @@ inputName.addEventListener("blur", inputNameHandler);
 selectUser.addEventListener("change", selectUserHandler);
 addUser.addEventListener("click", addUserHandler);
 nextButton.addEventListener("click", nextButtonHandler);
+gridContainer.addEventListener('contextmenu', event => event.preventDefault());
 
 function nextButtonHandler() {
   gd = loadLevel(gd.gameLevel+1);
