@@ -535,16 +535,44 @@ describe("GameData class", () => {
     let gd = new GameData();
     let start = {row:0, col:0, color: "H"};
     let end = {row:1, col:0, color: "A"};
+    let lineStart = {
+      row: 0,
+      col: 0,
+    };
+    let lineEnd = {
+      row: 0,
+      col: 5,
+    };
+    let list = [{
+      start: lineStart,
+      end: lineEnd
+    }];
+    let output = {isNormalWithStripedMove: true, list2: list };
     let result = gd.checkNormalWithStripedMove(start,end);
-    expect(result).toBe(true);
+    expect(result).toStrictEqual(output);
     start = {row:0, col:0, color: "A"};
     end = {row:1, col:0, color: "A"};
+    list = [];
+    output = {isNormalWithStripedMove: false, list2: list };
     result = gd.checkNormalWithStripedMove(start,end);
-    expect(result).toBe(false);
+    expect(result).toStrictEqual(output);
     start = {row:0, col:0, color: "A"};
     end = {row:1, col:0, color: "N"};
+    lineStart = {
+      row: 0,
+      col: 0,
+    };
+    lineEnd = {
+      row: 5,
+      col: 0,
+    };
+    list = [{
+      start: lineStart,
+      end: lineEnd
+    }];
+    output = {isNormalWithStripedMove: true, list2: list };
     result = gd.checkNormalWithStripedMove(start,end);
-    expect(result).toBe(true);
+    expect(result).toStrictEqual(output);
 
   })
 });

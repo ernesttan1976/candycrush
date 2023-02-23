@@ -107,7 +107,7 @@ div {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   font-weight: 600;
   font-style: italic;
   color: #fffb00;
@@ -251,6 +251,18 @@ div {
   align-items: flex-start;
 }
 
+#level-title {
+  font-size: 2.5rem;
+  width: 550px;
+  height: 100px;
+  margin-top: 120px;
+  margin-bottom: 20px;
+}
+
+#next-button, #back-button {
+  margin-top: 50px;
+}
+
 #level-page {
   height: 100%;
   width: 0; /* width 0 is hidden */
@@ -261,10 +273,9 @@ div {
   background-color: rgba(0, 0, 0, 0.64); /* Black w/opacity */
   overflow-x: hidden; /* Disable horizontal scroll */
   transition: 0.5s;
-  padding: 30px 50px;
   display: none;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
 }
 
@@ -272,7 +283,7 @@ div {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 50px;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   align-content: center;
 }
 
@@ -434,7 +445,7 @@ div {
 
 .small-button {
   font-weight: 300;
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #000000;
   background: linear-gradient(90deg, #fffb00 0%, #ffbb00 100%);
   padding: 5px 5px;
@@ -446,8 +457,8 @@ div {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px;
-  height: 50px;
+  width: 300px;
+  height: 80px;
   margin: 0 10px;
   animation: shake 5s;
   animation-iteration-count: infinite;

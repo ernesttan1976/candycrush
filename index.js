@@ -1,11 +1,10 @@
-"use strict";
+
 Array.prototype.map2d = function (conditionalFunction) {
   return this.map((row) => row.map(conditionalFunction));
 };
 
 import { min, max, findLength, findAngle, midPoint } from "./utils.js";
 import { GameData } from "./GameData.js";
-
 //added this function map2d to Array as a generic function for 2d mapping
 
 //DOM dependency
@@ -20,8 +19,8 @@ class User {
           name: "Random Kid",
           highestlevel: 1,
           highScore: 0,
-          musicLevel: 0.2,
-          soundLevel: 0.2,
+          musicLevel: 0.3,
+          soundLevel: 0.3,
           gameHistory: [
             {
               level: 1,
@@ -34,8 +33,8 @@ class User {
           name: "Unicorn Girl",
           highestlevel: 9,
           highScore: 10000,
-          musicLevel: 0.2,
-          soundLevel: 0.2,
+          musicLevel: 0.3,
+          soundLevel: 0.3,
           gameHistory: [
             {
               level: 1,
@@ -100,7 +99,7 @@ let user = new User();
 //DOM dependency
 class Sound {
   constructor() {
-    this.volume = 0.4;
+    this.volume = 0.3;
     this.switch = new Audio("./sounds/switch.ogg");
     this.negativeswitch = new Audio("./sounds/negativeswitch.ogg");
     //this.loadgame = new Audio("./sounds/loadgame.ogg");
@@ -126,6 +125,12 @@ class Sound {
     this.cascade12 = new Audio("./sounds/cascade12.ogg");
     this.music = new Audio("./sounds/music.ogg");
     this.music2 = new Audio("./sounds/music2.ogg");
+    this.lose = new Audio("./sounds/lose.ogg");
+    this.win = new Audio("./sounds/win.ogg");
+    this.sweet = new Audio("./sounds/sweet.ogg");
+    this.tasty = new Audio("./sounds/tasty.ogg");
+    this.divine = new Audio("./sounds/divine.ogg");
+    this.sugarcrush = new Audio("./sounds/sugarcrush.ogg");
     this.setVolume(this.volume);
   }
 
@@ -149,6 +154,10 @@ class Sound {
     this[`cascade${gd.cascadeCounter}`].play();
     gd.cascadeCounter++;
     gd.cascadeCounter = (gd.cascadeCounter % 12) + 1;
+    if (gd.cascadeCounter===5) sound.sweet.play();
+    if (gd.cascadeCounter===7) sound.tasty.play();
+    if (gd.cascadeCounter===9) sound.divine.play();
+    if (gd.cascadeCounter===11) sound.sugarcrush.play();
   }
 }
 
@@ -159,6 +168,7 @@ function routerNext() {
     case "wait":
       //console.log("wait");
       //do nothing
+      gd.userActive = false;
       break;
     case "ready":
       //console.log("swapping candy");
@@ -169,6 +179,7 @@ function routerNext() {
       gd.swapCandy();
       sound.switch.play();
       gd.state = "check1";
+      gd.gameMoves=gd.gameMoves-1;
       routerNext();
       break;
     case "check1":
@@ -177,10 +188,12 @@ function routerNext() {
         //console.log("end check (not valid adjacent move)");
         gd.swapCandy(); //swap it back
         //sound.negativeswitch.play();
+        gd.gameMoves=gd.gameMoves+1;
         renderGrid();
         gd.state = "ready";
         return;
       }
+      renderScoreBoard();
       renderGrid();
 
       gd.state = "check2";
@@ -198,6 +211,13 @@ function routerNext() {
         isColorBallWithNormal,
         isColorBallWithStriped,
       } = gd.checkCandyMatch();
+
+      const status = checkWinLose();
+      if (status ==="win" || status === "lose"){
+        renderScoreBoard();
+      }
+
+
       if (
         !isThree &&
         !isFour &&
@@ -215,12 +235,15 @@ function routerNext() {
         } else {
           //final cascade
           gd.cascadeCounter = 1;
+         
         }
+        
+        
         renderGrid();
         gd.state = "ready";
         return;
       }
-
+      
       renderGrid();
 
       gd.state = "crush";
@@ -231,14 +254,19 @@ function routerNext() {
 
     case "crush":
       //console.log("start crush");
+      gd.countTarget();
+      gd.countScores();
+      
       gd.removeOnesAndGiveSpecialCandy();
+      //renderLaser(gd.laserList);
       sound.candyfallplayrandom();
+      renderScoreBoard();
       renderGrid();
       setTimeout(() => {
         //console.log("end crush, when setTimeout of 2s ended");
         gd.state = "drop";
         routerNext();
-      }, 200);
+      }, 500);
       gd.state = "wait"; //set to wait, so as not to trigger
 
       break;
@@ -247,25 +275,28 @@ function routerNext() {
       gd.dropCandy();
       sound.candydropplayrandom();
       //console.log("dropped grid:", gd.grid);
+      
       renderGrid();
       setTimeout(() => {
         //console.log("end drop, when setTimeout of 2s ended");
         gd.state = "fill";
         routerNext();
-      }, 200);
+      }, 500);
 
       gd.state = "wait"; //set to wait, so as not to trigger
       break;
     case "fill":
       //console.log("start fill");
       gd.fillGridArrayBlanks();
+
       //console.log("After filling:", gd.grid);
+      
       renderGrid();
       setTimeout(() => {
         //console.log("end fill, when setTimeout of 2s ended");
         gd.state = "check2"; // check2 because not moved by user
         routerNext();
-      }, 200);
+      }, 500);
       gd.state = "wait"; //set to wait, so as not to trigger
       break;
     default:
@@ -280,108 +311,160 @@ function loadLevel(level) {
     {
       rowCount: 6,
       colCount: 6,
-      candyCount: 6,
+      candyCount: 4,
+      targetCandy: "A",
+      targetQty: 10,
+      maxMoves: 20,
     },
     {
       rowCount: 7,
       colCount: 6,
-      candyCount: 4,
+      candyCount: 5,
+      targetCandy: "A",
+      targetQty: 12,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 7,
       candyCount: 5,
+      targetCandy: "B",
+      targetQty: 14,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 10,
       candyCount: 5,
+      targetCandy: "C",
+      targetQty: 16,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 14,
       candyCount: 6,
+      targetCandy: "D",
+      targetQty: 18,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 16,
       candyCount: 6,
+      targetCandy: "E",
+      targetQty: 20,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 18,
       candyCount: 6,
+      targetCandy: "F",
+      targetQty: 22,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 20,
       candyCount: 6,
+      targetCandy: "A",
+      targetQty: 24,
+      maxMoves: 20,
     },
     {
       rowCount: 8,
       colCount: 22,
       candyCount: 6,
+      targetCandy: "B",
+      targetQty: 26,
+      maxMoves: 20,
     },
   ];
 
   //console.log(window.innerWidth, window.innerHeight);
   if (window.innerWidth < window.innerHeight) {
-    levelArray = [
+    let levelArray = [
       {
         rowCount: 6,
         colCount: 6,
-        candyCount: 4,
-      },
-      {
-        rowCount: 6,
-        colCount: 7,
-        candyCount: 4,
-      },
-      {
-        rowCount: 8,
-        colCount: 8,
-        candyCount: 5,
-      },
-      {
-        rowCount: 8,
-        colCount: 8,
-        candyCount: 5,
-      },
-      {
-        rowCount: 8,
-        colCount: 8,
         candyCount: 6,
+        targetCandy: "E",
+        targetQty: 10,
+        maxMoves: 20,
+      },
+      {
+        rowCount: 7,
+        colCount: 6,
+        candyCount: 4,
+        targetCandy: "A",
+        targetQty: 12,
+        maxMoves: 20,
+      },
+      {
+        rowCount: 8,
+        colCount: 6,
+        candyCount: 5,
+        targetCandy: "B",
+        targetQty: 14,
+        maxMoves: 20,
       },
       {
         rowCount: 9,
-        colCount: 8,
-        candyCount: 6,
-      },
-      {
-        rowCount: 9,
-        colCount: 8,
-        candyCount: 6,
-      },
-      {
-        rowCount: 10,
-        colCount: 8,
-        candyCount: 6,
+        colCount: 6,
+        candyCount: 5,
+        targetCandy: "C",
+        targetQty: 16,
+        maxMoves: 20,
       },
       {
         rowCount: 10,
-        colCount: 8,
+        colCount: 6,
         candyCount: 6,
+        targetCandy: "D",
+        targetQty: 18,
+        maxMoves: 20,
       },
-    ];
+      {
+        rowCount: 11,
+        colCount: 6,
+        candyCount: 6,
+        targetCandy: "E",
+        targetQty: 20,
+        maxMoves: 20,
+      },
+      {
+        rowCount: 12,
+        colCount: 6,
+        candyCount: 6,
+        targetCandy: "F",
+        targetQty: 22,
+        maxMoves: 20,
+      },
+      {
+        rowCount: 13,
+        colCount: 6,
+        candyCount: 6,
+        targetCandy: "A",
+        targetQty: 24,
+        maxMoves: 20,
+      },
+      {
+        rowCount: 14,
+        colCount: 6,
+        candyCount: 6,
+        targetCandy: "B",
+        targetQty: 26,
+        maxMoves: 20,
+      },
+    ]
     //console.log(levelArray);
   }
-
-  const { rowCount, colCount, candyCount } = levelArray[level - 1];
-  //console.log(rowCount, colCount, candyCount);
-  let gdNew = new GameData(rowCount, colCount, candyCount);
-
+  const { rowCount, colCount, candyCount, targetCandy, targetQty, maxMoves } = levelArray[level-1];
+  let gdNew = new GameData(rowCount, colCount, candyCount, level, maxMoves, "", targetQty, targetCandy);
   return gdNew;
 }
+
 
 //Fill array with 6 rows, 6 cols, 6 types of candy (represented by A to F)
 //let gd = new GameData(6, 6, 3);
@@ -411,12 +494,15 @@ const audio = document.querySelector("#music");
 
 const gameName = document.querySelector("#game-name");
 const gameLevel = document.querySelector("#game-level");
-const gameMoves = document.querySelector("#game-moves");
+const gameMovesEl = document.querySelector("#game-moves");
 const gameStars = document.querySelector("#game-stars");
+const gameTargetCandy = document.querySelector("#game-candy-target");
 const gameTarget = document.querySelector("#game-target");
 const gameScore = document.querySelector("#game-score");
 const inputName = document.querySelector("#name");
 const selectUser = document.querySelector("#select-user");
+const levelTitle = document.querySelector("#level-title");
+const nextButton = document.querySelector("#next-button");
 
 //Event listeners
 window.onresize = applyStyleToGridContainer;
@@ -433,6 +519,17 @@ levelContainer.addEventListener("click", levelChangeButtonHandler);
 inputName.addEventListener("blur", inputNameHandler);
 selectUser.addEventListener("change", selectUserHandler);
 addUser.addEventListener("click", addUserHandler);
+nextButton.addEventListener("click", nextButtonHandler);
+
+function nextButtonHandler() {
+  gd = loadLevel(gd.gameLevel+1);
+  console.log(gd.grid);
+  applyStyleToGridContainer();
+  renderGrid();
+  renderScoreBoard();
+  setActivePage("game");
+}
+
 
 function inputNameHandler(ev) {
   //console.log(inputName.value);
@@ -495,52 +592,63 @@ function loadUserList(ev) {
 }
 
 function setActivePage(page) {
+  startPage.style.display = "none";
+  gamePage.style.display = "none";
+  levelTitle.innerText = "LEVEL";
+  nextButton.visibility = "false";
+  levelPage.style.width = "0";
+  levelPage.style.display = "none";
+  settingPage.style.width = "0";
+  settingPage.style.display = "none";
+
   switch (page) {
     case "start":
       startPage.style.display = "flex";
-      gamePage.style.display = "none";
-      levelPage.style.width = "0";
-      levelPage.style.display = "none";
-      settingPage.style.width = "0";
-      settingPage.style.display = "none";
       break;
     case "game":
-      startPage.style.display = "none";
       gamePage.style.display = "grid";
-      levelPage.style.width = "0";
-      levelPage.style.display = "none";
-      settingPage.style.width = "0";
-      settingPage.style.display = "none";
       break;
     case "level":
-      startPage.style.display = "none";
-      gamePage.style.display = "grid";
       levelPage.style.width = "100vw";
       levelPage.style.display = "flex";
-      settingPage.style.width = "0";
-      settingPage.style.display = "none";
+      gamePage.style.display = "grid";
+      break;
+    case "win":
+      levelPage.style.width = "100vw";
+      levelPage.style.display = "flex";
+      levelTitle.innerText = "YOU WIN!";
+      nextButton.visibility = "true";
+      gamePage.style.display = "grid";
+      break;
+    case "lose":
+      levelPage.style.width = "100vw";
+      levelPage.style.display = "flex";
+      levelTitle.innerText = "YOU LOSE! TRY AGAIN";
+      nextButton.visibility = "true";
+      gamePage.style.display = "grid";
       break;
     case "setting":
-      startPage.style.display = "none";
-      gamePage.style.display = "grid";
-      levelPage.style.width = "0";
-      levelPage.style.display = "none";
       settingPage.style.width = "100vw";
       settingPage.style.display = "flex";
-      //load user list
+      gamePage.style.display = "grid";
       loadUserList();
       break;
   }
 }
 
+
+
 function levelChangeButtonHandler(ev) {
   const str = "" + ev.target.id;
   const level = str[5];
   //console.log(ev.target.id, level);
+  gd="";
   gd = loadLevel(level);
   setActivePage("game");
-  applyStyleToGridContainer(gridContainer);
+  console.log(gd.grid);
+  applyStyleToGridContainer();
   renderGrid();
+  renderScoreBoard();
 }
 
 function playButtonHandler(ev) {
@@ -634,6 +742,7 @@ function renderGrid() {
       }
       gridContainer.appendChild(item);
     }
+    //renderScoreBoard();
   }
   // let from={row:0,col:0};
   // let to={row:0,col:gd.colCount-1};
@@ -681,10 +790,43 @@ function renderGrid() {
   // renderLaser(from,to);
 }
 
+function checkWinLose() {
+  //console.log("Target",gd.gameTarget, "Moves Left", gd.gameMoves);
+  if (gd.gameTarget <= 0) {
+    console.log("WIN");
+    gd.gameTarget=0;
+    setActivePage("win");
+    sound.win.play();
+    return "win";
+
+  } else if (gd.gameMoves === 0 && gd.gameTarget>0) {
+    console.log("LOSE");
+    setActivePage("lose");
+    gd.state="wait";
+    sound.lose.play();
+    return "lose";
+  } else {
+    
+    return undefined;
+  }
+}
+
+function renderScoreBoard(){
+  gameName.innerText = gd.gameName;
+  gameLevel.innerText = gd.gameLevel;
+  gameMovesEl.innerText = gd.gameMoves;
+  gameStars.innerText = gd.gameStars;
+  gameTarget.innerText = gd.gameTarget;
+  gameScore.innerText = gd.gameScore;
+  gameTargetCandy.src = "";
+  gameTargetCandy.src = `./images/candy${gd.gameTargetCandy}.png`;
+  gameTargetCandy.style.width = "60px";
+  gameTargetCandy.style.height = "60px";
+}
 
 function removeLaser(){
   const lasers = document.querySelectorAll(".laser");
-  lasers.remove();
+  lasers.forEach(laser=>laser.remove());
 }
 
 function renderLaser(list) {
@@ -711,9 +853,6 @@ function renderLaser(list) {
     gridContainer.appendChild(laser);
     sound.stripedcandyblast.play();
   });
-  setTimeout(()=>{    
-    removeLaser();
-  },500);
 }
 
 function init() {
@@ -721,6 +860,7 @@ function init() {
   user.loadUserData(gd.currentUser);
   applyStyleToGridContainer(gridContainer);
   renderGrid();
+  renderScoreBoard();
   //document.addEventListener('contextmenu', event => event.preventDefault());
   //sound.music2.play();
 

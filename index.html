@@ -8,6 +8,8 @@
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <link href="https://fonts.cdnfonts.com/css/keep-calm" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <script src="index.js" defer type="module"></script>
+
   </head>
   <body>
     <div id="start-page">
@@ -29,7 +31,7 @@
         <div id="game-container2">
           <div id="game-stars" class="game-display">STARS</div>
           <div id="game-score" class="game-display">SCORE</div>
-          <div id="game-candy-target" class="game-display">RED</div>
+          <div class="game-display"><img id="game-candy-target" src=""/></div>
           <div id="game-target" class="game-display">10</div>
   
         </div>
@@ -50,7 +52,7 @@
     </div>
 
     <div id="level-page">
-      <div class="game-display">LEVEL</div>
+      <div id="level-title" class="game-display">LEVEL</div>
       <div id="level-container">
         <div id="level1-button" class="level-button">1</div>
         <div id="level2-button" class="level-button">2</div>
@@ -62,6 +64,7 @@
         <div id="level8-button" class="level-button">8</div>
         <div id="level9-button" class="level-button">9</div>
       </div>
+      <div id="next-button" class="small-button">NEXT LEVEL</div>
       <div id="back-button" class="small-button">BACK</div>
     </div>
 
@@ -86,7 +89,7 @@
           controls
           src="./sounds/music2.ogg"
         >
-          <source type="audio/filetype" volume="0.2" />
+          <source type="audio/filetype" volume="0.5" />
         </audio>
         <!-- <input id="range-music" type="range" min="1" max="100" value="50" /> -->
 
@@ -96,6 +99,5 @@
       <div id="back-button2" class="small-button">BACK</div>
     </div>
 
-    <script src="index.js" defer type="module"></script>
   </body>
 </html>
