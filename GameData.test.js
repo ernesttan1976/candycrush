@@ -32,6 +32,34 @@ describe("GameData class", () => {
     });
   });
 
+  it("setStartId returns {id, row, col, color}",
+  ()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+    ];
+    expect(gd.setStartId('r0c0')).toStrictEqual({id:"r0c0",row:0,col:0,color:"A"});
+  })
+
+  it("setEndId returns {id, row, col, color}",
+  ()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+      [..."ABCDEF"],
+      [..."BCDEFA"],
+    ];
+    expect(gd.setEndId('r0c0')).toStrictEqual({id:"r0c0",row:0,col:0,color:"A"});
+  })
+
   it("getRow(id) gets row number from 'r1c1'", () => {
     let gd = new GameData();
     let testId = "r10c10";
@@ -503,4 +531,20 @@ describe("GameData class", () => {
     expect(gd.gridFour[5].join("")).toMatch(/BCDEFA/);
   })
 
+  it("checkNormalWithStripedMove(start,end) returns true if start.color === end.color",()=>{
+    let gd = new GameData();
+    let start = {row:0, col:0, color: "H"};
+    let end = {row:1, col:0, color: "A"};
+    let result = gd.checkNormalWithStripedMove(start,end);
+    expect(result).toBe(true);
+    start = {row:0, col:0, color: "A"};
+    end = {row:1, col:0, color: "A"};
+    result = gd.checkNormalWithStripedMove(start,end);
+    expect(result).toBe(false);
+    start = {row:0, col:0, color: "A"};
+    end = {row:1, col:0, color: "N"};
+    result = gd.checkNormalWithStripedMove(start,end);
+    expect(result).toBe(true);
+
+  })
 });

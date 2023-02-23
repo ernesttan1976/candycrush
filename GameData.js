@@ -21,6 +21,7 @@ export class GameData {
     this.isFive = false;
     this.isColorBallWithNormal = false;
     this.isColorBallWithStriped = false;
+    this.isNormalWithStripedMove = false;
     this.gridStripedWithNormal = [];
     this.gridColorBallWithNormal = [];
     this.gridColorBallWithStriped = [];
@@ -73,7 +74,7 @@ export class GameData {
       id: "",
       row: "",
       col: "",
-      value: "",
+      color: "",
     };
 
     if (id === "") return start;
@@ -86,7 +87,7 @@ export class GameData {
         start.id = id;
         start.row = this.getRow(id);
         start.col = this.getCol(id);
-        start.value = this.grid[start.row][start.col];
+        start.color = this.grid[start.row][start.col];
       }
       this.start = start;
       return start;
@@ -101,7 +102,7 @@ export class GameData {
       id: "",
       row: "",
       col: "",
-      value: "",
+      color: "",
     };
 
     if (id === "") return end;
@@ -114,7 +115,7 @@ export class GameData {
         end.id = id;
         end.row = this.getRow(id);
         end.col = this.getCol(id);
-        end.value = this.grid[end.row][end.col];
+        end.color = this.grid[end.row][end.col];
       }
       this.end = end;
       return end;
@@ -183,25 +184,23 @@ export class GameData {
     }
   }
 
-  //simple match 3 algorithm
-  //checkThreeOrMoreInALine -> uses markLineThree with regex of 3 or more duplicate letters
-  //compareAndRemoveOnesFromGridArray
+  markColorBallMoveSpaces(colorBall,other){
+  //remove the 2 spaces
+    this.grid[colorBall.row][colorBall.col] = "1";
+    this.grid[other.row][other.col] = "1";
+  }
 
-  //upgrade to include striped candy and color ball
 
-  //OMG this function is terrible
-  checkColorBall() {
-    const start = this.getStart();
-    const end = this.getEnd();
+  checkColorBallMove({grid,start,end}) {
     let colorBall;
     let other;
     let normalColor = "";
     let stripedColor = "";
     let isColorBallWithNormal = false;
     let isColorBallWithStriped = false;
-    this.gridColorBallWithNormal = [];
-    this.gridColorBallWithStriped = [];
-    this.list = [];
+    let gridColorBallWithNormal = this.initGridArray(this.rowCount, this.colCount);
+    let gridColorBallWithStriped = this.initGridArray(this.rowCount, this.colCount);
+    let list = [];
     if (start.color === "G") {
       colorBall = start;
       other = end;
@@ -209,63 +208,56 @@ export class GameData {
       colorBall = end;
       other = start;
     } else {
-      return { isColorBallWithNormal, isColorBallWithStriped };
+      return {isColorBallWithNormal, isColorBallWithStriped, list};
     }
 
-    console.log(other.color);
+    this.markColorBallMoveSpaces(colorBall,other);
 
-    //remove the 2 spaces
-    this.grid[colorBall.row][colorBall.col] = "1";
-    this.grid[other.row][other.col] = "1";
-
-    if (other.color >= "A" && other.color <= "F") {
+    isColorBallWithNormal = other.color >= "A" && other.color <= "F";
+    isColorBallWithStriped = other.color >= "H" && other.color <= "S";
+    if (isColorBallWithNormal) {
       //color+normal
-      isColorBallWithNormal = true;
       normalColor = other.color;
-      this.gridColorBallWithNormalCandy = [];
       for (let i = 0; i < this.rowCount; i++) {
-        let row = [];
         for (let j = 0; j < this.colCount; j++) {
-          if (this.grid[i][j] === normalColor) {
-            row.push("1");
-            this.grid[i][j] = "1";
-            this.list.push({
+          if (grid[i][j] === normalColor) {
+            grid[i][j] = "1";
+            gridColorBallWithNormal[i][j]="1";
+            list.push({
               start: colorBall,
               end: { row: i, col: j },
             });
-          } else {
-            row.push(" ");
           }
         }
-        this.gridColorBallWithNormal.push(row);
       }
-    } else if (other.color >= "H" && other.color <= "S") {
+    } else if (isColorBallWithStriped) {
       //color+striped
-      isColorBallWithStriped = true;
       stripedColor = this.stripedToNormal(other.color);
-      console.log("striped: ", other.color, stripedColor);
-      this.gridColorBallWithStriped = [];
       for (let i = 0; i < this.rowCount; i++) {
-        let row = [];
         for (let j = 0; j < this.colCount; j++) {
-          if (this.grid[i][j] === stripedColor) {
+          if (grid[i][j] === stripedColor) {
             let thisStripe = this.getRandomStripeCandy(stripedColor);
             //randomly assign  striped candy
-            console.log(thisStripe);
-            row.push(thisStripe);
-            this.list.push({
+            grid[i][j]=thisStripe;
+            gridColorBallWithStriped[i][j] =thisStripe;
+            list.push({
               start: colorBall,
               end: { row: i, col: j },
             });
-          } else {
-            row.push(" ");
           }
         }
-        this.gridColorBallWithStriped.push(row);
       }
     }
-    console.log(this.list);
-    return { isColorBallWithNormal, isColorBallWithStriped };
+    this.grid = grid;
+    this.gridColorBallWithNormal = gridColorBallWithNormal;
+    this.gridColorBallWithStriped = gridColorBallWithStriped;
+    return {isColorBallWithNormal, isColorBallWithStriped, list };
+  }
+
+  checkNormalWithStripedMove(start, end){
+    const isSameColor = this.stripedToNormal(start.color) === this.stripedToNormal(end.color);
+    const isSameLetter = start.color === end.color;
+    return (isSameColor && !isSameLetter);
   }
 
   stripedToNormal(str) {
@@ -284,7 +276,7 @@ export class GameData {
       .replace("S", "F");
   }
 
-  //OMG another one!
+  //OMG!!
   checkCandyMatch() {
     this.isThree = false;
     this.isFour = false;
@@ -292,25 +284,20 @@ export class GameData {
     this.isColorBallWithNormal = false;
     this.isColorBallWithStriped = false;
     //prioity given to the rarest
-    const { isColorBallWithNormal, isColorBallWithStriped } =
-      this.checkColorBall();
+    const { isColorBallWithNormal, isColorBallWithStriped, list } = this.checkColorBallMove({grid:this.grid, start:this.start,end:this.end});
     this.isColorBallWithNormal = isColorBallWithNormal;
     this.isColorBallWithStriped = isColorBallWithStriped;
+    this.list = list;
     //color ball + normal candy -> all normal candy of that color disappears
     //color ball + striped candy -> all normal candy of that color changes into striped candy
     if (this.isColorBallWithNormal || this.isColorBallWithStriped) {
-      console.log("ColorBallWithNormalCandy", this.gridColorBallWithNormal);
-      console.log("ColorBallWithStriped", this.gridColorBallWithStriped);
-
-      // gd.list.forEach(line=>{
-      //   let laser = document.createElement("div");
-      //   laser.style.position = "absolute";
-      //   gamePage.append(laser);
-      // });
+      renderLaser(list);
     }
 
-    this.isThree = this.checkThreeInALine();
     //results in gridThree marked with 1 (normal candy)
+    this.isThree = this.checkThreeInALine();
+    //must be 3 in a row for normal and striped to be true
+    this.isNormalWithStripedMove = this.checkNormalWithStripedMove(this.start, this.end) && this.isThree;
 
     this.isFour = this.checkFourInALine();
     //results in gridFour marked with H to S (striped candy)
@@ -753,8 +740,24 @@ export class GameData {
     return markedString;
   }
 
+  horizontalLaser(row){
+    if (!TEST) sound.stripedcandyblast.play();
+    for (let j2 = 0; j2 < this.colCount; j2++) {
+      this.grid[row][j2] = " ";
+    }
+  }
+
+  verticalLaser(col){
+    //vertical laser
+    if (!TEST) sound.stripedcandyblast.play();
+    for (let i = 0; i < this.rowCount; i++) {
+      this.grid[i][col] = " ";
+    }
+  }
+
   removeOnesAndGiveSpecialCandy() {
     //if colorBall add the striped candy to the grid
+
 
     if (this.isColorBallWithStripedCandy) {
       for (let i = 0; i < this.rowCount; i++) {
@@ -768,50 +771,37 @@ export class GameData {
           }
         }
       }
+    } else {
+      
     }
 
     //remove items, including laser zaps
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.colCount; j++) {
-        if (
+        let isHorizontal = this.grid[i][j] >= "H" && this.grid[i][j] <= "M";
+        let isVertical = this.grid[i][j] >= "N" && this.grid[i][j] <= "S";
+          if (
           this.gridThree[i][j] === "1" &&
-          this.grid[i][j] >= "H" &&
-          this.grid[i][j] <= "S"
+          (isHorizontal||isVertical)
         ) {
           //Striped candy laser
-          if (this.grid[i][j] >= "H" && this.grid[i][j] <= "M") {
-            //horizontal laser
-            for (let j2 = 0; j2 < this.colCount; j2++) {
-              this.grid[i][j2] = " ";
-            }
-          } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
-            //vertical laser
-            for (let i2 = 0; i2 < this.rowCount; i2++) {
-              this.grid[i2][j] = " ";
-            }
+          if (isHorizontal) {
+            horizontalLaser(i);
           }
-          if (!TEST) sound.stripedcandyblast.play();
-        } else if (this.grid[i][j] === "G") {
-          this.grid[i][j] = " ";
+          
+          if (isVertical) {
+            verticalLaser(j);
+          }
         } else if (
-          this.gridColorBallWithStriped.length > 0 &&
-          this.gridColorBallWithStriped[i][j] === "G" &&
-          this.grid[i][j] >= "H" &&
-          this.grid[i][j] <= "S"
+          this.isColorBallWithStripedCandy &&
+          (isHorizontal || isVertical)
         ) {
-          //Striped candy laser
-          if (this.grid[i][j] >= "H" && this.grid[i][j] <= "M") {
-            //horizontal laser
-            for (let j2 = 0; j2 < this.colCount; j2++) {
-              this.grid[i][j2] = " ";
-            }
-          } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
-            //vertical laser
-            for (let i2 = 0; i2 < this.rowCount; i2++) {
-              this.grid[i2][j] = " ";
-            }
+          if (isHorizontal) {
+            horizontalLaser(i);
+          }          
+          if (isVertical) {
+            verticalLaser(j);
           }
-          if (!TEST) sound.stripedcandyblast.play();
         } else if (
           this.gridThree[i][j] === "1" &&
           !(this.grid[i][j] >= "H" && this.grid[i][j] <= "S")
