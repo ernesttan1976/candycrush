@@ -1,4 +1,5 @@
 # [CANDY CRUSH](https://ernesttan1976.github.io/candycrush/) #
+#### (CLICK TITLE TO PLAY) ####
 
 ## GA SEI BOOTCAMP PROJECT ##
 To demonstrate my proficiency in vanilla Javascript, HTML and CSS.  
@@ -74,7 +75,7 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 ## EXTRACT OF THE CODE ##
 
 ### USE OF REGEX TO DETECT CONSECUTIVE LETTERS IN A STRING ###
-```JS
+```js
 markLineThree(str) {
     let newStr = str
       .replace("H", "A")
