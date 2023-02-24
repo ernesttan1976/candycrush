@@ -69,7 +69,7 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 - [x] 11. Game win if blue candy = 0;
 - [x] 12. Game over if number of rounds = 0;
 - [x] 13. Count points per item removed. 
-- [] 14. Award 1 star for >18 moves, 2 star for >14 moves, 3 star for 10 moves
+- [ ] 14. Award 1 star for >18 moves, 2 star for >14 moves, 3 star for 10 moves
 
 ## EXTRACT OF THE CODE ##
 
