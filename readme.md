@@ -73,7 +73,11 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 
 ## EXTRACT OF THE CODE ##
 
+<details>
+<summary>
 ### USE OF REGEX TO DETECT CONSECUTIVE LETTERS IN A STRING ###
+</summary>
+<p>
 ```JS
 markLineThree(str) {
     let newStr = str
@@ -100,6 +104,8 @@ markLineThree(str) {
     return markedString;
   }
 ```
+</p>
+</details>
 
 ### CODE REFACTORING ###
 The below code is easily understood.
