@@ -27,10 +27,11 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 
 ### USER STORIES / FEATURES ###
 #### PLANS ####
-![Plan1](/planning1.jpg =600x400)
-![Plan2](/planning2.jpg =600x400)
-![Start Page](/startpage.jpg =600x400)
-![Game Page](/gamepage.jpg =600x400)
+<img src="/planning1.jpg"/>
+<img src="/planning2.jpg"/>
+<img src="/startpage.jpg" width="800" height="350" />
+<img src="/gamepage.jpg" width="800" height="350" />
+
 
 #### Main ####
 - [x] 1.Player swipes candy to match 3 tiles. resulting in candy being removed, and refilled from the top.
@@ -68,7 +69,7 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 - [x] 11. Game win if blue candy = 0;
 - [x] 12. Game over if number of rounds = 0;
 - [x] 13. Count points per item removed. 
-- [] 14. Award 1 star for >18 moves, 2 star for >14 moves, 3 star for 10 moves
+- [ ] 14. Award 1 star for >18 moves, 2 star for >14 moves, 3 star for 10 moves
 
 ## EXTRACT OF THE CODE ##
 
