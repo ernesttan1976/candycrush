@@ -1,4 +1,5 @@
 # [CANDY CRUSH](https://ernesttan1976.github.io/candycrush/) #
+#### (CLICK TITLE TO PLAY) ####
 
 ## GA SEI BOOTCAMP PROJECT ##
 To demonstrate my proficiency in vanilla Javascript, HTML and CSS.  
