@@ -74,7 +74,7 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 ## EXTRACT OF THE CODE ##
 
 ### USE OF REGEX TO DETECT CONSECUTIVE LETTERS IN A STRING ###
-```
+```JS
 markLineThree(str) {
     let newStr = str
       .replace("H", "A")
@@ -104,7 +104,7 @@ markLineThree(str) {
 ### CODE REFACTORING ###
 The below code is easily understood.
 However it is tedious to type 2 for loops.
-```
+```JS
 #### original function  ####
 fillGridArrayBlanks() {
   for (let i = 0; i < this.rowCount; i++) {
@@ -119,7 +119,7 @@ fillGridArrayBlanks() {
 
 #### refactored with reduce ####
 I refactored it to have 2 reduce functions. It worked, but REDUCE is hard to understand. So I scrapped it!
-```
+```JS
 //refactored with reduce function
 fillGridArrayBlanks2() {
   const result = this.grid.reduce((prevRows, currRow) => {
@@ -143,7 +143,7 @@ fillGridArrayBlanks2() {
 For this 3rd version I use the map function 2 times. And I put the conditional function separately so it is modular.
 It is cleaner and more extendable. Different conditionals can be passed into the generic 2D array mapping function.
 What do you think?
-```
+```JS
 //refactored wth map function and conditional function is abstracted for clarity
     fillGridArrayBlanks3() {
       const conditionalFunction = (item) =>
@@ -161,7 +161,7 @@ It is more obvious I'm changing the row or the column.
 ## UNIT TEST WITH VITEST ##
 
 ### EXTRACT OF UNIT TEST CODE ###
-```
+```JS
 import { describe, it, expect } from "vitest";
 import { GameData } from "GameData.js";
 
@@ -199,7 +199,7 @@ describe("GameData class", () => {
 ```
 
 
-```
+```JS
 
 PS C:\Users\ernes\Coding2\SEI\Projects\candycrush> npm run test
 

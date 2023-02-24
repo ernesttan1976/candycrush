@@ -2,36 +2,7 @@ import { describe, it, expect } from "vitest";
 import { GameData } from "GameData.js";
 
 describe("GameData class", () => {
-  it("initGridArray() returns array of 6 x 6 blanks", () => {
-    let gd = new GameData();
-    gd.grid = gd.initGridArray(6,6);
-    const testGrid = [
-      [" ", " ", " ", " ", " ", " "],
-      [" ", " ", " ", " ", " ", " "],
-      [" ", " ", " ", " ", " ", " "],
-      [" ", " ", " ", " ", " ", " "],
-      [" ", " ", " ", " ", " ", " "],
-      [" ", " ", " ", " ", " ", " "],
-    ];
-    console.log(testGrid);
-    console.log(gd.grid);
-    gd.grid.map((row, rowIndex) => {
-      row.map((item, colIndex) =>
-        expect(item).toBe(testGrid[rowIndex][colIndex])
-      );
-    });
-  });
-
-  it("fillGridArray() returns array of 6 x 6 letters from A to F", () => {
-    let gd = new GameData();
-    gd.initGridArray();
-    gd.fillGridArray();
-    console.log(gd.grid);
-    gd.grid.map((row, rowIndex) => {
-      row.map((item, colIndex) => expect(item).toMatch(/[A-G]/));
-    });
-  });
-
+  
   it("setStartId returns {id, row, col, color}",
   ()=>{
     let gd = new GameData();
@@ -102,6 +73,78 @@ describe("GameData class", () => {
     expect(result).toMatch(/[A-G]/);
   });
 
+
+  it("initGridArray() returns array of 6 x 6 blanks", () => {
+    let gd = new GameData();
+    gd.grid = gd.initGridArray(6,6);
+    const testGrid = [
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+    ];
+    console.log(testGrid);
+    console.log(gd.grid);
+    gd.grid.map((row, rowIndex) => {
+      row.map((item, colIndex) =>
+        expect(item).toBe(testGrid[rowIndex][colIndex])
+      );
+    });
+  });
+
+  it("fillGridArray() returns array of 6 x 6 letters from A to F", () => {
+    let gd = new GameData();
+    gd.initGridArray();
+    gd.fillGridArray();
+    console.log(gd.grid);
+    gd.grid.map((row, rowIndex) => {
+      row.map((item, colIndex) => expect(item).toMatch(/[A-G]/));
+    });
+  });
+
+  it("cleanOutThreeInARow() returns array without any 3 in a line",()=>{
+    let gd = new GameData();
+    gd.initGridArray();
+    let grid = gd.grid.map2d(
+      (item, colIndex) => (item = gd.getRandomCandy())
+    );
+    let result = gd.cleanOutThreeInARow();
+    gd.isThree = gd.checkThreeInALine();
+    expect(gd.isThree).toBe(false);
+  })
+
+  it("removeOnes checks gridThree for 1 and replacing grid with blank space",()=>{
+    let gd = new GameData();
+    gd.grid = [
+      [..."BCDEFA"],
+      [..."ABCCCF"],
+      [..."BCDEFA"],
+      [..."CFFFAB"],
+      [..."BCDEFA"],
+      [..."CDAAAB"],
+    ]
+   gd.gridThree= [
+    [..."BCDEFA"],
+    [..."AB111F"],
+    [..."BCDEFA"],
+    [..."C111AB"],
+    [..."BCDEFA"],
+    [..."CD111B"],
+];
+    let output = [
+      [..."BCDEFA"],
+      [..."AB   F"],
+      [..."BCDEFA"],
+      [..."C   AB"],
+      [..."BCDEFA"],
+      [..."CD   B"],
+    ];
+    gd.removeOnes();
+    expect(gd.grid).toStrictEqual(output);
+  })
+
   it("getDistance(start,end): returns distance between 2 points by Pythagoras Theorem", () => {
     let gd = new GameData();
     let start = { row: 0, col: 0 };
@@ -140,6 +183,10 @@ describe("GameData class", () => {
     result = gd.checkValidMoveAdjacent(gd.start, gd.end);
     expect(result).toBe(false);
   });
+
+  it("checkColorBallMove(colorBall, other) returns { isColorBallWithNormal, isColorBallWithStriped, list } list of laser lines",()=>{
+    
+  })
 
   it("stripedToNormal(str) should convert H and N to A, I and O to B, J and P to C, K and Q to D, L and R to E, M and S to F", () => {
     let gd = new GameData();
