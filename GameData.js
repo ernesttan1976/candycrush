@@ -1,4 +1,3 @@
-
 export class GameData {
   constructor(
     rowCount = 6,
@@ -185,11 +184,22 @@ export class GameData {
     return grid;
   }
 
-  cleanOutThreeInARow(){
+  cleanOutThreeInARow() {
     this.isThree = this.checkThreeInALine();
     if (!this.isThree) return true;
+    this.removeOnes();
     this.fillGridArrayBlanks();
     this.cleanOutThreeInARow();
+  }
+
+  removeOnes() {
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.colCount; j++) {
+        if (this.gridThree[i][j] === "1") {
+            this.grid[i][j] = " ";
+        }
+      }
+    }
   }
 
   //refactor this - done
@@ -354,7 +364,6 @@ export class GameData {
       .replace("M", "F")
       .replace("S", "F");
   }
-
 
   checkCandyMatch() {
     this.isThree = false;
@@ -629,7 +638,6 @@ export class GameData {
 
   assignCandy({ list, gridFour, start, end }) {
     list.forEach((item) => {
-      
       let stripedCandy = this.getRandomStripeCandy(item.color);
       const isStartOnLine = this.isPointOnLine(
         item.gdStart,
@@ -842,7 +850,6 @@ export class GameData {
   }
 
   horizontalLaser(row) {
-    
     for (let j2 = 0; j2 < this.colCount; j2++) {
       this.grid[row][j2] = " ";
     }
@@ -850,7 +857,7 @@ export class GameData {
 
   verticalLaser(col) {
     //vertical laser
-    
+
     for (let i = 0; i < this.rowCount; i++) {
       this.grid[i][col] = " ";
     }
@@ -863,12 +870,11 @@ export class GameData {
           this.gridThree[i][j] === "1" &&
           this.grid[i][j] === this.gameTargetCandy
         ) {
-          if (this.gameTarget>0) this.gameTarget=this.gameTarget-1;
+          if (this.gameTarget > 0) this.gameTarget = this.gameTarget - 1;
         }
       }
     }
   }
-  
 
   countScores() {
     for (let i = 0; i < this.rowCount; i++) {
@@ -896,7 +902,6 @@ export class GameData {
 
   removeOnesAndGiveSpecialCandy() {
     //if colorBall add the striped candy to the grid
-
 
     if (this.isColorBallWithStripedCandy) {
       for (let i = 0; i < this.rowCount; i++) {
