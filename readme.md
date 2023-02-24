@@ -67,7 +67,37 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 - [x] 13. Count points per item removed. 
 - [] 14. Award 1 star for >18 moves, 2 star for >14 moves, 3 star for 10 moves
 
-### Code Refactoring ###
+## EXTRACT OF THE CODE ##
+
+### USE OF REGEX TO DETECT CONSECUTIVE LETTERS IN A STRING ###
+```
+markLineThree(str) {
+    let newStr = str
+      .replace("H", "A")
+      .replace("N", "A")
+      .replace("I", "B")
+      .replace("O", "B")
+      .replace("J", "C")
+      .replace("P", "C")
+      .replace("K", "D")
+      .replace("Q", "D")
+      .replace("L", "E")
+      .replace("R", "E")
+      .replace("M", "F")
+      .replace("S", "F");
+
+    const regex = /([A-Z])\1{2,}/g;
+    let numDuplicates = 0;
+    const markedString = newStr.replace(regex, (match) => {
+      numDuplicates = match.length;
+      return "1".repeat(numDuplicates);
+    });
+
+    return markedString;
+  }
+```
+
+### CODE REFACTORING ###
 The below code is easily understood.
 However it is tedious to type 2 for loops.
 ```
@@ -125,6 +155,46 @@ Actually it is preferred to use nested for loop since it is easier to be underst
 It is more obvious I'm changing the row or the column.
 
 ## UNIT TEST WITH VITEST ##
+
+### EXTRACT OF UNIT TEST CODE ###
+```
+import { describe, it, expect } from "vitest";
+import { GameData } from "GameData.js";
+
+describe("GameData class", () => {
+  it("initGridArray() returns array of 6 x 6 blanks", () => {
+    let gd = new GameData();
+    gd.grid = gd.initGridArray(6,6);
+    const testGrid = [
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+      [" ", " ", " ", " ", " ", " "],
+    ];
+    console.log(testGrid);
+    console.log(gd.grid);
+    gd.grid.map((row, rowIndex) => {
+      row.map((item, colIndex) =>
+        expect(item).toBe(testGrid[rowIndex][colIndex])
+      );
+    });
+  });
+
+  it("fillGridArray() returns array of 6 x 6 letters from A to F", () => {
+    let gd = new GameData();
+    gd.initGridArray();
+    gd.fillGridArray();
+    console.log(gd.grid);
+    gd.grid.map((row, rowIndex) => {
+      row.map((item, colIndex) => expect(item).toMatch(/[A-G]/));
+    });
+  });
+
+```
+
+
 ```
 
 PS C:\Users\ernes\Coding2\SEI\Projects\candycrush> npm run test
