@@ -124,7 +124,7 @@ It is more obvious I'm changing the row or the column.
 ## UNIT TEST WITH VITEST ##
 ```
 
-PS C:\Users\ernes\Coding2\SEI\Projects\candycrush> npm run test      
+PS C:\Users\ernes\Coding2\SEI\Projects\candycrush> npm run test
 
 > test
 > vitest --run --reporter verbose --globals
@@ -136,62 +136,39 @@ PS C:\Users\ernes\Coding2\SEI\Projects\candycrush> npm run test
    ✓ math functions (4)
      ✓ max() gives the maximum of 2 numbers
      ✓ min() gives the minimum of 2 numbers
-     ✓ findLength(from,to) gives the length
- between 2 points
-     ✓ findAngle(from,to) gives the angle w
-ith horizontal
+     ✓ findLength(from,to) gives the length between 2 points
+     ✓ findAngle(from,to) gives the angle with horizontal
  · GameData.test.js (23)
    · GameData class (23)
-     · initGridArray() returns array of 6 x
- 6 blanks
-     · fillGridArray() returns array of 6 x
- 6 letters from A to F
-     · setStartId returns {id, row, col, co
-lor}
-     · setEndId returns {id, row, col, colo
-r}
-     · getRow(id) gets row number from 'r1c
-1'
-     · getCol(id) gets column number from '
-r1c1'
-     · getRandomCandy(): returns a letter f
-rom 'A' to'F'
-     · getDistance(start,end): returns dist
-ance between 2 points by Pythagoras Theorem
-     · checkValidMoveAdjacent(): return tru
-e if distance is 1, return false otherwise 
-     · stripedToNormal(str) should convert 
-H and N to A, I and O to B, J and P to C, K
- and Q to D, L and R to E, M and S to F    
 stdout | GameData.test.js > GameData class > initGridArray() returns array of 6 x 6 blanks
 [
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
   [ ' ', ' ', ' ', ' ', ' ', ' ' ]
 ]
 [
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
   [ ' ', ' ', ' ', ' ', ' ', ' ' ]
 ]
 
 stdout | GameData.test.js > GameData class > fillGridArray() returns array of 6 x 6 letters from A to F
 [
-  [ 'B', 'D', 'C', 'F', 'D', 'B' ],        
-  [ 'A', 'F', 'F', 'F', 'D', 'E' ],        
-  [ 'F', 'A', 'C', 'E', 'D', 'A' ],        
-  [ 'D', 'E', 'F', 'B', 'F', 'C' ],        
-  [ 'B', 'A', 'E', 'F', 'B', 'C' ],        
-  [ 'E', 'B', 'D', 'B', 'E', 'C' ]
+  [ 'B', 'F', 'C', 'B', 'F', 'F' ],
+  [ 'C', 'D', 'E', 'E', 'E', 'E' ],
+  [ 'E', 'C', 'A', 'C', 'E', 'D' ],
+  [ 'D', 'A', 'A', 'B', 'E', 'B' ],
+  [ 'B', 'E', 'C', 'A', 'E', 'C' ],
+  [ 'E', 'F', 'C', 'F', 'D', 'C' ]
 ]
 
-stdout | GameData.test.js > GameData class > getRow(id) gets row number from 'r1c1'   
+stdout | GameData.test.js > GameData class > getRow(id) gets row number from 'r1c1'
 r10c10 getRow: 10
 rc10 getRow: undefined
 '' getRow: undefined
@@ -204,161 +181,161 @@ r10c getCol: undefined
 stdout | GameData.test.js > GameData class > getRandomStripeCandy(color) should convert A to H or N, B to I or O, C t J or P, D to K or Q, E to L or R, F to M or S randomly
 getRandomStripeCandy: error
 
-stdout | GameData.test.js > GameData class > checkFiveInALine() finds 5 in a line and returns gridFive with 1 for each item      
+stdout | GameData.test.js > GameData class > checkFiveInALine() finds 5 in a line and returns gridFive with 1 for each item
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'A', 'A', 'A', 'A', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'A', 'A', 'A', 'A', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ '1', '1', '1', '1', '1', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ '1', '1', '1', '1', '1', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] []
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'D', 'E', 'F', 'E', 'B', 'C' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'E', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'D', 'E', 'F', 'E', 'B', 'C' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'E', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'D', 'E', 'F', '1', 'B', 'C' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'C', 'D', 'E', '1', 'A', 'B' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'D', 'E', 'F', '1', 'B', 'C' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'C', 'D', 'E', '1', 'A', 'B' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ '1', '1', '1', '1', '1', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ '1', '1', '1', '1', '1', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ]
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'D', 'E', 'F', 'A', 'B', 'C' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'D', 'E', 'F', 'A', 'B', 'C' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'D', 'E', 'F', 'A', 'B', 'C' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'D', 'E', 'F', 'A', 'B', 'C' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'D', 'E', 'F', '1', 'B', 'C' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'C', 'D', 'E', '1', 'A', 'B' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'D', 'E', 'F', '1', 'B', 'C' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'C', 'D', 'E', '1', 'A', 'B' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ]
 
-stdout | GameData.test.js > GameData class > checkFourInALine() finds 4 in a line and returns gridFour with a 1 for each item    
+stdout | GameData.test.js > GameData class > checkFourInALine() finds 4 in a line and returns gridFour with a 1 for each item
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'A', 'A', 'A', 'A', 'B', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'A', 'A', 'A', 'A', 'B', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ '1', '1', '1', '1', 'B', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ '1', '1', '1', '1', 'B', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] []
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'A', 'A', 'A', 'E', 'B', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'E', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'F', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'A', 'A', 'A', 'E', 'B', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'E', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'F', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'A', 'A', 'A', '1', 'B', 'B' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'C', 'D', 'E', '1', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'F', 'F', 'A' ],        
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'A', 'A', 'A', '1', 'B', 'B' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'C', 'D', 'E', '1', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'F', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ '1', '1', '1', '1', 'B', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ '1', '1', '1', '1', 'B', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ]
 [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'D', 'E', 'F', 'A', 'B', 'C' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'D', 'E', 'F', 'A', 'B', 'C' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'D', 'E', 'F', 'A', 'B', 'C' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
-  [ 'C', 'D', 'E', 'F', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'E', 'F', 'A' ],        
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'D', 'E', 'F', 'A', 'B', 'C' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
+  [ 'C', 'D', 'E', 'F', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'E', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ] [
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'A', 'A', 'A', '1', 'B', 'B' ],        
-  [ 'B', 'C', 'D', '1', 'F', 'A' ],        
-  [ 'C', 'D', 'E', '1', 'A', 'B' ],        
-  [ 'B', 'C', 'D', 'F', 'F', 'A' ],        
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'A', 'A', 'A', '1', 'B', 'B' ],
+  [ 'B', 'C', 'D', '1', 'F', 'A' ],
+  [ 'C', 'D', 'E', '1', 'A', 'B' ],
+  [ 'B', 'C', 'D', 'F', 'F', 'A' ],
   [ 'C', 'D', 'E', 'F', 'A', 'B' ]
 ]
 
 stdout | GameData.test.js > GameData class > fillGridArrayBlanks() fills in the spaces with random letters from A to F
 [
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ 'A', 'B', ' ', 'D', 'E', ' ' ],        
-  [ 'A', 'B', 'C', 'E', 'F', ' ' ],        
-  [ 'B', 'C', 'C', 'D', 'E', 'F' ],        
-  [ 'A', 'B', 'C', 'D', 'E', 'A' ],        
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ 'A', 'B', ' ', 'D', 'E', ' ' ],
+  [ 'A', 'B', 'C', 'E', 'F', ' ' ],
+  [ 'B', 'C', 'C', 'D', 'E', 'F' ],
+  [ 'A', 'B', 'C', 'D', 'E', 'A' ],
   [ 'B', 'C', 'D', 'E', 'F', 'A' ]
 ]
 [
-  [ 'F', 'F', 'A', 'D', 'F', 'D' ],        
-  [ 'A', 'B', 'D', 'D', 'E', 'C' ],        
-  [ 'A', 'B', 'C', 'E', 'F', 'C' ],        
-  [ 'B', 'C', 'C', 'D', 'E', 'F' ],        
-  [ 'A', 'B', 'C', 'D', 'E', 'A' ],        
+  [ 'E', 'D', 'B', 'A', 'E', 'A' ],
+  [ 'A', 'B', 'F', 'D', 'E', 'D' ],
+  [ 'A', 'B', 'C', 'E', 'F', 'B' ],
+  [ 'B', 'C', 'C', 'D', 'E', 'F' ],
+  [ 'A', 'B', 'C', 'D', 'E', 'A' ],
   [ 'B', 'C', 'D', 'E', 'F', 'A' ]
 ]
 
 stdout | GameData.test.js > GameData class > dropCandy() shifts all characters in the column towards the bottom
 [
-  [ 'A', 'B', 'C', 'D', 'E', 'F' ],        
-  [ ' ', ' ', ' ', 'E', 'F', 'A' ],        
-  [ 'A', 'B', 'C', 'D', 'E', ' ' ],        
-  [ 'B', 'C', ' ', ' ', ' ', ' ' ],        
-  [ 'A', 'B', 'C', 'D', 'E', ' ' ],        
+  [ 'A', 'B', 'C', 'D', 'E', 'F' ],
+  [ ' ', ' ', ' ', 'E', 'F', 'A' ],
+  [ 'A', 'B', 'C', 'D', 'E', ' ' ],
+  [ 'B', 'C', ' ', ' ', ' ', ' ' ],
+  [ 'A', 'B', 'C', 'D', 'E', ' ' ],
   [ 'B', 'C', 'D', 'E', 'F', 'A' ]
 ]
 [
-  [ ' ', ' ', ' ', ' ', ' ', ' ' ],        
-  [ 'A', 'B', ' ', 'D', 'E', ' ' ],        
-  [ 'A', 'B', 'C', 'E', 'F', ' ' ],        
-  [ 'B', 'C', 'C', 'D', 'E', 'F' ],        
-  [ 'A', 'B', 'C', 'D', 'E', 'A' ],        
+  [ ' ', ' ', ' ', ' ', ' ', ' ' ],
+  [ 'A', 'B', ' ', 'D', 'E', ' ' ],
+  [ 'A', 'B', 'C', 'E', 'F', ' ' ],
+  [ 'B', 'C', 'C', 'D', 'E', 'F' ],
+  [ 'A', 'B', 'C', 'D', 'E', 'A' ],
   [ 'B', 'C', 'D', 'E', 'F', 'A' ]
 ]
 
@@ -367,14 +344,14 @@ stdout | GameData.test.js > GameData class > scanRows(list) returns list of {sta
   start: { row: 1, col: 0 },
   end: { row: 1, col: 3 },
   color: 'C',
-  gdStart: { row: 1, col: 4, color: 'F' }, 
-  gdEnd: { row: 1, col: 3, color: 'C' }    
+  gdStart: { row: 1, col: 4, color: 'F' },
+  gdEnd: { row: 1, col: 3, color: 'C' }
 } {
   start: { row: 1, col: 0 },
   end: { row: 1, col: 3 },
   color: 'C',
-  gdStart: { row: 1, col: 4, color: 'F' }, 
-  gdEnd: { row: 1, col: 3, color: 'C' }    
+  gdStart: { row: 1, col: 4, color: 'F' },
+  gdEnd: { row: 1, col: 3, color: 'C' }
 }
 
 stdout | GameData.test.js > GameData class > scanColumns(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}
@@ -382,14 +359,14 @@ stdout | GameData.test.js > GameData class > scanColumns(list) returns list of {
   start: { row: 1, col: 3 },
   end: { row: 4, col: 3 },
   color: 'B',
-  gdStart: { row: 1, col: 4, color: 'F' }, 
-  gdEnd: { row: 1, col: 3, color: 'B' }    
+  gdStart: { row: 1, col: 4, color: 'F' },
+  gdEnd: { row: 1, col: 3, color: 'B' }
 } {
   start: { row: 1, col: 3 },
   end: { row: 4, col: 3 },
   color: 'B',
-  gdStart: { row: 1, col: 4, color: 'F' }, 
-  gdEnd: { row: 1, col: 3, color: 'B' }    
+  gdStart: { row: 1, col: 4, color: 'F' },
+  gdEnd: { row: 1, col: 3, color: 'B' }
 }
 
  ✓ utils.test.js (4)
@@ -408,26 +385,26 @@ stdout | GameData.test.js > GameData class > scanColumns(list) returns list of {
      ✓ getCol(id) gets column number from 'r1c1'
      ✓ getRandomCandy(): returns a letter from 'A' to'F'
      ✓ getDistance(start,end): returns distance between 2 points by Pythagoras Theorem
-     ✓ checkValidMoveAdjacent(): return true if distance is 1, return false otherwise 
-     ✓ stripedToNormal(str) should convert H and N to A, I and O to B, J and P to C, K and Q to D, L and R to E, M and S to F    
-     ✓ getRandomStripeCandy(color) should convert A to H or N, B to I or O, C t J or P, D to K or Q, E to L or R, F to M or S randomly
+     ✓ checkValidMoveAdjacent(): return true if distance is 1, return false otherwise
+     ✓ stripedToNormal(str) should convert H and N to A, I and O to B, J and P to C, K and Q to D, L and R to E, M and S to F
+     ✓ getRandomStripeCandy(color) should convert A to H or N, B to I or O, C t J or P, D to K or Q, E to L or R, F to M or S randomly      
      ✓ isPointOnLine(point,start,end) returns true if the point is on the line, otherwise returns false
-     ✓ markLineFive(str) replace a string, all letters between A and F with a 1       
-     ✓ checkFiveInALine() finds 5 in a line and returns gridFive with 1 for each item 
-     ✓ markLineFour(str) replaces a string, all letters between A and F with a 1      
+     ✓ markLineFive(str) replace a string, all letters between A and F with a 1
+     ✓ checkFiveInALine() finds 5 in a line and returns gridFive with 1 for each item
+     ✓ markLineFour(str) replaces a string, all letters between A and F with a 1
      ✓ checkFourInALine() finds 4 in a line and returns gridFour with a 1 for each item
-     ✓ fillGridArrayBlanks() fills in the spaces with random letters from A to F      
+     ✓ fillGridArrayBlanks() fills in the spaces with random letters from A to F
      ✓ dropCandy() shifts all characters in the column towards the bottom
      ✓ scanRows(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}
      ✓ scanColumns(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}
      ✓ assignCandy({list, gridFour, start, end}) returns gridFour with 'H to M'(horizontal) or 'N to S'(vertical)
-     ✓ giveStripedCandy() scans gridFour for 1 and assigns striped candy returns gridFour with 'H to M'(horizontal) or 'N to S'(vertical)
+     ✓ giveStripedCandy() scans gridFour for 1 and assigns striped candy returns gridFour with 'H to M'(horizontal) or 'N to S'(vertical)   
      ✓ checkNormalWithStripedMove(start,end) returns true if start.color === end.color
 
  Test Files  2 passed (2)
       Tests  27 passed (27)
-   Start at  09:30:53
-   Duration  880ms (transform 150ms, setup 0ms, collect 179ms, tests 63ms)
+   Start at  09:37:20
+   Duration  1.24s (transform 223ms, setup 0ms, collect 251ms, tests 71ms)
 
 ```
 
