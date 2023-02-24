@@ -26,7 +26,10 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
     + unit tests of functions and classes
 
 ### USER STORIES / FEATURES ###
-#### Main ###
+#### PLANS ####
+![Plan1](/plan1.jpg)
+![Plan2](/plan2.jpg)
+#### Main ####
 - [x] 1.Player swipes candy to match 3 tiles. resulting in candy being removed, and refilled from the top.
 - [x] 2.Game to have sound effects and background music. This will give a great experience.
 - [x] 3.Player wins the round when Player matches "X" number of "Y" colour candy in "Z" number of moves. Player loses the round when "Z" number of moves is zero.
