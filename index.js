@@ -5,6 +5,8 @@ Array.prototype.map2d = function (conditionalFunction) {
 
 import { min, max, findLength, findAngle, midPoint } from "./utils.js";
 import { GameData } from "./GameData.js";
+
+const DELAY = 300;
 //added this function map2d to Array as a generic function for 2d mapping
 
 //DOM dependency
@@ -204,13 +206,16 @@ function routerNext() {
       //console.log("start check2");
       // state = 1 "check": checking for correct move, 3 or more in a line
 
-      const {
+     let{
         isThree,
         isFour,
         isFive,
         isColorBallWithNormal,
         isColorBallWithStriped,
       } = gd.checkCandyMatch();
+
+      // isColorBallWithNormal = false;
+      // isColorBallWithStriped = false;
 
       const status = checkWinLose();
       if (status ==="win" || status === "lose"){
@@ -235,13 +240,12 @@ function routerNext() {
         } else {
           //final cascade
           gd.cascadeCounter = 1;
-         
+          renderGrid();
+          gd.state = "ready";
+          break;
         }
         
-        
-        renderGrid();
-        gd.state = "ready";
-        return;
+
       }
       
       renderGrid();
@@ -266,7 +270,7 @@ function routerNext() {
         //console.log("end crush, when setTimeout of 2s ended");
         gd.state = "drop";
         routerNext();
-      }, 500);
+      }, DELAY);
       gd.state = "wait"; //set to wait, so as not to trigger
 
       break;
@@ -281,7 +285,7 @@ function routerNext() {
         //console.log("end drop, when setTimeout of 2s ended");
         gd.state = "fill";
         routerNext();
-      }, 500);
+      }, DELAY);
 
       gd.state = "wait"; //set to wait, so as not to trigger
       break;
@@ -296,7 +300,7 @@ function routerNext() {
         //console.log("end fill, when setTimeout of 2s ended");
         gd.state = "check2"; // check2 because not moved by user
         routerNext();
-      }, 500);
+      }, DELAY);
       gd.state = "wait"; //set to wait, so as not to trigger
       break;
     default:
@@ -382,86 +386,9 @@ function loadLevel(level) {
     },
   ];
 
-  //console.log(window.innerWidth, window.innerHeight);
-  if (window.innerWidth < window.innerHeight) {
-    let levelArray = [
-      {
-        rowCount: 6,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "E",
-        targetQty: 10,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 7,
-        colCount: 6,
-        candyCount: 4,
-        targetCandy: "A",
-        targetQty: 12,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 8,
-        colCount: 6,
-        candyCount: 5,
-        targetCandy: "B",
-        targetQty: 14,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 9,
-        colCount: 6,
-        candyCount: 5,
-        targetCandy: "C",
-        targetQty: 16,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 10,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "D",
-        targetQty: 18,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 11,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "E",
-        targetQty: 20,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 12,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "F",
-        targetQty: 22,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 13,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "A",
-        targetQty: 24,
-        maxMoves: 20,
-      },
-      {
-        rowCount: 14,
-        colCount: 6,
-        candyCount: 6,
-        targetCandy: "B",
-        targetQty: 26,
-        maxMoves: 20,
-      },
-    ]
-    //console.log(levelArray);
-  }
-  const { rowCount, colCount, candyCount, targetCandy, targetQty, maxMoves } = levelArray[level-1];
+   let { rowCount, colCount, candyCount, targetCandy, targetQty, maxMoves } = levelArray[level-1];
   let gdNew = new GameData(rowCount, colCount, candyCount, level, maxMoves, "", targetQty, targetCandy);
+  gdNew.gameLevel = level;
   return gdNew;
 }
 
@@ -523,8 +450,10 @@ nextButton.addEventListener("click", nextButtonHandler);
 gridContainer.addEventListener('contextmenu', event => event.preventDefault());
 
 function nextButtonHandler() {
-  gd = loadLevel(gd.gameLevel+1);
-  console.log(gd.grid);
+  let level = +gd.gameLevel+1;
+  level = (level > 9) ? 9 : level; 
+  //console.log(gd.gameLevel, level);
+  gd = loadLevel(level);
   applyStyleToGridContainer();
   renderGrid();
   renderScoreBoard();
@@ -596,7 +525,7 @@ function setActivePage(page) {
   startPage.style.display = "none";
   gamePage.style.display = "none";
   levelTitle.innerText = "LEVEL";
-  nextButton.visibility = "false";
+  nextButton.visibility = false;
   levelPage.style.width = "0";
   levelPage.style.display = "none";
   settingPage.style.width = "0";
@@ -618,14 +547,14 @@ function setActivePage(page) {
       levelPage.style.width = "100vw";
       levelPage.style.display = "flex";
       levelTitle.innerText = "YOU WIN!";
-      nextButton.visibility = "true";
+      nextButton.visibility = true;
       gamePage.style.display = "grid";
       break;
     case "lose":
       levelPage.style.width = "100vw";
       levelPage.style.display = "flex";
       levelTitle.innerText = "YOU LOSE! TRY AGAIN";
-      nextButton.visibility = "true";
+      nextButton.visibility = true;
       gamePage.style.display = "grid";
       break;
     case "setting":
@@ -646,7 +575,6 @@ function levelChangeButtonHandler(ev) {
   gd="";
   gd = loadLevel(level);
   setActivePage("game");
-  console.log(gd.grid);
   applyStyleToGridContainer();
   renderGrid();
   renderScoreBoard();

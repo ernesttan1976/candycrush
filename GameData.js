@@ -195,8 +195,11 @@ export class GameData {
   removeOnes() {
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.colCount; j++) {
-        if (this.gridThree[i][j] === "1") {
-          this.grid[i][j] = " ";
+        if (typeof this.gridThree[i][j] !== undefined)
+        {
+          if (this.gridThree[i][j] === "1") {
+            this.grid[i][j] = " ";
+          }  
         }
       }
     }
@@ -219,149 +222,110 @@ export class GameData {
     }
   }
 
-  markColorBallMoveSpaces(colorBall, other) {
-    //remove the 2 spaces
-    this.grid[colorBall.row][colorBall.col] = "1";
-    this.grid[other.row][other.col] = "1";
-  }
-
-  checkColorBallMove({ grid, start, end }) {
+  checkColorBallMove() {
+    if (this.userActive === false)
+      return {
+        isColorBallWithNormal: false,
+        isColorBallWithStriped: false,
+        laserList: [],
+      };
     let colorBall;
     let other;
     let normalColor = "";
     let stripedColor = "";
-    let isColorBallWithNormal = false;
-    let isColorBallWithStriped = false;
-    let gridColorBallWithNormal = this.initGridArray(
-      this.rowCount,
-      this.colCount
-    );
-    let gridColorBallWithStriped = this.initGridArray(
-      this.rowCount,
-      this.colCount
-    );
-    let laserlist = [];
-    if (start.color === "G") {
-      colorBall = start;
-      other = end;
-    } else if (end.color === "G") {
-      colorBall = end;
-      other = start;
-    } else {
-      return { isColorBallWithNormal, isColorBallWithStriped, list };
-    }
-
-    this.markColorBallMoveSpaces(colorBall, other);
-
-    isColorBallWithNormal = other.color >= "A" && other.color <= "F";
-    isColorBallWithStriped = other.color >= "H" && other.color <= "S";
-    if (isColorBallWithNormal) {
-      normalColor = other.color;
-      assignColorBallWithNormal(normalColor);
-    } else if (isColorBallWithStriped) {
-      stripedColor = this.stripedToNormal(other.color);
-      assignColorBallWithStriped(stripedColor);
-    }
-    return { isColorBallWithNormal, isColorBallWithStriped, laserList:this.laserList };
-  }
-
-  assignColorBallWithNormal(normalColor) {
-    //color+normal
-    this.laserList = [];
+    this.isColorBallWithNormal = false;
+    this.isColorBallWithStriped = false;
     this.gridColorBallWithNormal = this.initGridArray(
       this.rowCount,
       this.colCount
     );
-    for (let i = 0; i < this.rowCount; i++) {
-      for (let j = 0; j < this.colCount; j++) {
-        if (this.grid[i][j] === normalColor) {
-          this.grid[i][j] = "1";
-          this.gridColorBallWithNormal[i][j] = "1";
-          this.laserList.push({
-            start: colorBall,
-            end: { row: i, col: j },
-          });
-        }
-      }
-    }
-  }
-
-  assignColorBallWithStriped(stripedColor) {
-    //color+striped
     this.gridColorBallWithStriped = this.initGridArray(
       this.rowCount,
       this.colCount
     );
-    for (let i = 0; i < this.rowCount; i++) {
-      for (let j = 0; j < this.colCount; j++) {
-        if (this.grid[i][j] === stripedColor) {
-          let thisStripe = this.getRandomStripeCandy(stripedColor);
-          //randomly assign  striped candy
-          this.grid[i][j] = thisStripe;
-          this.gridColorBallWithStriped[i][j] = thisStripe;
-          this.laserList.push({
-            start: colorBall,
-            end: { row: i, col: j },
-          });
-        }
-      }
+
+    if (this.start.color === "G") {
+      colorBall = this.start;
+      other = this.end;
+    } else if (this.end.color === "G") {
+      colorBall = end;
+      other = start;
+    } else {
+      return {
+        isColorBallWithNormal: this.isColorBallWithNormal,
+        isColorBallWithStriped: this.isColorBallWithStriped,
+        laserList: this.laserList,
+      };
     }
+
+    this.grid[colorBall.row][colorBall.col] = "1";
+    this.grid[other.row][other.col] = "1";
+
+    this.isColorBallWithNormal = other.color >= "A" && other.color <= "F";
+    this.isColorBallWithStriped = other.color >= "H" && other.color <= "S";
+    if (this.isColorBallWithNormal) {
+      normalColor = other.color;
+      this.assignColorBallWithNormal(normalColor, colorBall);
+    } else if (this.isColorBallWithStriped) {
+      stripedColor = this.stripedToNormal(other.color);
+      this.assignColorBallWithStriped(stripedColor, colorBall);
+    }
+
+    return {
+      isColorBallWithNormal: this.isColorBallWithNormal,
+      isColorBallWithStriped: this.isColorBallWithStriped,
+      laserList: this.laserList,
+    };
   }
 
   checkNormalWithStripedMove(start, end) {
-    const isSameColor =
-      this.stripedToNormal(start.color) === this.stripedToNormal(end.color);
-    const isSameLetter = start.color === end.color;
     let lineStart = {};
     let lineEnd = {};
     let list = [];
-    if (start.color >= "H" && start.color <= "M") {
-      lineStart = {
-        row: start.row,
-        col: 0,
-      };
-      lineEnd = {
-        row: start.row,
-        col: this.colCount - 1,
-      };
-    } else if (start.color >= "N" && start.color <= "S") {
-      lineStart = {
-        row: 0,
-        col: start.col,
-      };
-      lineEnd = {
-        row: this.rowCount - 1,
-        col: start.col,
-      };
-    } else if (end.color >= "H" && end.color <= "M") {
-      lineStart = {
-        row: end.row,
-        col: 0,
-      };
-      lineEnd = {
-        row: end.row,
-        col: this.colCount - 1,
-      };
-    } else if (end.color >= "N" && end.color <= "S") {
-      lineStart = {
-        row: 0,
-        col: end.col,
-      };
-      lineEnd = {
-        row: this.rowCount - 1,
-        col: end.col,
-      };
+    this.isNormalWithStripedMove = false;
+
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.colCount; j++) {
+        if (this.gridThree[i][j] === "1") {
+          if (this.grid[i][j] >= "H" && this.grid[i][j] <= "M") {
+            this.horizontalLaser(i);
+            lineStart = {
+              row: i,
+              col: 0,
+            };
+            lineEnd = {
+              row: i,
+              col: this.colCount - 1,
+            };
+            list.push({
+              start: lineStart,
+              end: lineEnd,
+            });
+            this.isNormalWithStripedMove = true;
+          } else if (this.grid[i][j] >= "N" && this.grid[i][j] <= "S") {
+            this.verticalLaser(j);
+            lineStart = {
+              row: 0,
+              col: j,
+            };
+            lineEnd = {
+              row: this.rowCount - 1,
+              col: j,
+            };
+            list.push({
+              start: lineStart,
+              end: lineEnd,
+            });
+            this.isNormalWithStripedMove = true;
+          }
+        }
+      }
     }
-    const isNormalWithStripedMove = isSameColor && !isSameLetter;
-    if (isNormalWithStripedMove)
-      list = [
-        {
-          start: lineStart,
-          end: lineEnd,
-        },
-      ];
-    this.isNormalWithStripedMove = isNormalWithStripedMove;
-    return { isNormalWithStripedMove, list2: list };
+    
+    return {
+      isNormalWithStripedMove: this.isNormalWithStripedMove,
+      list2: list,
+    };
   }
 
   stripedToNormal(str) {
@@ -386,35 +350,32 @@ export class GameData {
     this.isFive = false;
     this.isColorBallWithNormal = false;
     this.isColorBallWithStriped = false;
-    this.isNormalWithStripedMovement = false;
+    this.isNormalWithStripedMove = false;
     //prioity given to the rarest
-    const { isColorBallWithNormal, isColorBallWithStriped, list } =
-      this.checkColorBallMove({
-        grid: this.grid,
-        start: this.start,
-        end: this.end,
-      });
-    this.isColorBallWithNormal = isColorBallWithNormal;
-    this.isColorBallWithStriped = isColorBallWithStriped;
-    this.laserList = list;
-    //color ball + normal candy -> all normal candy of that color disappears
-    //color ball + striped candy -> all normal candy of that color changes into striped candy
-    if (this.isColorBallWithNormal || this.isColorBallWithStriped) {
-      //
-    }
+    const { isColorBallWithNormal, isColorBallWithStriped, laserList } =
+      this.checkColorBallMove();
 
     //results in gridThree marked with 1 (normal candy)
     this.isThree = this.checkThreeInALine();
     //must be 3 in a row for normal and striped to be true
-    const { isNormalWithStripedMove, list2 } = this.checkNormalWithStripedMove(
-      this.start,
-      this.end
-    );
-
-    this.laserList = [...this.laserList, ...list2];
-    this.isNormalWithStripedMove = isNormalWithStripedMove && this.isThree;
+    if (this.isThree) {
+      const { isNormalWithStripedMove, list2 } =
+        this.checkNormalWithStripedMove(this.start, this.end);
+      this.laserList = [...this.laserList, ...list2];
+    } else {
+      this.Four = false;
+      this.Five = false;
+      return {
+        isColorBallWithNormal: this.isColorBallWithNormal,
+        isColorBallWithStriped: this.isColorBallWithStriped,
+        isThree: this.isThree,
+        isFour: this.isFour,
+        isFive: this.isFive,
+      };
+    }
 
     this.isFour = this.checkFourInALine();
+
     //results in gridFour marked with H to S (striped candy)
     if (this.isFour) {
       this.giveStripedCandy();
@@ -427,19 +388,13 @@ export class GameData {
       this.giveColorBall();
       //console.log(this.gridFive);
     }
-    //const isColorBallWithNormalCandy = this.checkColorBallWithNormalCandy();
-    //results in gridColorBallWithNormalCandy marked with 1, all candy with that color
-
-    //const isColorBallWithStriped = this.checkColorBallWithStriped();
-    //results in gridColorBallWithStriped marked with N to S, all candy with that color's striped candy. e.g. A -> H or N, immediately invoke laser on it.
-    // i.e. invoke checkStripedWithNormalCandy
 
     return {
+      isColorBallWithNormal: this.isColorBallWithNormal,
+      isColorBallWithStriped: this.isColorBallWithStriped,
       isThree: this.isThree,
       isFour: this.isFour,
       isFive: this.isFive,
-      isColorBallWithNormal: this.isColorBallWithNormal,
-      isColorBallWithStriped: this.isColorBallWithStriped,
     };
   }
 
@@ -465,12 +420,13 @@ export class GameData {
         return n === 1 ? "M" : "S";
         break;
       default:
-        console.log("getRandomStripeCandy: error");
+        console.log("getRandomStripeCandy: error", "color:", color);
         break;
     }
   }
 
   isPointOnLine(point, start, end) {
+    if (start === undefined || end === undefined) return false;
     if (
       point.row === start.row &&
       start.col <= end.col &&
@@ -589,7 +545,8 @@ export class GameData {
     });
   }
 
-  scanRows(list) {
+  scanRows() {
+    let list = [];
     for (let i = 0; i < this.rowCount; i++) {
       let count = 0;
       let start = {};
@@ -620,7 +577,8 @@ export class GameData {
     return list;
   }
 
-  scanColumns(list) {
+  scanColumns() {
+    let list = [];
     for (let j = 0; j < this.colCount; j++) {
       let count = 0;
       let start = {};
@@ -652,6 +610,7 @@ export class GameData {
   }
 
   assignCandy({ list, gridFour, start, end }) {
+    //console.log({ ...list, gridFour, start, end });
     list.forEach((item) => {
       let stripedCandy = this.getRandomStripeCandy(item.color);
       const isStartOnLine = this.isPointOnLine(
@@ -689,9 +648,8 @@ export class GameData {
     if (!this.isFour) {
       console.log("gridFour is empty");
       return;
-    } else if (this.isFour) {
-      list = this.scanRows(list);
-      list = this.scanColumns(list);
+    } else {
+      list = [...this.scanRows(), ...this.scanColumns()];
       this.gridFour = this.assignCandy({
         list,
         gridFour: this.gridFour,
@@ -866,7 +824,8 @@ export class GameData {
 
   horizontalLaser(row) {
     for (let j2 = 0; j2 < this.colCount; j2++) {
-      this.grid[row][j2] = " ";
+      //this.grid[row][j2] = "1";
+      this.gridThree[row][j2] = "1";
     }
   }
 
@@ -874,11 +833,13 @@ export class GameData {
     //vertical laser
 
     for (let i = 0; i < this.rowCount; i++) {
-      this.grid[i][col] = " ";
+      //this.grid[i][col] = "1";
+      this.gridThree[i][col] = "1";
     }
   }
 
   countTarget() {
+    if (!this.isThree) return;
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.colCount; j++) {
         if (
@@ -915,9 +876,7 @@ export class GameData {
     // this.gameScore = 0;
   }
 
-  removeOnesAndGiveSpecialCandy() {
-    //if colorBall add the striped candy to the grid
-
+  assignColorBallWithStriped2() {
     if (this.isColorBallWithStripedCandy) {
       for (let i = 0; i < this.rowCount; i++) {
         for (let j = 0; j < this.colCount; j++) {
@@ -943,27 +902,87 @@ export class GameData {
       }
       this.isColorBallWithStripedCandy = false;
     }
+  }
 
+  assignColorBallWithNormal(normalColor, colorBall) {
+    //color+normal
+    this.laserList = [];
+    this.gridThree = this.initGridArray(this.rowCount, this.colCount);
+    this.gridColorBallWithNormal = this.initGridArray(
+      this.rowCount,
+      this.colCount
+    );
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.colCount; j++) {
+        if (this.grid[i][j] === normalColor) {
+          this.grid[i][j] = "1";
+          this.gridThree[i][j] = "1";
+          this.laserList.push({
+            start: colorBall,
+            end: { row: i, col: j },
+          });
+        }
+      }
+    }
+    //console.log(normalColor, this.laserList.length, this.grid);
+    this.countScores();
+    this.countTarget();
+    this.gridThree = [];
+  }
+
+  assignColorBallWithStriped(stripedColor, colorBall) {
+    //color+striped
+    this.gridColorBallWithStriped = this.initGridArray(
+      this.rowCount,
+      this.colCount
+    );
+    for (let i = 0; i < this.rowCount; i++) {
+      for (let j = 0; j < this.colCount; j++) {
+        if (this.grid[i][j] === stripedColor) {
+          let thisStripe = this.getRandomStripeCandy(stripedColor);
+          //randomly assign  striped candy
+          this.grid[i][j] = thisStripe;
+          if (thisStripe >= "H" && thisStripe <= "M") {
+            this.horizontalLaser(i);
+          } else {
+            this.verticalLaser(j);
+          }
+
+          this.gridColorBallWithStriped[i][j] = thisStripe;
+          this.laserList.push({
+            start: colorBall,
+            end: { row: i, col: j },
+          });
+        }
+      }
+    }
+    this.countScores();
+    this.countTarget();
+  }
+
+  assignNormalWithStriped() {
     //remove items, including laser zaps
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.colCount; j++) {
         let isHorizontal = this.grid[i][j] >= "H" && this.grid[i][j] <= "M";
         let isVertical = this.grid[i][j] >= "N" && this.grid[i][j] <= "S";
-        if (this.gridThree[i][j] === "1") {
-          if (this.isNormalWithStripedMove && (isHorizontal || isVertical)) {
+
+        if (isHorizontal || isVertical) {
+
+          if (this.isNormalWithStripedMove) {
             //Striped candy laser
             if (isHorizontal) {
               this.horizontalLaser(i);
             } else if (isVertical) {
               this.verticalLaser(j);
             }
-          } else {
-            this.grid[i][j] = " ";
           }
         }
       }
     }
+  }
 
+  giveStripedCandyAndColorBall() {
     //add striped candy AFTER the others are removed
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.colCount; j++) {
@@ -982,12 +1001,26 @@ export class GameData {
         }
       }
     }
+  }
+
+  resetAllValues() {
+    // this.start = {};
+    // this.end = {};
     this.gridThree = [];
     this.gridFour = [];
     this.gridFive = [];
+    this.gridColorBallWithNormal = [];
+    this.gridColorBallWithStriped = [];
     this.isColorBallWithNormal = false;
     this.isColorBallWithStriped = false;
     this.isNormalWithStripedMove = false;
+  }
+
+  removeOnesAndGiveSpecialCandy() {
+    this.removeOnes();
+    this.assignNormalWithStriped();
+    this.giveStripedCandyAndColorBall();
+    this.resetAllValues();
   }
 
   //refactor this - done

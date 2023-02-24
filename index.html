@@ -5,11 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Candy Crush</title>
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
     <link href="https://fonts.cdnfonts.com/css/keep-calm" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <script src="index.js" defer type="module"></script>
-
   </head>
   <body>
     <div id="start-page">
@@ -27,21 +26,17 @@
           <div id="game-level" class="game-display">LEVEL 1</div>
           <div id="game-moves" class="game-display">MOVES 20</div>
         </div>
-  
+
         <div id="game-container2">
           <div id="game-stars" class="game-display">STARS</div>
           <div id="game-score" class="game-display">SCORE</div>
-          <div class="game-display"><img id="game-candy-target" src=""/></div>
+          <div class="game-display"><img id="game-candy-target" src="" /></div>
           <div id="game-target" class="game-display">10</div>
-  
         </div>
-  
+
         <div id="game-container3">
-          <img
-            src="images/unicorn.png"
-            alt="unicorn"
-          />
-        </div>  
+          <img src="images/unicorn.png" alt="unicorn" />
+        </div>
       </div>
 
       <div id="grid"></div>
@@ -78,8 +73,7 @@
           class="setting-display"
           placeholder="Your Name"
         />
-        <select name="User" id="select-user" class="setting-display">
-        </select>
+        <select name="User" id="select-user" class="setting-display"></select>
         <div id="add-user" class="small-button">CREATE</div>
         <div id="label-music" class="game-display">GAME MUSIC</div>
         <audio
@@ -94,10 +88,16 @@
         <!-- <input id="range-music" type="range" min="1" max="100" value="50" /> -->
 
         <div id="label-sound" class="game-display">GAME SOUND</div>
-        <input id="range-sound" class="setting-display" type="range" min="1" max="100" value="50" />
+        <input
+          id="range-sound"
+          class="setting-display"
+          type="range"
+          min="1"
+          max="100"
+          value="50"
+        />
       </div>
       <div id="back-button2" class="small-button">BACK</div>
     </div>
-
   </body>
 </html>

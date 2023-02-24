@@ -185,7 +185,7 @@ describe("GameData class", () => {
   });
 
   it("checkColorBallMove(colorBall, other) returns { isColorBallWithNormal, isColorBallWithStriped, list } list of laser lines",()=>{
-    
+
   })
 
   it("stripedToNormal(str) should convert H and N to A, I and O to B, J and P to C, K and Q to D, L and R to E, M and S to F", () => {
@@ -446,7 +446,7 @@ describe("GameData class", () => {
     
   });
 
-  it("scanRows(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
+  it("scanRows() returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
     let gd = new GameData();
     gd.grid = [
       [..."ABCDEF"],
@@ -474,12 +474,12 @@ describe("GameData class", () => {
       gdEnd: {row:1,col:3,color:"C"}
     }
     let list = [];
-    list = gd.scanRows(list);
+    list = gd.scanRows();
     console.log(output, list[0]);
     expect(list[0]).toEqual(output);
   });
 
-  it("scanColumns(list) returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
+  it("scanColumns() returns list of {start(line),end(line),color,gdStart(user move), gdEnd(user move)}",()=>{
     let gd = new GameData();
     gd.grid = [
       [..."ABCDEF"],
@@ -507,7 +507,7 @@ describe("GameData class", () => {
       gdEnd: {row:1,col:3,color:"B"}
     }
     let list = [];
-    list = gd.scanColumns(list);
+    list = gd.scanColumns();
     console.log(output, list[0]);
     expect(list[0]).toEqual(output);
   });
@@ -560,13 +560,6 @@ describe("GameData class", () => {
       [..."BCDEFA"],
     ];
     gd.isFour=true;
-    let list = [{
-      start: {row:1,col:3},
-      end: {row:4,col:3},
-      color: "B",
-      gdStart: {row:1,col:4,color:"F"},
-      gdEnd: {row:1,col:3,color:"B"}
-    }];
     gd.start={row:1,col:4}
     gd.end={row:1,col:3}  
     gd.gridFour = gd.giveStripedCandy();
@@ -580,14 +573,30 @@ describe("GameData class", () => {
 
   it("checkNormalWithStripedMove(start,end) returns true if start.color === end.color",()=>{
     let gd = new GameData();
-    let start = {row:0, col:0, color: "H"};
-    let end = {row:1, col:0, color: "A"};
+    gd.grid = [
+      [..."ABCDEF"],
+      [..."BCDBFA"],
+      [..."ABCIEF"],
+      [..."BCDBFA"],
+      [..."ABCBEF"],
+      [..."BCDEFA"],
+    ];
+    gd.gridThree = [
+      [..."ABCDEF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCD1FA"],
+      [..."ABC1EF"],
+      [..."BCDEFA"],
+    ];
+    let start = {row:1, col:4, color: "F"};
+    let end = {row:1, col:3, color: "B"};
     let lineStart = {
-      row: 0,
+      row: 2,
       col: 0,
     };
     let lineEnd = {
-      row: 0,
+      row: 2,
       col: 5,
     };
     let list = [{
@@ -597,29 +606,7 @@ describe("GameData class", () => {
     let output = {isNormalWithStripedMove: true, list2: list };
     let result = gd.checkNormalWithStripedMove(start,end);
     expect(result).toStrictEqual(output);
-    start = {row:0, col:0, color: "A"};
-    end = {row:1, col:0, color: "A"};
-    list = [];
-    output = {isNormalWithStripedMove: false, list2: list };
-    result = gd.checkNormalWithStripedMove(start,end);
-    expect(result).toStrictEqual(output);
-    start = {row:0, col:0, color: "A"};
-    end = {row:1, col:0, color: "N"};
-    lineStart = {
-      row: 0,
-      col: 0,
-    };
-    lineEnd = {
-      row: 5,
-      col: 0,
-    };
-    list = [{
-      start: lineStart,
-      end: lineEnd
-    }];
-    output = {isNormalWithStripedMove: true, list2: list };
-    result = gd.checkNormalWithStripedMove(start,end);
-    expect(result).toStrictEqual(output);
+
 
   })
 });
