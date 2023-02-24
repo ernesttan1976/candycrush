@@ -179,7 +179,17 @@ export class GameData {
       (item, colIndex) => (item = this.getRandomCandy())
     );
     this.grid = grid;
+
+    this.cleanOutThreeInARow();
+
     return grid;
+  }
+
+  cleanOutThreeInARow(){
+    this.isThree = this.checkThreeInALine();
+    if (!this.isThree) return true;
+    this.fillGridArrayBlanks();
+    this.cleanOutThreeInARow();
   }
 
   //refactor this - done
