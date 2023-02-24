@@ -27,10 +27,10 @@ games in 2022 and cracks the top10 most downloaded mobile games regularly.
 
 ### USER STORIES / FEATURES ###
 #### PLANS ####
-![Plan1](/planning1.jpg){width=600 height=400}
-![Plan2](/planning2.jpg){width=600 height=400}
-![Start Page](/startpage.jpg){width=600 height=400}
-![Game Page](/gamepage.jpg){width=600 height=400}
+![Plan1](/planning1.jpg =600x400)
+![Plan2](/planning2.jpg =600x400)
+![Start Page](/startpage.jpg =600x400)
+![Game Page](/gamepage.jpg =600x400)
 
 #### Main ####
 - [x] 1.Player swipes candy to match 3 tiles. resulting in candy being removed, and refilled from the top.
