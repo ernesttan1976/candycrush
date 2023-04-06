@@ -1,5 +1,5 @@
 # [CANDY CRUSH](https://ernesttan1976.github.io/candycrush/) #
-#### (CLICK TITLE TO PLAY) ####
+#### [DEPLOYED APP IS HERE (CLICK TITLE TO PLAY)](https://ernesttan1976.github.io/candycrush/) ####
 
 ## GA SEI BOOTCAMP PROJECT ##
 To demonstrate my proficiency in vanilla Javascript, HTML and CSS.  
